@@ -1,0 +1,19 @@
+# Ambiente Virtual (O mais importante para você agora)
+venv/
+env/
+# Arquivos compilados do Python
+__pycache__/
+*.pyc
+
+# Configurações do VS Code (opcional, mas recomendado)
+.vscode/
+
+# Variáveis de ambiente (Onde você guardará as chaves da OpenAI/Gemini)
+.env
+
+# Banco de dados local (caso use SQLite para testes antes do MySQL)
+*.sqlite3
+
+# Arquivos do Sistema Operacional
+.DS_Store
+Thumbs.db
