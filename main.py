@@ -1,67 +1,139 @@
-import requests
-import base64  # Necessário para decodificar o conteúdo que vem do GitHub
-from fastapi import FastAPI
-from pydantic import BaseModel
+import os
+import re
+import httpx # [biblioteca para requisições assíncronas]
+import base64
+import google.generativeai as genai
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, field_validator
+from dotenv import load_dotenv # Biblioteca para ler o arquivo .env com segurança
+
+# 1. CONFIGURAÇÃO DE SEGURANÇA
+# Carregamos as variáveis do arquivo .env (onde está sua API_KEY)
+# Isso evita que sua chave fique exposta diretamente no código (Hardcoded)
+load_dotenv()
+genai.configure(api_key=os.getenv("GEMINI_API_KEY")) # type: ignore
+
+''' Trecho temporário para teste para ver as models disponíveis no terminal
+for m in genai.list_models():
+    if 'generateContent' in m.supported_generation_methods:
+        print(f"Modelo disponível: {m.name}")
+'''
+
+# [NOVO] Token do GitHub para evitar o erro de "Rate Limit" (limite de acessos)
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+headers = {"Authorization": f"token {GITHUB_TOKEN}"} if GITHUB_TOKEN else {}
 
 app = FastAPI(title="CheckIA - Motor de Análise")
 
 class RepoRequest(BaseModel):
-    repo_url: str
+    repo_url: str # Recebe como string para validarmos manualmente
 
+    @field_validator('repo_url')
+    def validate_github_url(cls, v):
+        # Usamos REGEX para garantir que a URL seja realmente do GitHub e tenha dono/projeto
+        pattern = r'^https?://github\.com/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/?$'
+        if not re.match(pattern, v):
+            raise ValueError('A URL deve ser um repositório válido: https://github.com/usuario/projeto')
+        return v
+    
 @app.post("/analyze")
 async def analyze_repo(request: RepoRequest):
-    # --- PARTE 1: Extração e Listagem ---
+    # --- PARTE 1: EXTRAÇÃO DA URL (Melhoria aplicada) ---
+    # Pegamos o link do GitHub e extraímos quem é o dono e qual o projeto
+    match = re.search(r"github\.com/([^/]+)/([^/]+)", request.repo_url)
     
-    # 1. Extraindo owner e repo da URL (Ex: https://github.com/usuario/projeto)
-    # Vamos "quebrar" a URL pelas barras e pegar as últimas partes [3]
-    parts = request.repo_url.rstrip("/").split("/")
-    owner = parts[-2]
-    repo = parts[-1]
+    if not match:
+        raise HTTPException(status_code=400, detail="Não foi possível identificar o dono e o repositório.")
 
-    # 2. Chamando a API do GitHub para listar os arquivos
-    # O parâmetro recursive=1 traz todas as pastas de uma vez [3]
+    owner = match.group(1)
+    repo = match.group(2).rstrip("/").replace(".git", "")
+
+    print(f"Iniciando análise para: {owner}/{repo}")
+
+    # --- PARTE 2: BUSCAR A ÁRVORE (TREE) NO GITHUB ---
+    # Montamos o link da API do GitHub para listar tudo
     github_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/main?recursive=1"
-    response = requests.get(github_url)
-    
-    if response.status_code != 200:
-        return {"error": "Não consegui acessar o repositório. Verifique se a URL é pública."}
 
-    tree = response.json().get("tree", [])
+    codigo_para_ia = "" #variável que vai armazenar o código para enviar à IA
 
-    # 3. Criando a Blacklist (Filtro de Código)
-    # Ignoramos o que não é código ou o que é muito pesado/desnecessário para a IA [1, 4]
-    blacklist = ['node_modules', '.git', 'package-lock.json', '.png', '.jpg', '.pdf', 'dist', 'build']
+    async with httpx.AsyncClient() as client:
+        # 1. Busca a árvore de arquivos de forma assíncrona
+        response = await client.get(github_url, headers=headers)
     
-    filtered_files = []
-    for file in tree:
-        # Só queremos 'blobs' (arquivos reais) e que NÃO estejam na blacklist [4]
-        path = file.get("path", "")
-        if file["type"] == "blob" and not any(ignored in path for ignored in blacklist):
-            filtered_files.append(path)
+        if response.status_code != 200:
+            return {"error": "Não consegui acessar o repositório. Verifique o Token ou se o repo é público."}
 
-    # --- PARTE 2: Coleta de Conteúdo Real (Nova Etapa) ---
+        tree = response.json().get("tree", [])
     
-    arquivos_com_conteudo = []
-    
-    # Percorremos a lista filtrada para buscar o "texto" de cada arquivo
-    # Limitamos aos primeiros 10 arquivos para o teste inicial não ser lento
-    for path in filtered_files[:10]: 
-        content_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
-        content_resp = requests.get(content_url)
+        # 2. Aplicamos a "Blacklist" para ignorar lixo e arquivos pesados [3]
+        blacklist = ['node_modules', '.git', 'package-lock.json', '.png', '.jpg', '.env', '.pem', '.key']
+        filtered_files = [f["path"] for f in tree if f["type"] == "blob" and not any(i in f["path"] for i in blacklist)]
+
+        # --- PARTE 3: COLETA DO CONTEÚDO  ---
+        # Percorremos os arquivos filtrados (limitando a 10 para não estourar o limite gratuito agora)
+        for path in filtered_files[:10]: 
+            content_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
+            res = await client.get(content_url, headers=headers)
         
-        if content_resp.status_code == 200:
-            data = content_resp.json()
-            # O GitHub envia o código em Base64, decodificamos para texto legível (UTF-8)
-            conteudo_decodificado = base64.b64decode(data['content']).decode('utf-8')
-            
-            arquivos_com_conteudo.append({
-                "arquivo": path,
-                "codigo": conteudo_decodificado
-            })
+            if res.status_code == 200:
+                try:
+                    # Tentamos decodificar. Se for um arquivo binário que passou pelo filtro, não travamos o código!
+                    raw_content = res.json().get('content', '')
+                    # Decodificação segura para evitar erros de arquivos binários
+                    decoded_bytes = base64.b64decode(raw_content)
+                    content = decoded_bytes.decode('utf-8')
+                    codigo_para_ia += f"--- ARQUIVO: {path} ---\n{content}\n\n"
+                except (UnicodeDecodeError, ValueError):
+                    # Se der erro de leitura (UTF-8), apenas pulamos o arquivo
+                    print(f"Pulando arquivo não-texto: {path}")
+                    continue
 
-    # Retornamos para o Frontend (Jonathan/João) e para a IA (Gabriel) apenas o que importa [2, 5]
+    # --- PARTE 4: ENGENHARIA DE PROMPT (Instruindo a IA [1]) ---
+    # Aqui definimos o modelo e como a IA deve se comportar
+    model = genai.GenerativeModel('gemini-flash-latest') # type: ignore
+
+     # 1. Primeiro, verifique no terminal se o código está chegando o print fica fora do prompt para não confundir a IA
+    print(f"Enviando {len(codigo_para_ia)} caracteres para análise...")
+
+    # Criamos o "Prompt de Segurança": definimos a persona da IA e o formato da resposta
+    # Pedimos especificamente o formato JSON para que o João e o Jonathan consigam exibir no front [4]
+    prompt = f"""
+    Você é um assistente de ensino especializado em boas práticas de programação e qualidade de software.
+    Sua tarefa é analisar o código abaixo para fins didáticos e sugerir melhorias de robustez, seguindo padrões profissionais de desenvolvimento.
+    
+    FOCO DA REVISÃO PEDAGÓGICA:
+    - Verificação de configurações (boas práticas de armazenamento).
+    - Higienização de dados e proteção contra entradas inesperadas.
+    - Melhoria na clareza e tratamento de erros do sistema.
+
+    REGRAS DE SAÍDA:
+    - Retorne APENAS o objeto JSON abaixo.
+    - Se o código for seguro, retorne o array vazio.
+
+    FORMATO JSON:
+    {{
+      "vulnerabilidades": [
+        {{
+          "arquivo": "nome_do_arquivo",
+          "risco": "Título da melhoria (ex: Proteção de Dados)",
+          "severidade": "Alta/Média/Baixa",
+          "descricao": "Explicação pedagógica do ponto de atenção",
+          "correcao": "Sugestão de código para melhoria"
+        }}
+      ]
+    }}
+
+    CÓDIGO PARA REVISÃO DE ESTUDO:
+    {codigo_para_ia}
+    """
+
+    # Enviamos tudo para o Google e recebemos a análise
+    ai_response = model.generate_content(prompt)
+    
+    # --- PARTE 5: RETORNO DA API ---
+    # Devolvemos o resultado final que será usado para alimentar o Dashboard [5]
     return {
         "repo": f"{owner}/{repo}",
-        "total_arquivos_filtrados": len(filtered_files),
-        "arquivos_analisados": arquivos_com_conteudo
+        "status": "sucesso",
+        "analise_ia": ai_response.text
     }
