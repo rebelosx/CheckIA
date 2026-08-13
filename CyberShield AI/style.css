@@ -1,0 +1,309 @@
+/* ===========================
+   CyberShield AI
+   style.css
+=========================== */
+
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Reset */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    font-family:'Inter',sans-serif;
+
+    background:#0D1117;
+
+    color:#F0F6FC;
+
+    min-height:100vh;
+
+}
+
+/* Variáveis */
+
+:root{
+
+    --background:#0D1117;
+
+    --sidebar:#161B22;
+
+    --card:#21262D;
+
+    --hover:#30363D;
+
+    --border:#30363D;
+
+    --blue:#2F81F7;
+
+    --green:#3FB950;
+
+    --red:#F85149;
+
+    --yellow:#D29922;
+
+    --white:#F0F6FC;
+
+    --gray:#8B949E;
+
+}
+
+/* Links */
+
+a{
+
+    color:inherit;
+
+    text-decoration:none;
+
+}
+
+/* Botões */
+
+button{
+
+    cursor:pointer;
+
+    border:none;
+
+    outline:none;
+
+    transition:.3s;
+
+}
+
+/* Inputs */
+
+input,
+textarea,
+select{
+
+    outline:none;
+
+    border:none;
+
+    font-family:'Inter',sans-serif;
+
+}
+
+/* Scroll */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#161B22;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#30363D;
+
+    border-radius:50px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#2F81F7;
+
+}
+
+/* Container */
+
+.container{
+
+    width:100%;
+
+    min-height:100vh;
+
+    display:flex;
+
+}
+
+/* Cards */
+
+.card{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    transition:.3s;
+
+}
+
+.card:hover{
+
+    transform:translateY(-5px);
+
+    border-color:var(--blue);
+
+    box-shadow:0 10px 30px rgba(47,129,247,.20);
+
+}
+
+/* Botão Primário */
+
+.btn-primary{
+
+    background:var(--blue);
+
+    color:white;
+
+    padding:14px 30px;
+
+    border-radius:8px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+.btn-primary:hover{
+
+    background:#1F6FEB;
+
+}
+
+/* Botão Secundário */
+
+.btn-secondary{
+
+    background:transparent;
+
+    border:1px solid var(--border);
+
+    color:white;
+
+    padding:14px 30px;
+
+    border-radius:8px;
+
+}
+
+.btn-secondary:hover{
+
+    background:var(--hover);
+
+}
+
+/* Títulos */
+
+h1{
+
+    font-size:34px;
+
+    font-weight:800;
+
+}
+
+h2{
+
+    font-size:28px;
+
+    font-weight:700;
+
+}
+
+h3{
+
+    font-size:22px;
+
+    font-weight:600;
+
+}
+
+/* Texto */
+
+p{
+
+    color:var(--gray);
+
+    line-height:1.6;
+
+}
+
+/* Animação */
+
+.fade{
+
+    animation:fade .6s;
+
+}
+
+@keyframes fade{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/* Responsividade */
+
+@media(max-width:992px){
+
+.container{
+
+    flex-direction:column;
+
+}
+
+}
+
+@media(max-width:768px){
+
+h1{
+
+    font-size:28px;
+
+}
+
+h2{
+
+    font-size:24px;
+
+}
+
+}
+
+@media(max-width:480px){
+
+body{
+
+    font-size:14px;
+
+}
+
+}

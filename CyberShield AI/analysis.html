@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Nova Análise | CyberShield AI</title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <link rel="stylesheet"
+          href="css/analysis.css">
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =====================================
+         SIDEBAR
+    ====================================== -->
+
+    <aside class="sidebar">
+
+        <div>
+
+
+            <div class="brand">
+
+                <div class="brand-icon">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>CyberShield</strong>
+
+                    <span>AI Security</span>
+
+                </div>
+
+            </div>
+
+
+            <div class="menu-title">
+
+                VISÃO GERAL
+
+            </div>
+
+
+            <nav>
+
+                <a href="dashboard.html">
+
+                    <i class="fa-solid fa-grid-2"></i>
+
+                    Dashboard
+
+                </a>
+
+
+                <a href="analysis.html"
+                   class="active">
+
+                    <i class="fa-solid fa-crosshairs"></i>
+
+                    Nova análise
+
+                </a>
+
+
+                <a href="projects.html">
+
+                    <i class="fa-solid fa-folder"></i>
+
+                    Projetos
+
+                </a>
+
+
+                <div class="menu-title">
+
+                    SEGURANÇA
+
+                </div>
+
+
+                <a href="vulnerabilities.html">
+
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    Vulnerabilidades
+
+                    <span class="menu-badge">
+
+                        5
+
+                    </span>
+
+                </a>
+
+
+                <a href="reports.html">
+
+                    <i class="fa-solid fa-chart-column"></i>
+
+                    Relatórios
+
+                </a>
+
+
+                <div class="menu-title">
+
+                    SISTEMA
+
+                </div>
+
+
+                <a href="settings.html">
+
+                    <i class="fa-solid fa-gear"></i>
+
+                    Configurações
+
+                </a>
+
+            </nav>
+
+        </div>
+
+
+        <!-- PERFIL -->
+
+        <div class="user-box">
+
+            <div class="user-avatar">
+
+                <i class="fa-solid fa-user"></i>
+
+            </div>
+
+            <div>
+
+                <strong id="usuario">
+
+                    Analista
+
+                </strong>
+
+                <span>
+
+                    Security Analyst
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================
+         CONTEÚDO
+    ====================================== -->
+
+    <main class="main">
+
+
+        <!-- HEADER -->
+
+        <header class="page-header">
+
+            <div>
+
+                <div class="breadcrumb">
+
+                    <span>CyberShield AI</span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                    <span>Nova análise</span>
+
+                </div>
+
+
+                <h1>
+
+                    Nova análise
+
+                </h1>
+
+
+                <p>
+
+                    Analise sua aplicação e descubra possíveis riscos de segurança antes da publicação.
+
+                </p>
+
+            </div>
+
+
+            <div class="header-status">
+
+                <span class="status-dot"></span>
+
+                Sistema operacional
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =====================================
+             CYBERSCORE
+        ====================================== -->
+
+        <section class="intro-card">
+
+            <div class="intro-icon">
+
+                <i class="fa-solid fa-shield-heart"></i>
+
+            </div>
+
+
+            <div>
+
+                <span class="eyebrow">
+
+                    CYBERSHIELD ENGINE
+
+                </span>
+
+                <h2>
+
+                    Segurança começa antes do deploy.
+
+                </h2>
+
+                <p>
+
+                    Escolha uma fonte para iniciar uma análise automatizada do seu projeto.
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================
+             OPÇÕES
+        ====================================== -->
+
+        <section class="analysis-options">
+
+
+            <!-- GITHUB -->
+
+            <article class="analysis-card github-card">
+
+                <div class="card-top">
+
+                    <div class="option-icon">
+
+                        <i class="fa-brands fa-github"></i>
+
+                    </div>
+
+                    <span class="recommended">
+
+                        RECOMENDADO
+
+                    </span>
+
+                </div>
+
+
+                <h3>
+
+                    Repositório GitHub
+
+                </h3>
+
+
+                <p>
+
+                    Conecte um repositório e analise automaticamente os arquivos do projeto.
+
+                </p>
+
+
+                <div class="feature-list">
+
+                    <span>
+
+                        <i class="fa-solid fa-check"></i>
+
+                        Análise de dependências
+
+                    </span>
+
+                    <span>
+
+                        <i class="fa-solid fa-check"></i>
+
+                        Secrets expostos
+
+                    </span>
+
+                    <span>
+
+                        <i class="fa-solid fa-check"></i>
+
+                        OWASP Top 10
+
+                    </span>
+
+                </div>
+
+
+                <button class="primary-button"
+                        id="githubButton">
+
+                    <i class="fa-brands fa-github"></i>
+
+                    Conectar GitHub
+
+                </button>
+
+            </article>
+
+
+
+            <!-- UPLOAD -->
+
+            <article class="analysis-card">
+
+                <div class="card-top">
+
+                    <div class="option-icon upload">
+
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                    </div>
+
+                </div>
+
+
+                <h3>
+
+                    Upload do projeto
+
+                </h3>
+
+
+                <p>
+
+                    Envie um arquivo ZIP contendo os arquivos da sua aplicação.
+
+                </p>
+
+
+                <label class="upload-area"
+                       for="projectFile">
+
+                    <i class="fa-solid fa-file-zipper"></i>
+
+                    <strong>
+
+                        Arraste seu projeto aqui
+
+                    </strong>
+
+                    <span>
+
+                        ou clique para selecionar
+
+                    </span>
+
+                    <small>
+
+                        Formato permitido: .ZIP
+
+                    </small>
+
+                </label>
+
+
+                <input type="file"
+                       id="projectFile"
+                       accept=".zip"
+                       hidden>
+
+
+                <button class="secondary-button"
+                        id="uploadButton">
+
+                    <i class="fa-solid fa-upload"></i>
+
+                    Selecionar projeto
+
+                </button>
+
+            </article>
+
+
+
+            <!-- CÓDIGO -->
+
+            <article class="analysis-card">
+
+                <div class="card-top">
+
+                    <div class="option-icon code">
+
+                        <i class="fa-solid fa-code"></i>
+
+                    </div>
+
+                </div>
+
+
+                <h3>
+
+                    Analisar código
+
+                </h3>
+
+
+                <p>
+
+                    Cole um trecho de código para realizar uma análise rápida.
+
+                </p>
+
+
+                <div class="code-preview">
+
+                    <span class="line-number">01</span>
+
+                    <code>
+
+                        const user = req.body.user;
+
+                    </code>
+
+                    <span class="line-number">02</span>
+
+                    <code>
+
+                        db.query(user);
+
+                    </code>
+
+                    <span class="line-number">03</span>
+
+                    <code>
+
+                        return response.json();
+
+                    </code>
+
+                </div>
+
+
+                <button class="secondary-button"
+                        id="codeButton">
+
+                    <i class="fa-solid fa-code"></i>
+
+                    Abrir analisador
+
+                </button>
+
+            </article>
+
+
+        </section>
+
+
+
+        <!-- =====================================
+             ÁREAS ANALISADAS
+        ====================================== -->
+
+        <section class="security-engine">
+
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="eyebrow">
+
+                        SECURITY ENGINE
+
+                    </span>
+
+                    <h2>
+
+                        O que será analisado?
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="engine-grid">
+
+
+                <div class="engine-item">
+
+                    <div class="engine-icon">
+
+                        <i class="fa-solid fa-bug"></i>
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+
+                            Vulnerabilidades
+
+                        </strong>
+
+                        <span>
+
+                            Identificação de falhas no código.
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="engine-item">
+
+                    <div class="engine-icon">
+
+                        <i class="fa-solid fa-key"></i>
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+
+                            Secrets
+
+                        </strong>
+
+                        <span>
+
+                            Detecção de chaves e credenciais expostas.
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="engine-item">
+
+                    <div class="engine-icon">
+
+                        <i class="fa-solid fa-cubes"></i>
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+
+                            Dependências
+
+                        </strong>
+
+                        <span>
+
+                            Verificação de bibliotecas vulneráveis.
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="engine-item">
+
+                    <div class="engine-icon">
+
+                        <i class="fa-solid fa-shield"></i>
+
+                    </div>
+
+                    <div>
+
+                        <strong>
+
+                            OWASP
+
+                        </strong>
+
+                        <span>
+
+                            Avaliação baseada nas principais ameaças.
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+<script src="js/analysis.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Security Scanner | CyberShield AI</title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <link rel="stylesheet"
+          href="css/scan.css">
+
+</head>
+
+
+<body>
+
+
+<div class="scanner-page">
+
+
+    <!-- =====================================
+         HEADER
+    ====================================== -->
+
+    <header class="scanner-header">
+
+        <div class="scanner-brand">
+
+            <div class="brand-icon">
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+            </div>
+
+            <div>
+
+                <strong>CyberShield AI</strong>
+
+                <span>Security Engine</span>
+
+            </div>
+
+        </div>
+
+
+        <div class="scanner-status">
+
+            <span class="status-dot"></span>
+
+            ANÁLISE EM ANDAMENTO
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================
+         CONTEÚDO
+    ====================================== -->
+
+    <main class="scanner-main">
+
+
+        <!-- TÍTULO -->
+
+        <section class="scanner-title">
+
+            <span class="eyebrow">
+
+                AI SECURITY ENGINE
+
+            </span>
+
+            <h1>
+
+                Analisando sua aplicação
+
+            </h1>
+
+            <p>
+
+                O CyberShield AI está verificando seu projeto
+                em busca de possíveis riscos de segurança.
+
+            </p>
+
+        </section>
+
+
+
+        <!-- =====================================
+             SCANNER PRINCIPAL
+        ====================================== -->
+
+        <section class="scanner-card">
+
+
+            <div class="scanner-visual">
+
+
+                <div class="scanner-circle">
+
+                    <div class="scanner-ring ring-one"></div>
+
+                    <div class="scanner-ring ring-two"></div>
+
+                    <div class="scanner-ring ring-three"></div>
+
+
+                    <div class="scanner-core">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                        <span id="percentage">
+
+                            0%
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="scan-line"></div>
+
+
+                <span class="scanning-text">
+
+                    SCANNING APPLICATION
+
+                </span>
+
+            </div>
+
+
+
+            <!-- PROGRESSO -->
+
+            <div class="progress-container">
+
+                <div class="progress-info">
+
+                    <span>
+
+                        Progresso da análise
+
+                    </span>
+
+                    <strong id="progressText">
+
+                        0%
+
+                    </strong>
+
+                </div>
+
+
+                <div class="progress-bar">
+
+                    <div class="progress-fill"
+                         id="progressFill">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ETAPAS -->
+
+            <div class="scan-steps">
+
+
+                <div class="scan-step active"
+                     id="step1">
+
+                    <div class="step-icon">
+
+                        <i class="fa-solid fa-folder-tree"></i>
+
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+
+                            Estrutura do projeto
+
+                        </strong>
+
+                        <span>
+
+                            Analisando arquivos e diretórios
+
+                        </span>
+
+                    </div>
+
+                    <div class="step-status">
+
+                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="scan-step"
+                     id="step2">
+
+                    <div class="step-icon">
+
+                        <i class="fa-solid fa-cubes"></i>
+
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+
+                            Dependências
+
+                        </strong>
+
+                        <span>
+
+                            Verificando bibliotecas vulneráveis
+
+                        </span>
+
+                    </div>
+
+                    <div class="step-status">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="scan-step"
+                     id="step3">
+
+                    <div class="step-icon">
+
+                        <i class="fa-solid fa-key"></i>
+
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+
+                            Secrets
+
+                        </strong>
+
+                        <span>
+
+                            Procurando credenciais expostas
+
+                        </span>
+
+                    </div>
+
+                    <div class="step-status">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="scan-step"
+                     id="step4">
+
+                    <div class="step-icon">
+
+                        <i class="fa-solid fa-bug"></i>
+
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+
+                            Vulnerabilidades
+
+                        </strong>
+
+                        <span>
+
+                            Detectando possíveis falhas
+
+                        </span>
+
+                    </div>
+
+                    <div class="step-status">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="scan-step"
+                     id="step5">
+
+                    <div class="step-icon">
+
+                        <i class="fa-solid fa-shield"></i>
+
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+
+                            OWASP Top 10
+
+                        </strong>
+
+                        <span>
+
+                            Comparando boas práticas de segurança
+
+                        </span>
+
+                    </div>
+
+                    <div class="step-status">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="scan-step"
+                     id="step6">
+
+                    <div class="step-icon">
+
+                        <i class="fa-solid fa-brain"></i>
+
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+
+                            AI Security Analysis
+
+                        </strong>
+
+                        <span>
+
+                            Gerando avaliação inteligente
+
+                        </span>
+
+                    </div>
+
+                    <div class="step-status">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================
+             MÉTRICAS
+        ====================================== -->
+
+        <section class="live-metrics">
+
+
+            <div class="metric-card">
+
+                <div class="metric-icon">
+
+                    <i class="fa-solid fa-file-code"></i>
+
+                </div>
+
+                <div>
+
+                    <span>
+
+                        Arquivos analisados
+
+                    </span>
+
+                    <strong id="filesCount">
+
+                        0
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="metric-card">
+
+                <div class="metric-icon">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                </div>
+
+                <div>
+
+                    <span>
+
+                        Verificações
+
+                    </span>
+
+                    <strong id="checksCount">
+
+                        0
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="metric-card">
+
+                <div class="metric-icon">
+
+                    <i class="fa-solid fa-bug"></i>
+
+                </div>
+
+                <div>
+
+                    <span>
+
+                        Possíveis riscos
+
+                    </span>
+
+                    <strong id="risksCount">
+
+                        0
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="metric-card">
+
+                <div class="metric-icon">
+
+                    <i class="fa-solid fa-clock"></i>
+
+                </div>
+
+                <div>
+
+                    <span>
+
+                        Tempo de análise
+
+                    </span>
+
+                    <strong id="timer">
+
+                        00:00
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =====================================
+             AI MESSAGE
+        ====================================== -->
+
+        <section class="ai-message">
+
+
+            <div class="ai-avatar">
+
+                <i class="fa-solid fa-sparkles"></i>
+
+            </div>
+
+
+            <div>
+
+                <span>
+
+                    CYBERSHIELD AI
+
+                </span>
+
+                <p id="aiMessage">
+
+                    Inicializando mecanismo de análise...
+
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+<script src="js/scan.js"></script>
+
+
+</body>
+
+</html>

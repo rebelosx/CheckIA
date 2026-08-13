@@ -1,0 +1,618 @@
+/* ===================================
+   CyberShield AI
+   DASHBOARD CSS
+=================================== */
+
+
+/* ===================================
+   ESTRUTURA PRINCIPAL
+=================================== */
+
+.dashboard{
+
+    display:flex;
+
+    min-height:100vh;
+
+    background:#0D1117;
+
+}
+
+
+/* ===================================
+   SIDEBAR
+=================================== */
+
+.sidebar{
+
+    width:260px;
+
+    background:#161B22;
+
+    border-right:1px solid #30363D;
+
+    padding:25px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+}
+
+
+.brand{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-bottom:40px;
+
+}
+
+
+.brand i{
+
+    font-size:32px;
+
+    color:#2F81F7;
+
+}
+
+
+.brand h2{
+
+    font-size:22px;
+
+    color:#F0F6FC;
+
+}
+
+
+
+/* MENU */
+
+.sidebar nav{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+}
+
+
+.sidebar nav a{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:14px;
+
+    border-radius:8px;
+
+    color:#8B949E;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+
+.sidebar nav a:hover,
+.sidebar nav .active{
+
+    background:#21262D;
+
+    color:#F0F6FC;
+
+}
+
+
+.sidebar nav i{
+
+    width:20px;
+
+    color:#2F81F7;
+
+}
+
+
+
+/* PERFIL */
+
+.profile{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding-top:20px;
+
+    border-top:1px solid #30363D;
+
+}
+
+
+.profile i{
+
+    width:40px;
+
+    height:40px;
+
+    border-radius:50%;
+
+    background:#2F81F7;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+
+.profile p{
+
+    font-size:13px;
+
+}
+
+
+
+
+
+/* ===================================
+   CONTEÚDO
+=================================== */
+
+
+.content{
+
+    flex:1;
+
+    padding:35px;
+
+    overflow:auto;
+
+}
+
+
+
+
+/* HEADER */
+
+header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:35px;
+
+}
+
+
+header h1{
+
+    font-size:32px;
+
+}
+
+
+header p{
+
+    margin-top:8px;
+
+}
+
+
+
+/* PESQUISA */
+
+
+.search{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    background:#161B22;
+
+    border:1px solid #30363D;
+
+    padding:12px 18px;
+
+    border-radius:10px;
+
+}
+
+
+.search i{
+
+    color:#8B949E;
+
+}
+
+
+.search input{
+
+    background:none;
+
+    color:white;
+
+    width:220px;
+
+}
+
+
+
+/* ===================================
+   CARDS
+=================================== */
+
+
+.cards-dashboard{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:20px;
+
+    margin-bottom:30px;
+
+}
+
+
+.security-card{
+
+    background:#161B22;
+
+    border:1px solid #30363D;
+
+    border-radius:12px;
+
+    padding:25px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    transition:.3s;
+
+}
+
+
+.security-card:hover{
+
+    transform:translateY(-5px);
+
+    border-color:#2F81F7;
+
+}
+
+
+.security-card i{
+
+    font-size:35px;
+
+    color:#3FB950;
+
+}
+
+
+.security-card h3{
+
+    font-size:30px;
+
+}
+
+
+.security-card p{
+
+    font-size:14px;
+
+}
+
+
+
+.security-card.danger i{
+
+    color:#F85149;
+
+}
+
+
+
+/* ===================================
+   PAINEL
+=================================== */
+
+
+.panel{
+
+    background:#161B22;
+
+    border:1px solid #30363D;
+
+    border-radius:12px;
+
+    padding:25px;
+
+    margin-bottom:30px;
+
+}
+
+
+.panel h2{
+
+    margin-bottom:25px;
+
+    font-size:20px;
+
+}
+
+
+
+
+
+/* ===================================
+   GRÁFICO
+=================================== */
+
+
+.chart{
+
+    height:220px;
+
+    display:flex;
+
+    align-items:flex-end;
+
+    gap:25px;
+
+}
+
+
+.chart div{
+
+    flex:1;
+
+    background:#2F81F7;
+
+    border-radius:8px 8px 0 0;
+
+    animation:grow 1s ease;
+
+}
+
+
+
+@keyframes grow{
+
+
+from{
+
+height:0;
+
+}
+
+
+}
+
+
+
+/* ===================================
+   TABELA
+=================================== */
+
+
+.table-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+
+.table-header button{
+
+    width:auto;
+
+    padding:12px 20px;
+
+    background:#2F81F7;
+
+}
+
+
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+
+thead{
+
+    background:#21262D;
+
+}
+
+
+
+th{
+
+    text-align:left;
+
+    padding:15px;
+
+    color:#8B949E;
+
+    font-size:14px;
+
+}
+
+
+td{
+
+    padding:15px;
+
+    border-bottom:1px solid #30363D;
+
+}
+
+
+tr:hover{
+
+    background:#21262D;
+
+}
+
+
+
+/* STATUS */
+
+
+.safe{
+
+    color:#3FB950;
+
+    font-weight:600;
+
+}
+
+
+.warning{
+
+    color:#D29922;
+
+    font-weight:600;
+
+}
+
+
+.danger-text{
+
+    color:#F85149;
+
+    font-weight:600;
+
+}
+
+
+
+
+
+/* ===================================
+   RESPONSIVIDADE
+=================================== */
+
+
+@media(max-width:1200px){
+
+
+.cards-dashboard{
+
+    grid-template-columns:repeat(2,1fr);
+
+}
+
+
+}
+
+
+
+@media(max-width:900px){
+
+
+.dashboard{
+
+    flex-direction:column;
+
+}
+
+
+.sidebar{
+
+    width:100%;
+
+}
+
+
+header{
+
+    flex-direction:column;
+
+    align-items:flex-start;
+
+    gap:20px;
+
+}
+
+
+.search{
+
+    width:100%;
+
+}
+
+
+
+}
+
+
+
+@media(max-width:600px){
+
+
+.content{
+
+    padding:20px;
+
+}
+
+
+.cards-dashboard{
+
+    grid-template-columns:1fr;
+
+}
+
+
+table{
+
+    font-size:13px;
+
+}
+
+
+}
