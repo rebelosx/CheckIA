@@ -11,7 +11,13 @@ from dotenv import load_dotenv # Biblioteca para ler o arquivo .env com seguran�
 # Carregamos as variáveis do arquivo .env (onde está sua API_KEY)
 # Isso evita que sua chave fique exposta diretamente no código (Hardcoded)
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY")) # type: ignore
+
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    print("ERRO CRÍTICO: A variável GEMINI_API_KEY não foi encontrada no arquivo .env")
+    raise RuntimeError("A variável de ambiente GEMINI_API_KEY não foi configurada.")
+
+genai.configure(api_key=api_key) #type: ignore
 
 ''' Trecho temporário para teste para ver as models disponíveis no terminal
 for m in genai.list_models():
@@ -56,15 +62,23 @@ async def analyze_repo(request: RepoRequest):
 
     codigo_para_ia = "" #variável que vai armazenar o código para enviar à IA
 
-    async with httpx.AsyncClient() as client:
-        # 1. Busca a árvore de arquivos de forma assíncrona
-        response = await client.get(github_url, headers=headers)
+    # Configuração de Timeout
+    # 10 segundos para resposta total e 5 segundos para conectar
+    timeout_config = httpx.Timeout(10.0, connect=5.0)
     
-        if response.status_code != 200:
-            return {"error": "Não consegui acessar o repositório. Verifique o Token ou se o repo é público."}
+    async with httpx.AsyncClient(timeout=timeout_config) as client:
+        try:
+            # 1. Busca a árvore de arquivos de forma assíncrona
+            response = await client.get(github_url, headers=headers)
 
-        tree = response.json().get("tree", [])
-    
+            if response.status_code != 200:
+                return {"error": "Não consegui acessar o repositório. Verifique o Token ou se o repo é público."}
+
+            tree = response.json().get("tree", [])
+
+        except httpx.TimeoutException:
+            raise HTTPException(status_code=504, detail="O GitHub demorou demais para responder. Tente novamente.")
+        
         # 2. Aplicamos a "Blacklist" para ignorar lixo e arquivos pesados [3]
         blacklist = ['node_modules', '.git', 'package-lock.json', '.png', '.jpg', '.env', '.pem', '.key']
         filtered_files = [f["path"] for f in tree if f["type"] == "blob" and not any(i in f["path"] for i in blacklist)]
