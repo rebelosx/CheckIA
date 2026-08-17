@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check IA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/area.css">
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div>
+                <a class="brand" href="dashboard.html" aria-label="Ir ao dashboard">
+                    <img class="brand-logo brand-logo--sidebar" src="assets/check-ia-logo.jpeg" alt="Check IA">
+                </a>
+                <nav>
+                    <a href="dashboard.html"><i class="fa-solid fa-house"></i>Dashboard</a>
+                    <a href="analysis.html"><i class="fa-solid fa-magnifying-glass"></i>Nova análise</a>
+                    <a data-view="projects" href="area.html?view=projects"><i class="fa-solid fa-folder"></i>Projetos</a>
+                    <a data-view="reports" href="area.html?view=reports"><i class="fa-solid fa-chart-line"></i>Relatórios</a>
+                    <a data-view="vulnerabilities" href="area.html?view=vulnerabilities"><i class="fa-solid fa-triangle-exclamation"></i>Vulnerabilidades</a>
+                    <a data-view="settings" href="area.html?view=settings"><i class="fa-solid fa-gear"></i>Configurações</a>
+                </nav>
+            </div>
+            <div class="profile">
+                <i class="fa-solid fa-user"></i>
+                <div><strong id="usuario">Usuário</strong><p>Analista</p></div>
+            </div>
+        </aside>
+        <main class="content area-content">
+            <header>
+                <div>
+                    <p class="eyebrow">CHECK IA</p>
+                    <h1 id="areaTitle">Projetos</h1>
+                    <p id="areaDescription">Acompanhe os ativos monitorados pela sua equipe.</p>
+                </div>
+                <a class="area-action" id="areaAction" href="analysis.html"><i class="fa-solid fa-plus"></i> Nova análise</a>
+            </header>
+            <section class="area-summary" id="areaSummary"></section>
+            <section class="panel area-panel">
+                <div class="table-header"><h2 id="panelTitle">Visão geral</h2></div>
+                <div class="area-list" id="areaList"></div>
+            </section>
+        </main>
+    </div>
+    <script src="area.js"></script>
+</body>
+</html>

@@ -1,7 +1,10 @@
 /* ===========================
-   Check IA
+   CyberShield AI
    style.css
 =========================== */
+
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 /* Reset */
 
@@ -17,7 +20,7 @@ html{
 
 body{
 
-    font-family:var(--font-sans);
+    font-family:'Inter',sans-serif;
 
     background:#0D1117;
 
@@ -30,8 +33,6 @@ body{
 /* Variáveis */
 
 :root{
-
-    --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
     --background:#0D1117;
 
@@ -91,7 +92,7 @@ select{
 
     border:none;
 
-    font-family:var(--font-sans);
+    font-family:'Inter',sans-serif;
 
 }
 
@@ -305,26 +306,4 @@ body{
 
 }
 
-}
-
-.brand-logo{
-
-    display:block;
-    height:auto;
-    max-width:100%;
-}
-
-.brand-logo--sidebar{
-
-    width:205px;
-}
-
-.brand-logo--login{
-
-    width:250px;
-}
-
-.brand-logo--header{
-
-    width:190px;
 }
