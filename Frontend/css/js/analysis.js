@@ -1,5 +1,5 @@
 /* =========================================
-   CYBERSHIELD AI
+   CHECK IA
    ANALYSIS.JS
 ========================================= */
 
@@ -301,7 +301,7 @@ function iniciarAnalise(
         function () {
 
             window.location.href =
-                "scan.html";
+                "css/js/scan.html";
 
         },
         1000

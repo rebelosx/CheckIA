@@ -1,5 +1,5 @@
 /* =====================================================
-   CYBERSHIELD AI
+   CHECK IA
    DASHBOARD.JS
 ===================================================== */
 
@@ -75,7 +75,7 @@ const projetos = [
     },
 
     {
-        nome: "API CyberShield",
+        nome: "API Check IA",
         linguagem: "Node.js",
         score: 94,
         status: "Seguro"
@@ -486,7 +486,7 @@ document.addEventListener(
     function () {
 
         console.log(
-            "CyberShield AI Dashboard carregado."
+            "Check IA Dashboard carregado."
         );
 
         console.log(

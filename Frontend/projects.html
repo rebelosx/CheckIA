@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Projetos | CyberShield AI</title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <link rel="stylesheet"
+          href="css/projects.css">
+
+</head>
+
+
+<body>
+
+<div class="projects-page">
+
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="sidebar-logo">
+
+            <div class="logo-icon">
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    CyberShield
+                </strong>
+
+                <span>
+                    AI Security
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+
+            <a href="dashboard.html">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                Dashboard
+
+            </a>
+
+
+            <a href="analysis.html">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                Nova análise
+
+            </a>
+
+
+            <a href="projects.html"
+               class="active">
+
+                <i class="fa-solid fa-folder"></i>
+
+                Projetos
+
+            </a>
+
+
+            <a href="vulnerabilities.html">
+
+                <i class="fa-solid fa-bug"></i>
+
+                Vulnerabilidades
+
+                <span class="nav-badge">
+                    11
+                </span>
+
+            </a>
+
+
+            <a href="reports.html">
+
+                <i class="fa-solid fa-file-lines"></i>
+
+                Relatórios
+
+            </a>
+
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+
+            <a href="settings.html">
+
+                <i class="fa-solid fa-gear"></i>
+
+                Configurações
+
+            </a>
+
+
+            <a href="index.html">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                Sair
+
+            </a>
+
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="projects-main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+
+            <div>
+
+                <span class="page-label">
+                    PROJECT SECURITY
+                </span>
+
+                <h1>
+                    Projetos
+                </h1>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+
+                <button class="icon-button">
+
+                    <i class="fa-regular fa-bell"></i>
+
+                </button>
+
+
+                <div class="user-profile">
+
+
+                    <div class="user-avatar">
+                        JD
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            Desenvolvedor
+                        </strong>
+
+                        <span>
+                            Security Team
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- CONTENT -->
+
+        <section class="projects-content">
+
+
+            <!-- HEADER -->
+
+            <div class="projects-heading">
+
+
+                <div>
+
+                    <span class="page-label">
+                        APPLICATIONS
+                    </span>
+
+                    <h2>
+                        Seus projetos
+                    </h2>
+
+                    <p>
+                        Gerencie e monitore a segurança
+                        das suas aplicações.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="new-project-button"
+                    onclick="openProjectModal()">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Novo projeto
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- STATS -->
+
+            <div class="project-stats">
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon blue">
+
+                        <i class="fa-solid fa-folder"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            PROJETOS
+                        </span>
+
+                        <strong id="totalProjects">
+                            4
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon green">
+
+                        <i class="fa-solid fa-shield-check"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            PROTEGIDOS
+                        </span>
+
+                        <strong>
+                            2
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon orange">
+
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            ATENÇÃO
+                        </span>
+
+                        <strong>
+                            2
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon purple">
+
+                        <i class="fa-solid fa-code-branch"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            REPOSITÓRIOS
+                        </span>
+
+                        <strong>
+                            4
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- TOOLBAR -->
+
+            <div class="projects-toolbar">
+
+
+                <div class="project-search">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="text"
+                        id="projectSearch"
+                        placeholder="Pesquisar projetos...">
+
+                </div>
+
+
+                <select id="projectStatus">
+
+                    <option value="all">
+                        Todos os status
+                    </option>
+
+                    <option value="secure">
+                        Seguro
+                    </option>
+
+                    <option value="attention">
+                        Atenção
+                    </option>
+
+                    <option value="critical">
+                        Crítico
+                    </option>
+
+                </select>
+
+
+                <select id="projectLanguage">
+
+                    <option value="all">
+                        Todas as linguagens
+                    </option>
+
+                    <option value="javascript">
+                        JavaScript
+                    </option>
+
+                    <option value="python">
+                        Python
+                    </option>
+
+                    <option value="java">
+                        Java
+                    </option>
+
+                    <option value="typescript">
+                        TypeScript
+                    </option>
+
+                </select>
+
+
+            </div>
+
+
+
+            <!-- PROJECT GRID -->
+
+            <div class="project-grid"
+                 id="projectGrid">
+
+
+                <!-- PROJECT 1 -->
+
+                <article class="project-card"
+                         data-status="secure"
+                         data-language="javascript"
+                         data-name="cybershield-api">
+
+
+                    <div class="project-card-header">
+
+
+                        <div class="project-icon">
+
+                            <i class="fa-brands fa-node-js"></i>
+
+                        </div>
+
+
+                        <button
+                            class="more-button"
+                            onclick="showProjectMenu(this)">
+
+                            <i class="fa-solid fa-ellipsis"></i>
+
+                        </button>
+
+
+                    </div>
+
+
+                    <div class="project-name">
+
+                        <h3>
+                            CyberShield API
+                        </h3>
+
+                        <span>
+                            API principal da plataforma
+                        </span>
+
+                    </div>
+
+
+                    <div class="repository">
+
+                        <i class="fa-brands fa-github"></i>
+
+                        cybershield/api
+
+                    </div>
+
+
+                    <div class="project-score">
+
+
+                        <div>
+
+                            <span>
+                                SECURITY SCORE
+                            </span>
+
+                            <strong>
+                                94
+                            </strong>
+
+                        </div>
+
+
+                        <div class="score-ring secure-ring">
+                            94
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="project-progress">
+
+                        <div class="progress-bar">
+
+                            <span style="width:94%"></span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="project-details">
+
+
+                        <div>
+
+                            <span>
+                                Vulnerabilidades
+                            </span>
+
+                            <strong>
+                                0
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Última análise
+                            </span>
+
+                            <strong>
+                                Hoje
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="project-footer">
+
+
+                        <span class="status secure-status">
+
+                            <i class="fa-solid fa-circle"></i>
+
+                            Seguro
+
+                        </span>
+
+
+                        <button
+                            onclick="openProject('CyberShield API')">
+
+                            Ver projeto
+
+                            <i class="fa-solid fa-arrow-right"></i>
+
+                        </button>
+
+
+                    </div>
+
+
+                </article>
+
+
+
+                <!-- PROJECT 2 -->
+
+                <article class="project-card"
+                         data-status="attention"
+                         data-language="python"
+                         data-name="ecommerce-ai">
+
+
+                    <div class="project-card-header">
+
+
+                        <div class="project-icon python-icon">
+
+                            <i class="fa-brands fa-python"></i>
+
+                        </div>
+
+
+                        <button
+                            class="more-button"
+                            onclick="showProjectMenu(this)">
+
+                            <i class="fa-solid fa-ellipsis"></i>
+
+                        </button>
+
+
+                    </div>
+
+
+                    <div class="project-name">
+
+                        <h3>
+                            E-commerce AI
+                        </h3>
+
+                        <span>
+                            Plataforma de comércio
+                        </span>
+
+                    </div>
+
+
+                    <div class="repository">
+
+                        <i class="fa-brands fa-github"></i>
+
+                        company/ecommerce-ai
+
+                    </div>
+
+
+                    <div class="project-score">
+
+
+                        <div>
+
+                            <span>
+                                SECURITY SCORE
+                            </span>
+
+                            <strong>
+                                78
+                            </strong>
+
+                        </div>
+
+
+                        <div class="score-ring attention-ring">
+                            78
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="project-progress">
+
+                        <div class="progress-bar">
+
+                            <span style="width:78%"></span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="project-details">
+
+
+                        <div>
+
+                            <span>
+                                Vulnerabilidades
+                            </span>
+
+                            <strong class="warning-number">
+                                4
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Última análise
+                            </span>
+
+                            <strong>
+                                Ontem
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="project-footer">
+
+
+                        <span class="status attention-status">
+
+                            <i class="fa-solid fa-circle"></i>
+
+                            Atenção
+
+                        </span>
+
+
+                        <button
+                            onclick="openProject('E-commerce AI')">
+
+                            Ver projeto
+
+                            <i class="fa-solid fa-arrow-right"></i>
+
+                        </button>
+
+
+                    </div>
+
+
+                </article>
+
+
+
+                <!-- PROJECT 3 -->
+
+                <article class="project-card"
+                         data-status="critical"
+                         data-language="java"
+                         data-name="sistema-login">
+
+
+                    <div class="project-card-header">
+
+
+                        <div class="project-icon java-icon">
+
+                            <i class="fa-brands fa-java"></i>
+
+                        </div>
+
+
+                        <button
+                            class="more-button"
+                            onclick="showProjectMenu(this)">
+
+                            <i class="fa-solid fa-ellipsis"></i>
+
+                        </button>
+
+
+                    </div>
+
+
+                    <div class="project-name">
+
+                        <h3>
+                            Sistema Login
+                        </h3>
+
+                        <span>
+                            Sistema de autenticação
+                        </span>
+
+                    </div>
+
+
+                    <div class="repository">
+
+                        <i class="fa-brands fa-github"></i>
+
+                        company/login-system
+
+                    </div>
+
+
+                    <div class="project-score">
+
+
+                        <div>
+
+                            <span>
+                                SECURITY SCORE
+                            </span>
+
+                            <strong>
+                                52
+                            </strong>
+
+                        </div>
+
+
+                        <div class="score-ring critical-ring">
+                            52
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="project-progress">
+
+                        <div class="progress-bar">
+
+                            <span style="width:52%"></span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="project-details">
+
+
+                        <div>
+
+                            <span>
+                                Vulnerabilidades
+                            </span>
+
+                            <strong class="critical-number">
+                                7
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Última análise
+                            </span>
+
+                            <strong>
+                                2 dias
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="project-footer">
+
+
+                        <span class="status critical-status">
+
+                            <i class="fa-solid fa-circle"></i>
+
+                            Crítico
+
+                        </span>
+
+
+                        <button
+                            onclick="openProject('Sistema Login')">
+
+                            Ver projeto
+
+                            <i class="fa-solid fa-arrow-right"></i>
+
+                        </button>
+
+
+                    </div>
+
+
+                </article>
+
+
+
+                <!-- PROJECT 4 -->
+
+                <article class="project-card"
+                         data-status="secure"
+                         data-language="typescript"
+                         data-name="dashboard-admin">
+
+
+                    <div class="project-card-header">
+
+
+                        <div class="project-icon typescript-icon">
+
+                            <i class="fa-brands fa-js"></i>
+
+                        </div>
+
+
+                        <button
+                            class="more-button"
+                            onclick="showProjectMenu(this)">
+
+                            <i class="fa-solid fa-ellipsis"></i>
+
+                        </button>
+
+
+                    </div>
+
+
+                    <div class="project-name">
+
+                        <h3>
+                            Dashboard Admin
+                        </h3>
+
+                        <span>
+                            Painel administrativo
+                        </span>
+
+                    </div>
+
+
+                    <div class="repository">
+
+                        <i class="fa-brands fa-github"></i>
+
+                        company/admin-dashboard
+
+                    </div>
+
+
+                    <div class="project-score">
+
+
+                        <div>
+
+                            <span>
+                                SECURITY SCORE
+                            </span>
+
+                            <strong>
+                                91
+                            </strong>
+
+                        </div>
+
+
+                        <div class="score-ring secure-ring">
+                            91
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="project-progress">
+
+                        <div class="progress-bar">
+
+                            <span style="width:91%"></span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="project-details">
+
+
+                        <div>
+
+                            <span>
+                                Vulnerabilidades
+                            </span>
+
+                            <strong>
+                                1
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Última análise
+                            </span>
+
+                            <strong>
+                                3 dias
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="project-footer">
+
+
+                        <span class="status secure-status">
+
+                            <i class="fa-solid fa-circle"></i>
+
+                            Seguro
+
+                        </span>
+
+
+                        <button
+                            onclick="openProject('Dashboard Admin')">
+
+                            Ver projeto
+
+                            <i class="fa-solid fa-arrow-right"></i>
+
+                        </button>
+
+
+                    </div>
+
+
+                </article>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================
+     MODAL NOVO PROJETO
+========================== -->
+
+<div class="project-modal"
+     id="projectModal">
+
+
+    <div class="project-modal-content">
+
+
+        <button
+            class="modal-close"
+            onclick="closeProjectModal()">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+
+        <span class="page-label">
+            NEW PROJECT
+        </span>
+
+
+        <h2>
+            Adicionar projeto
+        </h2>
+
+
+        <p>
+            Conecte um repositório ou adicione
+            seu projeto manualmente.
+        </p>
+
+
+        <div class="integration-options">
+
+
+            <button
+                class="integration-button"
+                onclick="connectGithub()">
+
+                <i class="fa-brands fa-github"></i>
+
+                <div>
+
+                    <strong>
+                        GitHub
+                    </strong>
+
+                    <span>
+                        Conectar repositório
+                    </span>
+
+                </div>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </button>
+
+
+            <button
+                class="integration-button"
+                onclick="uploadProject()">
+
+                <i class="fa-solid fa-upload"></i>
+
+                <div>
+
+                    <strong>
+                        Upload
+                    </strong>
+
+                    <span>
+                        Enviar projeto ZIP
+                    </span>
+
+                </div>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </button>
+
+
+            <button
+                class="integration-button"
+                onclick="manualProject()">
+
+                <i class="fa-solid fa-code"></i>
+
+                <div>
+
+                    <strong>
+                        Manual
+                    </strong>
+
+                    <span>
+                        Adicionar código
+                    </span>
+
+                </div>
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script src="js/projects.js"></script>
+
+</body>
+
+</html>

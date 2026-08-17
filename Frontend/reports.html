@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Relatórios | CyberShield AI</title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="css/reports.css">
+
+</head>
+
+
+<body>
+
+<div class="reports-page">
+
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+
+        <div class="sidebar-logo">
+
+            <div class="logo-icon">
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+            </div>
+
+            <div>
+
+                <strong>
+                    CyberShield
+                </strong>
+
+                <span>
+                    AI Security
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+
+            <a href="dashboard.html">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                Dashboard
+
+            </a>
+
+
+            <a href="analysis.html">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                Nova análise
+
+            </a>
+
+
+            <a href="projects.html">
+
+                <i class="fa-solid fa-folder"></i>
+
+                Projetos
+
+            </a>
+
+
+            <a href="vulnerabilities.html">
+
+                <i class="fa-solid fa-bug"></i>
+
+                Vulnerabilidades
+
+                <span class="nav-badge">
+                    11
+                </span>
+
+            </a>
+
+
+            <a href="reports.html"
+               class="active">
+
+                <i class="fa-solid fa-file-lines"></i>
+
+                Relatórios
+
+            </a>
+
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+
+            <a href="settings.html">
+
+                <i class="fa-solid fa-gear"></i>
+
+                Configurações
+
+            </a>
+
+
+            <a href="index.html">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                Sair
+
+            </a>
+
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="reports-main">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+
+            <div>
+
+                <span class="page-label">
+                    SECURITY REPORTING
+                </span>
+
+                <h1>
+                    Relatórios
+                </h1>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+
+                <button class="icon-button">
+
+                    <i class="fa-regular fa-bell"></i>
+
+                </button>
+
+
+                <div class="user-profile">
+
+                    <div class="user-avatar">
+                        JD
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Desenvolvedor
+                        </strong>
+
+                        <span>
+                            Security Team
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =========================
+             CONTENT
+        ========================== -->
+
+        <section class="reports-content">
+
+
+            <!-- TITLE -->
+
+            <div class="reports-heading">
+
+
+                <div>
+
+                    <span class="page-label">
+                        SECURITY ANALYTICS
+                    </span>
+
+                    <h2>
+                        Central de relatórios
+                    </h2>
+
+                    <p>
+                        Acompanhe os resultados das análises
+                        de segurança das suas aplicações.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="generate-button"
+                    onclick="generateReport()">
+
+                    <i class="fa-solid fa-file-circle-plus"></i>
+
+                    Gerar relatório
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- =========================
+                 SUMMARY
+            ========================== -->
+
+            <div class="summary-grid">
+
+
+                <div class="summary-card">
+
+
+                    <div class="summary-icon blue">
+
+                        <i class="fa-solid fa-file-lines"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            RELATÓRIOS
+                        </span>
+
+                        <strong id="reportCount">
+                            24
+                        </strong>
+
+                        <small>
+                            +3 este mês
+                        </small>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="summary-card">
+
+
+                    <div class="summary-icon green">
+
+                        <i class="fa-solid fa-shield-check"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            SCORE MÉDIO
+                        </span>
+
+                        <strong>
+                            86
+                        </strong>
+
+                        <small class="positive">
+                            +8% este mês
+                        </small>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="summary-card">
+
+
+                    <div class="summary-icon orange">
+
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            VULNERABILIDADES
+                        </span>
+
+                        <strong>
+                            18
+                        </strong>
+
+                        <small>
+                            -12% este mês
+                        </small>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="summary-card">
+
+
+                    <div class="summary-icon purple">
+
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            ÚLTIMA ANÁLISE
+                        </span>
+
+                        <strong class="time-value">
+                            Hoje
+                        </strong>
+
+                        <small>
+                            há 24 minutos
+                        </small>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =========================
+                 CHARTS
+            ========================== -->
+
+            <div class="charts-grid">
+
+
+                <!-- SECURITY SCORE -->
+
+                <div class="chart-card">
+
+
+                    <div class="chart-header">
+
+
+                        <div>
+
+                            <span class="page-label">
+                                SECURITY SCORE
+                            </span>
+
+                            <h3>
+                                Evolução da segurança
+                            </h3>
+
+                        </div>
+
+
+                        <select id="scorePeriod">
+
+                            <option value="7">
+                                Últimos 7 dias
+                            </option>
+
+                            <option value="30">
+                                Últimos 30 dias
+                            </option>
+
+                            <option value="90">
+                                Últimos 90 dias
+                            </option>
+
+                        </select>
+
+
+                    </div>
+
+
+                    <div class="score-chart">
+
+
+                        <div class="y-axis">
+
+                            <span>
+                                100
+                            </span>
+
+                            <span>
+                                80
+                            </span>
+
+                            <span>
+                                60
+                            </span>
+
+                            <span>
+                                40
+                            </span>
+
+                            <span>
+                                20
+                            </span>
+
+                        </div>
+
+
+                        <div class="chart-area">
+
+
+                            <div class="grid-line line-1"></div>
+                            <div class="grid-line line-2"></div>
+                            <div class="grid-line line-3"></div>
+                            <div class="grid-line line-4"></div>
+                            <div class="grid-line line-5"></div>
+
+
+                            <svg
+                                class="score-svg"
+                                viewBox="0 0 600 220"
+                                preserveAspectRatio="none">
+
+                                <defs>
+
+                                    <linearGradient
+                                        id="scoreGradient"
+                                        x1="0"
+                                        y1="0"
+                                        x2="0"
+                                        y2="1">
+
+                                        <stop
+                                            offset="0%"
+                                            stop-opacity=".25"/>
+
+                                        <stop
+                                            offset="100%"
+                                            stop-opacity="0"/>
+
+                                    </linearGradient>
+
+                                </defs>
+
+
+                                <path
+                                    class="score-area"
+                                    d="M0 145
+                                       L100 125
+                                       L200 130
+                                       L300 100
+                                       L400 88
+                                       L500 70
+                                       L600 55
+                                       L600 220
+                                       L0 220 Z"/>
+
+
+                                <polyline
+                                    class="score-line"
+                                    points="
+                                    0,145
+                                    100,125
+                                    200,130
+                                    300,100
+                                    400,88
+                                    500,70
+                                    600,55
+                                    "/>
+
+
+                                <circle cx="0" cy="145" r="5"/>
+                                <circle cx="100" cy="125" r="5"/>
+                                <circle cx="200" cy="130" r="5"/>
+                                <circle cx="300" cy="100" r="5"/>
+                                <circle cx="400" cy="88" r="5"/>
+                                <circle cx="500" cy="70" r="5"/>
+                                <circle cx="600" cy="55" r="5"/>
+
+                            </svg>
+
+
+                            <div class="chart-labels">
+
+                                <span>
+                                    07 AGO
+                                </span>
+
+                                <span>
+                                    08 AGO
+                                </span>
+
+                                <span>
+                                    09 AGO
+                                </span>
+
+                                <span>
+                                    10 AGO
+                                </span>
+
+                                <span>
+                                    11 AGO
+                                </span>
+
+                                <span>
+                                    12 AGO
+                                </span>
+
+                                <span>
+                                    13 AGO
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- VULNERABILITIES -->
+
+                <div class="chart-card">
+
+
+                    <div class="chart-header">
+
+                        <div>
+
+                            <span class="page-label">
+                                VULNERABILITIES
+                            </span>
+
+                            <h3>
+                                Por severidade
+                            </h3>
+
+                        </div>
+
+
+                        <button
+                            class="chart-menu">
+
+                            <i class="fa-solid fa-ellipsis"></i>
+
+                        </button>
+
+                    </div>
+
+
+                    <div class="severity-chart">
+
+
+                        <div class="donut">
+
+                            <div class="donut-center">
+
+                                <strong>
+                                    18
+                                </strong>
+
+                                <span>
+                                    Total
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="severity-list">
+
+
+                            <div class="severity-item">
+
+                                <span>
+
+                                    <i class="dot critical"></i>
+
+                                    Crítica
+
+                                </span>
+
+                                <strong>
+                                    3
+                                </strong>
+
+                            </div>
+
+
+                            <div class="severity-item">
+
+                                <span>
+
+                                    <i class="dot high"></i>
+
+                                    Alta
+
+                                </span>
+
+                                <strong>
+                                    5
+                                </strong>
+
+                            </div>
+
+
+                            <div class="severity-item">
+
+                                <span>
+
+                                    <i class="dot medium"></i>
+
+                                    Média
+
+                                </span>
+
+                                <strong>
+                                    7
+                                </strong>
+
+                            </div>
+
+
+                            <div class="severity-item">
+
+                                <span>
+
+                                    <i class="dot low"></i>
+
+                                    Baixa
+
+                                </span>
+
+                                <strong>
+                                    3
+                                </strong>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =========================
+                 REPORT LIST
+            ========================== -->
+
+            <div class="reports-section">
+
+
+                <div class="section-header">
+
+
+                    <div>
+
+                        <span class="page-label">
+                            REPORT HISTORY
+                        </span>
+
+                        <h3>
+                            Histórico de relatórios
+                        </h3>
+
+                    </div>
+
+
+                    <div class="report-filters">
+
+
+                        <div class="search-box">
+
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                            <input
+                                type="text"
+                                id="reportSearch"
+                                placeholder="Pesquisar relatório...">
+
+                        </div>
+
+
+                        <select id="reportFilter">
+
+                            <option value="all">
+                                Todos
+                            </option>
+
+                            <option value="secure">
+                                Seguro
+                            </option>
+
+                            <option value="attention">
+                                Atenção
+                            </option>
+
+                            <option value="critical">
+                                Crítico
+                            </option>
+
+                        </select>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- TABLE -->
+
+                <div class="table-container">
+
+
+                    <table>
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    RELATÓRIO
+                                </th>
+
+                                <th>
+                                    PROJETO
+                                </th>
+
+                                <th>
+                                    SCORE
+                                </th>
+
+                                <th>
+                                    VULNERABILIDADES
+                                </th>
+
+                                <th>
+                                    DATA
+                                </th>
+
+                                <th>
+                                    STATUS
+                                </th>
+
+                                <th>
+                                    AÇÕES
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="reportsTable">
+
+
+                            <tr data-status="secure">
+
+
+                                <td>
+
+                                    <div class="report-name">
+
+                                        <div class="report-icon">
+
+                                            <i class="fa-solid fa-file-shield"></i>
+
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                Security Scan #024
+                                            </strong>
+
+                                            <span>
+                                                Relatório completo
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+                                    CyberShield API
+                                </td>
+
+
+                                <td>
+
+                                    <span class="table-score secure">
+                                        94
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+                                    0
+                                </td>
+
+
+                                <td>
+                                    Hoje, 18:24
+                                </td>
+
+
+                                <td>
+
+                                    <span class="table-status secure-status">
+                                        Seguro
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            onclick="viewReport('Security Scan #024')">
+
+                                            <i class="fa-regular fa-eye"></i>
+
+                                        </button>
+
+                                        <button
+                                            onclick="downloadReport('Security Scan #024')">
+
+                                            <i class="fa-solid fa-download"></i>
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+
+                            </tr>
+
+
+
+                            <tr data-status="attention">
+
+
+                                <td>
+
+                                    <div class="report-name">
+
+                                        <div class="report-icon">
+
+                                            <i class="fa-solid fa-file-shield"></i>
+
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                Security Scan #023
+                                            </strong>
+
+                                            <span>
+                                                Relatório completo
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+                                    E-commerce AI
+                                </td>
+
+
+                                <td>
+
+                                    <span class="table-score attention">
+                                        78
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+                                    4
+                                </td>
+
+
+                                <td>
+                                    Ontem, 15:42
+                                </td>
+
+
+                                <td>
+
+                                    <span class="table-status attention-status">
+                                        Atenção
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            onclick="viewReport('Security Scan #023')">
+
+                                            <i class="fa-regular fa-eye"></i>
+
+                                        </button>
+
+                                        <button
+                                            onclick="downloadReport('Security Scan #023')">
+
+                                            <i class="fa-solid fa-download"></i>
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+
+                            </tr>
+
+
+
+                            <tr data-status="critical">
+
+
+                                <td>
+
+                                    <div class="report-name">
+
+                                        <div class="report-icon">
+
+                                            <i class="fa-solid fa-file-shield"></i>
+
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                Security Scan #022
+                                            </strong>
+
+                                            <span>
+                                                Relatório completo
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+                                    Sistema Login
+                                </td>
+
+
+                                <td>
+
+                                    <span class="table-score critical">
+                                        52
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+                                    7
+                                </td>
+
+
+                                <td>
+                                    11 AGO, 10:15
+                                </td>
+
+
+                                <td>
+
+                                    <span class="table-status critical-status">
+                                        Crítico
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            onclick="viewReport('Security Scan #022')">
+
+                                            <i class="fa-regular fa-eye"></i>
+
+                                        </button>
+
+                                        <button
+                                            onclick="downloadReport('Security Scan #022')">
+
+                                            <i class="fa-solid fa-download"></i>
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+
+                            </tr>
+
+
+
+                            <tr data-status="secure">
+
+
+                                <td>
+
+                                    <div class="report-name">
+
+                                        <div class="report-icon">
+
+                                            <i class="fa-solid fa-file-shield"></i>
+
+                                        </div>
+
+                                        <div>
+
+                                            <strong>
+                                                Security Scan #021
+                                            </strong>
+
+                                            <span>
+                                                Relatório completo
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+                                    Dashboard Admin
+                                </td>
+
+
+                                <td>
+
+                                    <span class="table-score secure">
+                                        91
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+                                    1
+                                </td>
+
+
+                                <td>
+                                    10 AGO, 16:32
+                                </td>
+
+
+                                <td>
+
+                                    <span class="table-status secure-status">
+                                        Seguro
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            onclick="viewReport('Security Scan #021')">
+
+                                            <i class="fa-regular fa-eye"></i>
+
+                                        </button>
+
+                                        <button
+                                            onclick="downloadReport('Security Scan #021')">
+
+                                            <i class="fa-solid fa-download"></i>
+
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+
+                            </tr>
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- =========================
+     MODAL
+========================== -->
+
+<div class="report-modal"
+     id="reportModal">
+
+
+    <div class="report-modal-content">
+
+
+        <button
+            class="modal-close"
+            onclick="closeReportModal()">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+
+        <div class="modal-icon">
+
+            <i class="fa-solid fa-file-shield"></i>
+
+        </div>
+
+
+        <span class="page-label">
+            SECURITY REPORT
+        </span>
+
+
+        <h2 id="modalReportName">
+            Security Scan
+        </h2>
+
+
+        <p>
+            Este relatório contém o resultado
+            completo da análise de segurança.
+        </p>
+
+
+        <div class="modal-info">
+
+
+            <div>
+
+                <span>
+                    SECURITY SCORE
+                </span>
+
+                <strong id="modalScore">
+                    94
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    VULNERABILIDADES
+                </span>
+
+                <strong id="modalVulnerabilities">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    STATUS
+                </span>
+
+                <strong>
+                    Seguro
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <button
+            class="modal-download"
+            onclick="downloadReportFromModal()">
+
+            <i class="fa-solid fa-download"></i>
+
+            Exportar relatório
+
+        </button>
+
+
+    </div>
+
+</div>
+
+
+
+<script src="js/reports.js"></script>
+
+</body>
+
+</html>

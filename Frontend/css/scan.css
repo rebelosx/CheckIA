@@ -1,6 +1,6 @@
 /* =========================================
-   CYBERSHIELD AI
-   SECURITY SCANNER
+   CHECK IA
+   CHECK IA SCANNER
 ========================================= */
 
 * {
@@ -20,7 +20,7 @@ body {
 
     color: #F4F7FB;
 
-    font-family: "Inter", sans-serif;
+    font-family: var(--font-sans);
 }
 
 
@@ -169,6 +169,25 @@ body {
     margin: auto;
 
     padding: 55px 0 60px;
+}
+
+.scan-result-link {
+    align-items: center;
+    background: #4F7CFF;
+    border-radius: 9px;
+    color: #fff;
+    display: flex;
+    font-size: 14px;
+    font-weight: 700;
+    gap: 9px;
+    justify-content: center;
+    margin: 24px auto 0;
+    padding: 13px 18px;
+    width: fit-content;
+}
+
+.scan-result-link:hover {
+    background: #3e67e6;
 }
 
 
