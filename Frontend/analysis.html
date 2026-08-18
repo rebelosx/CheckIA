@@ -12,92 +12,53 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/analysis.css">
 </head>
 
 <body>
 
-<div class="app">
+<div class="dashboard">
 
     <!-- =====================================
          SIDEBAR
     ====================================== -->
     <aside class="sidebar">
         <div>
-            <div class="brand">
-                <i class="fa-solid fa-shield-halved brand-icon"></i>
-                <div>
-                    <strong>Check IA</strong>
-                    <span>Security Engine</span>
-                </div>
-            </div>
-
-            <div class="menu-title">VISÃO GERAL</div>
+            <a class="brand" href="dashboard.html" aria-label="Ir ao dashboard">
+                <img class="brand-logo brand-logo--sidebar" src="assets/check-ia-logo.jpeg" alt="Check IA">
+            </a>
 
             <nav>
-                <a href="dashboard.html">
-                    <i class="fa-solid fa-border-all"></i>
-                    Dashboard
-                </a>
+                <a href="dashboard.html"><i class="fa-solid fa-house"></i>Dashboard</a>
 
-                <a href="analysis.html" class="active">
-                    <i class="fa-solid fa-crosshairs"></i>
-                    Nova análise
-                </a>
+                <a class="active" href="analysis.html"><i class="fa-solid fa-magnifying-glass"></i>Nova análise</a>
 
-                <a href="area.html?view=projects">
-                    <i class="fa-solid fa-folder"></i>
-                    Projetos
-                </a>
+                <a href="area.html?view=projects"><i class="fa-solid fa-folder"></i>Projetos</a>
 
-                <div class="menu-title">SEGURANÇA</div>
+                <a href="area.html?view=reports"><i class="fa-solid fa-chart-line"></i>Relatórios</a>
 
-                <a href="area.html?view=vulnerabilities">
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    Vulnerabilidades
-                    <span class="menu-badge">5</span>
-                </a>
+                <a href="area.html?view=vulnerabilities"><i class="fa-solid fa-triangle-exclamation"></i>Vulnerabilidades</a>
 
-                <a href="area.html?view=reports">
-                    <i class="fa-solid fa-chart-column"></i>
-                    Relatórios
-                </a>
-
-                <div class="menu-title">SISTEMA</div>
-
-                <a href="area.html?view=settings">
-                    <i class="fa-solid fa-gear"></i>
-                    Configurações
-                </a>
+                <a href="area.html?view=settings"><i class="fa-solid fa-gear"></i>Configurações</a>
             </nav>
         </div>
 
-        <!-- PERFIL -->
-        <div class="user-box">
-            <div class="user-avatar">
-                <i class="fa-solid fa-user"></i>
-            </div>
-            <div>
-                <strong id="usuario">Analista</strong>
-                <span>Security Analyst</span>
-            </div>
+        <div class="profile">
+            <i class="fa-solid fa-user"></i>
+            <div><strong id="usuario">Usuário</strong><p>Analista</p></div>
         </div>
     </aside>
 
     <!-- =====================================
          CONTEÚDO PRINCIPAL
     ====================================== -->
-    <main class="main">
+    <main class="content analysis-content">
 
         <!-- HEADER -->
         <header class="page-header">
             <div>
-                <div class="breadcrumb">
-                    <span>Check IA</span>
-                    <i class="fa-solid fa-chevron-right"></i>
-                    <span>Nova análise</span>
-                </div>
-
+                <span class="eyebrow">CHECK IA ENGINE</span>
                 <h1>Nova análise</h1>
                 <p>Analise sua aplicação e descubra possíveis riscos de segurança antes da publicação.</p>
             </div>
