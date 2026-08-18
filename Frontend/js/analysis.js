@@ -7,7 +7,7 @@ const usuario = localStorage.getItem("usuario");
 
 if (!usuario) {
 
-    window.location.href = "login.html";
+    window.location.href = "index.html";
 
 }
 
