@@ -3,99 +3,53 @@
    ANALYSIS.JS
 ========================================= */
 
+/* VERIFICAÇÃO DE SESSÃO */
 const usuario = localStorage.getItem("usuario");
 
 if (!usuario) {
-
     window.location.href = "index.html";
-
 }
 
-
-/* MOSTRAR USUÁRIO */
-
-const usuarioElemento =
-    document.getElementById("usuario");
+/* MOSTRAR USUÁRIO NO PERFIL */
+const usuarioElemento = document.getElementById("usuario");
 
 if (usuarioElemento && usuario) {
-
-    let nome =
-        usuario.split("@")[0];
-
-    nome =
-        nome.charAt(0).toUpperCase() +
-        nome.slice(1);
-
+    let nome = usuario.split("@")[0];
+    nome = nome.charAt(0).toUpperCase() + nome.slice(1);
     usuarioElemento.textContent = nome;
-
 }
 
 
 /* =========================================
-   UPLOAD
+   UPLOAD DE ARQUIVO (.ZIP)
 ========================================= */
 
-const fileInput =
-    document.getElementById("projectFile");
+const fileInput = document.getElementById("projectFile");
+const uploadButton = document.getElementById("uploadButton");
 
-const uploadButton =
-    document.getElementById("uploadButton");
+if (uploadButton && fileInput) {
+    uploadButton.addEventListener("click", function () {
+        fileInput.click();
+    });
 
+    fileInput.addEventListener("change", function () {
+        if (!this.files.length) return;
 
-if (uploadButton) {
+        const arquivo = this.files[0];
 
-    uploadButton.addEventListener(
-        "click",
-        function () {
-
-            fileInput.click();
-
+        if (!arquivo.name.toLowerCase().endsWith(".zip")) {
+            mostrarMensagem("Selecione um arquivo .ZIP válido.", "erro");
+            this.value = "";
+            return;
         }
-    );
 
-}
+        uploadButton.innerHTML = `<i class="fa-solid fa-check"></i> ${arquivo.name}`;
+        uploadButton.style.color = "#3FB950";
+        uploadButton.style.borderColor = "#3FB950";
 
-
-if (fileInput) {
-
-    fileInput.addEventListener(
-        "change",
-        function () {
-
-            if (!this.files.length) {
-                return;
-            }
-
-            const arquivo =
-                this.files[0];
-
-            if (!arquivo.name
-                .toLowerCase()
-                .endsWith(".zip")) {
-
-                alert(
-                    "Selecione um arquivo ZIP."
-                );
-
-                this.value = "";
-
-                return;
-
-            }
-
-
-            uploadButton.innerHTML =
-
-                `<i class="fa-solid fa-check"></i>
-                 ${arquivo.name}`;
-
-
-            uploadButton.style.color =
-                "#39D98A";
-
-        }
-    );
-
+        // Inicia análise simulada do arquivo enviado
+        iniciarAnalise("ZIP", arquivo.name);
+    });
 }
 
 
@@ -103,21 +57,12 @@ if (fileInput) {
    GITHUB
 ========================================= */
 
-const githubButton =
-    document.getElementById("githubButton");
-
+const githubButton = document.getElementById("githubButton");
 
 if (githubButton) {
-
-    githubButton.addEventListener(
-        "click",
-        function () {
-
-            mostrarModalGitHub();
-
-        }
-    );
-
+    githubButton.addEventListener("click", function () {
+        mostrarModalGitHub();
+    });
 }
 
 
@@ -126,247 +71,164 @@ if (githubButton) {
 ========================================= */
 
 function mostrarModalGitHub() {
-
-    const modal =
-        document.createElement("div");
-
-
-    modal.className =
-        "modal-overlay";
-
+    const modal = document.createElement("div");
+    modal.className = "modal-overlay";
 
     modal.innerHTML = `
-
         <div class="modal">
-
             <div class="modal-icon">
-
                 <i class="fa-brands fa-github"></i>
-
             </div>
-
             <h2>Conectar repositório</h2>
-
-            <p>
-                Informe a URL pública do repositório
-                que deseja analisar.
-            </p>
-
-            <input
-                id="githubUrl"
-                type="url"
-                placeholder="https://github.com/usuario/projeto"
-            >
-
+            <p>Informe a URL pública do repositório que deseja analisar.</p>
+            <input id="githubUrl" type="url" placeholder="https://github.com/usuario/projeto">
             <div class="modal-actions">
-
-                <button
-                    class="cancel-modal">
-                    Cancelar
-                </button>
-
-                <button
-                    class="confirm-github">
-                    Analisar
-                </button>
-
+                <button class="cancel-modal">Cancelar</button>
+                <button class="confirm-github">Analisar</button>
             </div>
-
         </div>
     `;
 
+    document.body.appendChild(modal);
+
+    // Fechar modal ao clicar fora
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal) modal.remove();
+    });
+
+    const cancelar = modal.querySelector(".cancel-modal");
+    cancelar.addEventListener("click", function () {
+        modal.remove();
+    });
+
+    const confirmar = modal.querySelector(".confirm-github");
+    confirmar.addEventListener("click", function () {
+        const urlInput = document.getElementById("githubUrl");
+        const url = urlInput ? urlInput.value.trim() : "";
+
+        if (!url) {
+            mostrarMensagem("Informe a URL do repositório.", "erro");
+            return;
+        }
+
+        if (!url.includes("github.com")) {
+            mostrarMensagem("Informe uma URL válida do GitHub.", "erro");
+            return;
+        }
+
+        modal.remove();
+        iniciarAnalise("GitHub", url);
+    });
+}
+
+
+/* =========================================
+   CÓDIGO MANUAL
+========================================= */
+
+const codeButton = document.getElementById("codeButton");
+
+if (codeButton) {
+    codeButton.addEventListener("click", function () {
+        mostrarModalCodigo();
+    });
+}
+
+function mostrarModalCodigo() {
+    const modal = document.createElement("div");
+    modal.className = "modal-overlay";
+
+    modal.innerHTML = `
+        <div class="modal">
+            <div class="modal-icon">
+                <i class="fa-solid fa-code"></i>
+            </div>
+            <h2>Analisar trecho de código</h2>
+            <p>Cole o trecho de código abaixo para verificar falhas de segurança.</p>
+            <textarea id="codeText" rows="6" placeholder="// Cole seu código aqui..."></textarea>
+            <div class="modal-actions">
+                <button class="cancel-modal">Cancelar</button>
+                <button class="confirm-code">Analisar Código</button>
+            </div>
+        </div>
+    `;
 
     document.body.appendChild(modal);
 
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal) modal.remove();
+    });
 
-    const cancelar =
-        modal.querySelector(".cancel-modal");
+    const cancelar = modal.querySelector(".cancel-modal");
+    cancelar.addEventListener("click", function () {
+        modal.remove();
+    });
 
+    const confirmar = modal.querySelector(".confirm-code");
+    confirmar.addEventListener("click", function () {
+        const codigo = document.getElementById("codeText").value.trim();
 
-    cancelar.addEventListener(
-        "click",
-        function () {
-
-            modal.remove();
-
+        if (!codigo) {
+            mostrarMensagem("Cole algum trecho de código para analisar.", "erro");
+            return;
         }
-    );
 
-
-    const confirmar =
-        modal.querySelector(".confirm-github");
-
-
-    confirmar.addEventListener(
-        "click",
-        function () {
-
-            const url =
-                document.getElementById(
-                    "githubUrl"
-                ).value.trim();
-
-
-            if (!url) {
-
-                alert(
-                    "Informe a URL do repositório."
-                );
-
-                return;
-
-            }
-
-
-            if (!url.includes("github.com")) {
-
-                alert(
-                    "Informe uma URL válida do GitHub."
-                );
-
-                return;
-
-            }
-
-
-            modal.remove();
-
-            iniciarAnalise(
-                "GitHub",
-                url
-            );
-
-        }
-    );
-
+        modal.remove();
+        iniciarAnalise("Código", "Trecho colado manual");
+    });
 }
 
 
 /* =========================================
-   CÓDIGO
+   INICIALIZAÇÃO DA ANÁLISE
 ========================================= */
 
-const codeButton =
-    document.getElementById("codeButton");
-
-
-if (codeButton) {
-
-    codeButton.addEventListener(
-        "click",
-        function () {
-
-            iniciarAnalise(
-                "Código",
-                null
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================
-   SIMULAÇÃO DE ANÁLISE
-========================================= */
-
-function iniciarAnalise(
-    tipo,
-    origem
-) {
-
-    localStorage.setItem(
-        "tipoAnalise",
-        tipo
-    );
-
+function iniciarAnalise(tipo, origem) {
+    localStorage.setItem("tipoAnalise", tipo);
 
     if (origem) {
-
-        localStorage.setItem(
-            "origemAnalise",
-            origem
-        );
-
+        localStorage.setItem("origemAnalise", origem);
     }
 
+    mostrarMensagem(`Preparando análise de ${tipo}...`, "sucesso");
 
-    mostrarMensagem(
-        "Preparando análise..."
-    );
-
-
-    setTimeout(
-        function () {
-
-            window.location.href =
-                "analysis.html";
-
-        },
-        1000
-    );
-
+    setTimeout(function () {
+        // Redireciona para visualização do progresso ou resultado
+        window.location.href = "area.html?view=vulnerabilities";
+    }, 1200);
 }
 
 
 /* =========================================
-   MENSAGEM
+   TOAST / NOTIFICAÇÃO FLUTUANTE
 ========================================= */
 
-function mostrarMensagem(texto) {
+function mostrarMensagem(texto, tipo = "sucesso") {
+    // Remove mensagens existentes para não empilhar
+    const antiga = document.querySelector(".toast-message");
+    if (antiga) antiga.remove();
 
-    const mensagem =
-        document.createElement("div");
+    const mensagem = document.createElement("div");
+    mensagem.className = "toast-message";
+    mensagem.textContent = texto;
 
+    // Estilos inline garantindo harmonia visual com o projeto
+    mensagem.style.position = "fixed";
+    mensagem.style.bottom = "25px";
+    mensagem.style.right = "25px";
+    mensagem.style.background = "#161B22";
+    mensagem.style.border = tipo === "erro" ? "1px solid #F85149" : "1px solid #2F81F7";
+    mensagem.style.color = "#F0F6FC";
+    mensagem.style.padding = "14px 22px";
+    mensagem.style.borderRadius = "10px";
+    mensagem.style.zIndex = "9999";
+    mensagem.style.fontSize = "14px";
+    mensagem.style.fontWeight = "500";
+    mensagem.style.boxShadow = "0 8px 24px rgba(0,0,0,0.5)";
 
-    mensagem.textContent =
-        texto;
+    document.body.appendChild(mensagem);
 
-
-    mensagem.style.position =
-        "fixed";
-
-    mensagem.style.bottom =
-        "25px";
-
-    mensagem.style.right =
-        "25px";
-
-    mensagem.style.background =
-        "#151C2B";
-
-    mensagem.style.border =
-        "1px solid #34435F";
-
-    mensagem.style.color =
-        "#F4F7FB";
-
-    mensagem.style.padding =
-        "14px 20px";
-
-    mensagem.style.borderRadius =
-        "10px";
-
-    mensagem.style.zIndex =
-        "9999";
-
-    mensagem.style.fontSize =
-        "13px";
-
-
-    document.body.appendChild(
-        mensagem
-    );
-
-
-    setTimeout(
-        function () {
-
-            mensagem.remove();
-
-        },
-        1500
-    );
-
+    setTimeout(function () {
+        mensagem.remove();
+    }, 2500);
 }
