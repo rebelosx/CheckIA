@@ -7,7 +7,7 @@ const usuario = localStorage.getItem("usuario");
 
 if (!usuario) {
 
-    window.location.href = "index.html";
+    window.location.href = "login.html";
 
 }
 
@@ -301,7 +301,7 @@ function iniciarAnalise(
         function () {
 
             window.location.href =
-                "css/js/scan.html";
+                "analysis.html";
 
         },
         1000
