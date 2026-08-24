@@ -1,7 +1,7 @@
 const usuario = localStorage.getItem("usuario");
 
 if (!usuario) {
-    window.location.href = "../../index.html";
+    window.location.href = "index.html";
 }
 
 const percentage = document.getElementById("percentage");
@@ -55,7 +55,7 @@ const progressInterval = setInterval(() => {
         document.querySelector(".scanner-status").innerHTML = '<span class="status-dot"></span> ANÁLISE CONCLUÍDA';
         const resultLink = document.createElement("a");
         resultLink.className = "scan-result-link";
-        resultLink.href = "../../area.html?view=reports";
+        resultLink.href = "area.html?view=reports";
         resultLink.innerHTML = '<i class="fa-solid fa-chart-line"></i> Ver resultados';
         document.querySelector(".scanner-main").appendChild(resultLink);
     }

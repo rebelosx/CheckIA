@@ -1,10 +1,16 @@
 .area-content {
+    font-family: var(--font-sans);
+    padding: var(--space-page);
     padding-bottom: 42px;
 }
 
 .area-content header {
     align-items: flex-start;
     gap: 24px;
+}
+
+.area-content .page-header-actions {
+    justify-content: flex-end;
 }
 
 .eyebrow {

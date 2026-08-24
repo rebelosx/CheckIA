@@ -185,7 +185,9 @@
 
     flex:1;
 
-    padding:35px;
+    font-family:var(--font-sans);
+
+    padding:28px;
 
     overflow:auto;
 
@@ -205,6 +207,50 @@ header{
     align-items:center;
 
     margin-bottom:35px;
+
+}
+
+.header-profile{
+
+    align-items:center;
+
+    display:flex;
+
+    gap:15px;
+
+    padding:0;
+
+    white-space:nowrap;
+
+}
+
+.page-header-actions{
+
+    align-items:center;
+
+    display:flex;
+
+    flex-shrink:0;
+
+    gap:24px;
+
+}
+
+.header-profile i{
+
+    align-items:center;
+
+    background:var(--blue);
+
+    border-radius:50%;
+
+    display:flex;
+
+    height:40px;
+
+    justify-content:center;
+
+    width:40px;
 
 }
 
@@ -276,9 +322,9 @@ header p{
 
     grid-template-columns:repeat(4,1fr);
 
-    gap:20px;
+    gap:16px;
 
-    margin-bottom:30px;
+    margin-bottom:20px;
 
 }
 
@@ -289,15 +335,15 @@ header p{
 
     border:1px solid #30363D;
 
-    border-radius:12px;
+    border-radius:var(--radius);
 
-    padding:25px;
+    padding:20px;
 
     display:flex;
 
     align-items:center;
 
-    gap:20px;
+    gap:16px;
 
     transition:.3s;
 
@@ -356,18 +402,18 @@ header p{
 
     border:1px solid #30363D;
 
-    border-radius:12px;
+    border-radius:var(--radius);
 
-    padding:25px;
+    padding:20px;
 
-    margin-bottom:30px;
+    margin-bottom:20px;
 
 }
 
 
 .panel h2{
 
-    margin-bottom:25px;
+    margin-bottom:18px;
 
     font-size:20px;
 
@@ -384,13 +430,13 @@ header p{
 
 .chart{
 
-    height:220px;
+    height:clamp(180px, 26vh, 220px);
 
     display:flex;
 
     align-items:flex-end;
 
-    gap:25px;
+    gap:16px;
 
 }
 

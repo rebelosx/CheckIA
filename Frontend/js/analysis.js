@@ -17,39 +17,9 @@ if (usuarioElemento && usuario) {
     let nome = usuario.split("@")[0];
     nome = nome.charAt(0).toUpperCase() + nome.slice(1);
     usuarioElemento.textContent = nome;
-}
 
-
-/* =========================================
-   UPLOAD DE ARQUIVO (.ZIP)
-========================================= */
-
-const fileInput = document.getElementById("projectFile");
-const uploadButton = document.getElementById("uploadButton");
-
-if (uploadButton && fileInput) {
-    uploadButton.addEventListener("click", function () {
-        fileInput.click();
-    });
-
-    fileInput.addEventListener("change", function () {
-        if (!this.files.length) return;
-
-        const arquivo = this.files[0];
-
-        if (!arquivo.name.toLowerCase().endsWith(".zip")) {
-            mostrarMensagem("Selecione um arquivo .ZIP válido.", "erro");
-            this.value = "";
-            return;
-        }
-
-        uploadButton.innerHTML = `<i class="fa-solid fa-check"></i> ${arquivo.name}`;
-        uploadButton.style.color = "#3FB950";
-        uploadButton.style.borderColor = "#3FB950";
-
-        // Inicia análise simulada do arquivo enviado
-        iniciarAnalise("ZIP", arquivo.name);
-    });
+    const usuarioHeader = document.getElementById("usuario-header");
+    if (usuarioHeader) usuarioHeader.textContent = nome;
 }
 
 
@@ -122,61 +92,6 @@ function mostrarModalGitHub() {
 }
 
 
-/* =========================================
-   CÓDIGO MANUAL
-========================================= */
-
-const codeButton = document.getElementById("codeButton");
-
-if (codeButton) {
-    codeButton.addEventListener("click", function () {
-        mostrarModalCodigo();
-    });
-}
-
-function mostrarModalCodigo() {
-    const modal = document.createElement("div");
-    modal.className = "modal-overlay";
-
-    modal.innerHTML = `
-        <div class="modal">
-            <div class="modal-icon">
-                <i class="fa-solid fa-code"></i>
-            </div>
-            <h2>Analisar trecho de código</h2>
-            <p>Cole o trecho de código abaixo para verificar falhas de segurança.</p>
-            <textarea id="codeText" rows="6" placeholder="// Cole seu código aqui..."></textarea>
-            <div class="modal-actions">
-                <button class="cancel-modal">Cancelar</button>
-                <button class="confirm-code">Analisar Código</button>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    modal.addEventListener("click", function (e) {
-        if (e.target === modal) modal.remove();
-    });
-
-    const cancelar = modal.querySelector(".cancel-modal");
-    cancelar.addEventListener("click", function () {
-        modal.remove();
-    });
-
-    const confirmar = modal.querySelector(".confirm-code");
-    confirmar.addEventListener("click", function () {
-        const codigo = document.getElementById("codeText").value.trim();
-
-        if (!codigo) {
-            mostrarMensagem("Cole algum trecho de código para analisar.", "erro");
-            return;
-        }
-
-        modal.remove();
-        iniciarAnalise("Código", "Trecho colado manual");
-    });
-}
 
 
 /* =========================================

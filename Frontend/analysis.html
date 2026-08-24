@@ -63,14 +63,21 @@
                 <p>Analise sua aplicação e descubra possíveis riscos de segurança antes da publicação.</p>
             </div>
 
-            <div class="header-status">
-                <span class="status-dot"></span>
-                Sistema operacional
+            <div class="page-header-actions">
+                <div class="header-status">
+                    <span class="status-dot"></span>
+                    Sistema operacional
+                </div>
+
+                <div class="header-profile" aria-label="Perfil do usuário">
+                    <i class="fa-solid fa-user"></i>
+                    <strong id="usuario-header">Usuário</strong>
+                </div>
             </div>
         </header>
 
         <!-- INTRO CARD -->
-        <section class="intro-card">
+        <section class="panel intro-card">
             <div class="intro-icon">
                 <i class="fa-solid fa-shield-heart"></i>
             </div>
@@ -82,11 +89,11 @@
             </div>
         </section>
 
-        <!-- OPÇÕES DE ANÁLISE -->
+        <!-- OPÇÃO DE ANÁLISE -->
         <section class="analysis-options">
 
             <!-- GITHUB -->
-            <article class="analysis-card github-card">
+            <article class="panel analysis-card github-card">
                 <div class="card-top">
                     <div class="option-icon">
                         <i class="fa-brands fa-github"></i>
@@ -95,7 +102,7 @@
                 </div>
 
                 <h3>Repositório GitHub</h3>
-                <p>Conecte um repositório e analise automaticamente os arquivos do projeto.</p>
+                <p>Insira o link público do seu repositório para analisar automaticamente os arquivos do projeto.</p>
 
                 <div class="feature-list">
                     <span><i class="fa-solid fa-check"></i> Análise de dependências</span>
@@ -109,59 +116,10 @@
                 </button>
             </article>
 
-            <!-- UPLOAD -->
-            <article class="analysis-card">
-                <div class="card-top">
-                    <div class="option-icon upload">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                    </div>
-                </div>
-
-                <h3>Upload do projeto</h3>
-                <p>Envie um arquivo ZIP contendo os arquivos da sua aplicação.</p>
-
-                <label class="upload-area" for="projectFile">
-                    <i class="fa-solid fa-file-zipper"></i>
-                    <strong>Arraste seu projeto aqui</strong>
-                    <span>ou clique para selecionar</span>
-                    <small>Formato permitido: .ZIP</small>
-                </label>
-
-                <input type="file" id="projectFile" accept=".zip" hidden>
-
-                <button class="secondary-button" id="uploadButton">
-                    <i class="fa-solid fa-upload"></i>
-                    Selecionar projeto
-                </button>
-            </article>
-
-            <!-- CÓDIGO -->
-            <article class="analysis-card">
-                <div class="card-top">
-                    <div class="option-icon code">
-                        <i class="fa-solid fa-code"></i>
-                    </div>
-                </div>
-
-                <h3>Analisar código</h3>
-                <p>Cole um trecho de código para realizar uma análise rápida.</p>
-
-                <div class="code-preview">
-                    <span class="line-number">01</span><code>const user = req.body.user;</code>
-                    <span class="line-number">02</span><code>db.query(user);</code>
-                    <span class="line-number">03</span><code>return response.json();</code>
-                </div>
-
-                <button class="secondary-button" id="codeButton">
-                    <i class="fa-solid fa-code"></i>
-                    Abrir analisador
-                </button>
-            </article>
-
         </section>
 
         <!-- O QUE SERÁ ANALISADO -->
-        <section class="security-engine">
+        <section class="panel security-engine">
             <div class="section-heading">
                 <div>
                     <span class="eyebrow">CHECK IA ENGINE</span>

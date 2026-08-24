@@ -16,7 +16,7 @@ body {
             rgba(79,124,255,.08),
             transparent 35%
         ),
-        #080B12;
+        var(--background);
 
     color: #F4F7FB;
 
@@ -48,9 +48,9 @@ body {
 
     padding: 0 45px;
 
-    border-bottom: 1px solid #202838;
+    border-bottom: 1px solid var(--border);
 
-    background: rgba(15,20,32,.88);
+    background: rgba(22,27,34,.88);
 
     backdrop-filter: blur(12px);
 }
@@ -130,10 +130,10 @@ body {
 
     border-radius: 50%;
 
-    background: #20D9D2;
+    background: var(--green);
 
     box-shadow:
-        0 0 12px #20D9D2;
+        0 0 12px var(--green);
 
     animation: pulse 1.5s infinite;
 }
@@ -173,8 +173,8 @@ body {
 
 .scan-result-link {
     align-items: center;
-    background: #4F7CFF;
-    border-radius: 9px;
+    background: var(--blue);
+    border-radius: 8px;
     color: #fff;
     display: flex;
     font-size: 14px;
@@ -187,7 +187,7 @@ body {
 }
 
 .scan-result-link:hover {
-    background: #3e67e6;
+    background: #1f6feb;
 }
 
 
@@ -203,7 +203,7 @@ body {
 
 
 .eyebrow {
-    color: #20D9D2;
+    color: var(--blue);
 
     font-size: 10px;
 
@@ -218,7 +218,7 @@ body {
 
     margin: 9px 0;
 
-    letter-spacing: -.8px;
+    letter-spacing: 0;
 }
 
 
@@ -246,11 +246,11 @@ body {
             rgba(79,124,255,.06),
             transparent 30%
         ),
-        #0F1420;
+        var(--card);
 
-    border: 1px solid #202838;
+    border: 1px solid var(--border);
 
-    border-radius: 18px;
+    border-radius: var(--radius);
 
     padding: 35px;
 

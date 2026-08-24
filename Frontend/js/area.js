@@ -61,5 +61,7 @@ document.querySelector(`[data-view="${view || "projects"}"]`)?.classList.add("ac
 const usuario = document.getElementById("usuario");
 if (usuarioLogado && usuario) {
     const nome = usuarioLogado.split("@")[0];
-    usuario.textContent = nome.charAt(0).toUpperCase() + nome.slice(1);
+    const nomeFormatado = nome.charAt(0).toUpperCase() + nome.slice(1);
+    usuario.textContent = nomeFormatado;
+    document.getElementById("usuario-header").textContent = nomeFormatado;
 }

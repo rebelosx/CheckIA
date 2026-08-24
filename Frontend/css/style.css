@@ -55,6 +55,10 @@ body{
 
     --gray:#8B949E;
 
+    --radius:12px;
+
+    --space-page:28px;
+
 }
 
 /* Links */
@@ -143,7 +147,7 @@ select{
 
     border:1px solid var(--border);
 
-    border-radius:12px;
+    border-radius:var(--radius);
 
     transition:.3s;
 
@@ -209,7 +213,7 @@ select{
 
 h1{
 
-    font-size:34px;
+    font-size:32px;
 
     font-weight:800;
 
@@ -217,7 +221,7 @@ h1{
 
 h2{
 
-    font-size:28px;
+    font-size:24px;
 
     font-weight:700;
 
@@ -225,7 +229,7 @@ h2{
 
 h3{
 
-    font-size:22px;
+    font-size:20px;
 
     font-weight:600;
 

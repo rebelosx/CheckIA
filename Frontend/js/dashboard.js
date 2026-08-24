@@ -37,6 +37,11 @@ if (usuarioElemento && usuarioLogado) {
 
     usuarioElemento.textContent = nomeUsuario;
 
+    const usuarioHeader = document.getElementById("usuario-header");
+    if (usuarioHeader) {
+        usuarioHeader.textContent = nomeUsuario;
+    }
+
 }
 
 
@@ -279,14 +284,14 @@ menuItens.forEach(function (item) {
 
 
         const texto =
-            this.textContent.trim();
+            this.textContent.trim().toLowerCase();
 
 
         /* ---------------------------------------------
            NOVA ANÁLISE
         --------------------------------------------- */
 
-        if (texto.includes("Nova Análise")) {
+        if (texto.includes("nova análise")) {
 
             window.location.href =
                 "analysis.html";
@@ -314,7 +319,7 @@ menuItens.forEach(function (item) {
         else if (texto.includes("Relatórios")) {
 
             window.location.href =
-                "reports.html";
+                "area.html?view=reports";
 
         }
 
