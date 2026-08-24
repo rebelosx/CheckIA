@@ -8,6 +8,9 @@ const form = document.getElementById("loginForm");
 const email = document.getElementById("email");
 
 const senha = document.getElementById("senha");
+const registerForm = document.getElementById("registerForm");
+const recoveryForm = document.getElementById("recoveryForm");
+const forms = [form, registerForm, recoveryForm];
 
 /*==========================================
 CRIAR ALERTA
@@ -113,6 +116,62 @@ form.addEventListener("submit",(e)=>{
 
 });
 
+function exibirFormulario(formularioAtivo) {
+    forms.forEach((formulario) => formulario.classList.toggle("auth-form-hidden", formulario !== formularioAtivo));
+}
+
+document.getElementById("registerLink").addEventListener("click", (event) => {
+    event.preventDefault();
+    exibirFormulario(registerForm);
+});
+
+document.getElementById("forgotPasswordLink").addEventListener("click", (event) => {
+    event.preventDefault();
+    exibirFormulario(recoveryForm);
+});
+
+document.querySelectorAll(".backToLogin").forEach((link) => link.addEventListener("click", (event) => {
+    event.preventDefault();
+    exibirFormulario(form);
+}));
+
+registerForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const nome = document.getElementById("registerName").value.trim();
+    const novoEmail = document.getElementById("registerEmail").value.trim();
+    const novaSenha = document.getElementById("registerPassword").value;
+    const confirmacao = document.getElementById("registerPasswordConfirm").value;
+
+    if (!validarEmail(novoEmail)) {
+        mostrarMensagem("Email inválido.", "#F85149");
+        return;
+    }
+    if (novaSenha.length < 6) {
+        mostrarMensagem("Senha deve possuir no mínimo 6 caracteres.", "#F85149");
+        return;
+    }
+    if (novaSenha !== confirmacao) {
+        mostrarMensagem("As senhas não coincidem.", "#F85149");
+        return;
+    }
+
+    localStorage.setItem("usuario", novoEmail);
+    localStorage.setItem("nomeConta", nome);
+    localStorage.setItem("emailConta", novoEmail);
+    mostrarMensagem("Conta criada com sucesso!", "#3FB950");
+    setTimeout(() => window.location.href = "dashboard.html", 1000);
+});
+
+recoveryForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const emailRecuperacao = document.getElementById("recoveryEmail").value.trim();
+    if (!validarEmail(emailRecuperacao)) {
+        mostrarMensagem("Email inválido.", "#F85149");
+        return;
+    }
+    mostrarMensagem("Instruções enviadas para seu email.", "#3FB950");
+});
+
 /*==========================================
 ENTER
 ==========================================*/
@@ -120,8 +179,7 @@ ENTER
 document.addEventListener("keydown",(e)=>{
 
     if(e.key==="Enter"){
-
-        form.requestSubmit();
+        document.querySelector("form:not(.auth-form-hidden)")?.requestSubmit();
 
     }
 

@@ -105,12 +105,36 @@ function iniciarAnalise(tipo, origem) {
         localStorage.setItem("origemAnalise", origem);
     }
 
-    mostrarMensagem(`Preparando análise de ${tipo}...`, "sucesso");
+    const apiBaseUrl = localStorage.getItem("apiBaseUrl") || "http://127.0.0.1:8000";
+    const botao = document.querySelector(".confirm-github");
+    if (botao) {
+        botao.disabled = true;
+        botao.textContent = "Analisando...";
+    }
 
-    setTimeout(function () {
-        // Redireciona para visualização do progresso ou resultado
-        window.location.href = "area.html?view=vulnerabilities";
-    }, 1200);
+    mostrarMensagem(`Enviando repositório para análise...`, "sucesso");
+
+    fetch(`${apiBaseUrl}/analyze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repo_url: origem })
+    })
+        .then(async (response) => {
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(data.detail || data.error || "O backend não conseguiu analisar o repositório.");
+            }
+            if (data.error) throw new Error(data.error);
+            return data;
+        })
+        .then((data) => {
+            localStorage.setItem("ultimaAnalise", JSON.stringify(data));
+            mostrarMensagem("Análise concluída com sucesso!", "sucesso");
+            setTimeout(() => window.location.href = "area.html?view=vulnerabilities", 700);
+        })
+        .catch((error) => {
+            mostrarMensagem(error.message || "Não foi possível conectar ao backend.", "erro");
+        });
 }
 
 

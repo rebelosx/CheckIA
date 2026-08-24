@@ -64,7 +64,33 @@
 .area-row span { color: var(--gray); display: block; font-size: 13px; margin-top: 4px; }
 .area-badge { background: rgba(47, 129, 247, .15); border-radius: 99px; color: #79b8ff; font-size: 12px; font-weight: 700; padding: 6px 10px; }
 
+.settings-section { border-bottom: 1px solid var(--border); padding: 24px; }
+.settings-section:last-child { border-bottom: 0; }
+.settings-section-heading { align-items: center; display: flex; gap: 14px; margin-bottom: 22px; }
+.settings-section-heading h3 { margin-bottom: 4px; }
+.settings-section-heading p { font-size: 13px; }
+.settings-icon { align-items: center; background: rgba(47, 129, 247, .12); border-radius: 10px; color: var(--blue); display: flex; height: 42px; justify-content: center; width: 42px; }
+.settings-form { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.settings-form label { color: var(--gray); display: flex; flex-direction: column; font-size: 13px; font-weight: 600; gap: 8px; }
+.settings-form input { background: var(--background); border: 1px solid var(--border); border-radius: 8px; color: var(--white); font-size: 14px; min-height: 46px; padding: 0 14px; }
+.settings-form input:focus { border-color: var(--blue); }
+.settings-save { align-self: end; border: 0; cursor: pointer; min-height: 46px; }
+.settings-toggle { align-items: center; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 18px; padding: 16px 0; }
+.settings-toggle:first-of-type { border-top: 0; }
+.settings-toggle strong, .settings-toggle small { display: block; }
+.settings-toggle strong { font-size: 14px; }
+.settings-toggle strong i { color: var(--blue); margin-right: 8px; }
+.settings-toggle small { color: var(--gray); font-size: 13px; margin-top: 5px; }
+.settings-toggle input { height: 0; opacity: 0; position: absolute; width: 0; }
+.toggle-control { background: var(--hover); border-radius: 20px; flex-shrink: 0; height: 24px; position: relative; transition: .2s; width: 44px; }
+.toggle-control::after { background: var(--gray); border-radius: 50%; content: ""; height: 18px; left: 3px; position: absolute; top: 3px; transition: .2s; width: 18px; }
+.settings-toggle input:checked + .toggle-control { background: var(--green); }
+.settings-toggle input:checked + .toggle-control::after { background: #fff; transform: translateX(20px); }
+.area-message { border-radius: 8px; box-shadow: 0 12px 30px rgba(0, 0, 0, .3); color: #fff; font-size: 14px; font-weight: 600; padding: 14px 20px; position: fixed; right: 24px; top: 24px; z-index: 10; }
+
 @media (max-width: 768px) {
     .area-summary { grid-template-columns: 1fr; }
     .area-content header { flex-direction: column; }
+    .settings-form { grid-template-columns: 1fr; }
+    .settings-save { width: 100%; }
 }

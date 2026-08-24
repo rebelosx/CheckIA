@@ -48,13 +48,99 @@ const action = document.getElementById("areaAction");
 action.innerHTML = `<i class="fa-solid fa-${page.actionHref ? "house" : "plus"}"></i> ${page.action}`;
 action.href = page.actionHref || "analysis.html";
 
-document.getElementById("areaSummary").innerHTML = page.stats.map(([label, value]) =>
+const areaSummary = document.getElementById("areaSummary");
+const areaList = document.getElementById("areaList");
+
+areaSummary.innerHTML = page.stats.map(([label, value]) =>
     `<article class="area-stat"><span>${label}</span><strong>${value}</strong></article>`
 ).join("");
 
-document.getElementById("areaList").innerHTML = page.rows.map(([title, detail, badge, icon]) =>
-    `<article class="area-row"><i class="fa-solid ${icon}"></i><div><strong>${title}</strong><span>${detail}</span></div><b class="area-badge">${badge}</b></article>`
-).join("");
+if (view === "settings") {
+    const emailSalvo = localStorage.getItem("emailConta") || usuarioLogado;
+    const nomeSalvo = localStorage.getItem("nomeConta") || usuarioLogado.split("@")[0];
+    const funcaoSalva = localStorage.getItem("funcaoConta") || "Analista";
+    const githubAtivo = localStorage.getItem("integracaoGithub") !== "false";
+    const webhooksAtivos = localStorage.getItem("webhooksAtivos") === "true";
+    const alertasAtivos = localStorage.getItem("alertasSeguranca") !== "false";
+    const resumoAtivo = localStorage.getItem("resumoSemanal") !== "false";
+
+    areaList.innerHTML = `
+        <section class="settings-section">
+            <div class="settings-section-heading">
+                <div class="settings-icon"><i class="fa-solid fa-user"></i></div>
+                <div><h3>Perfil da conta</h3><p>Atualize as informações usadas no seu acesso.</p></div>
+            </div>
+            <form class="settings-form" id="profileForm">
+                <label>Nome<input name="nome" value="${nomeSalvo}" required></label>
+                <label>E-mail<input name="email" type="email" value="${emailSalvo}" required></label>
+                <label>Função<input name="funcao" value="${funcaoSalva}" required></label>
+                <label>Nova senha<input name="senha" type="password" placeholder="Deixe em branco para manter"></label>
+                <button class="area-action settings-save" type="submit"><i class="fa-solid fa-check"></i> Salvar perfil</button>
+            </form>
+        </section>
+        <section class="settings-section">
+            <div class="settings-section-heading">
+                <div class="settings-icon"><i class="fa-solid fa-plug"></i></div>
+                <div><h3>Integrações</h3><p>Controle os serviços conectados à sua conta.</p></div>
+            </div>
+            <label class="settings-toggle"><span><strong><i class="fa-brands fa-github"></i> GitHub</strong><small>Conectar repositórios para novas análises.</small></span><input id="githubToggle" type="checkbox" ${githubAtivo ? "checked" : ""}><span class="toggle-control"></span></label>
+            <label class="settings-toggle"><span><strong><i class="fa-solid fa-code-branch"></i> Webhooks</strong><small>Receber eventos automáticos dos projetos.</small></span><input id="webhookToggle" type="checkbox" ${webhooksAtivos ? "checked" : ""}><span class="toggle-control"></span></label>
+        </section>
+        <section class="settings-section">
+            <div class="settings-section-heading">
+                <div class="settings-icon"><i class="fa-solid fa-bell"></i></div>
+                <div><h3>Notificações</h3><p>Escolha quais atualizações deseja receber.</p></div>
+            </div>
+            <label class="settings-toggle"><span><strong>Alertas de segurança</strong><small>Avise quando um risco crítico for encontrado.</small></span><input id="alertsToggle" type="checkbox" ${alertasAtivos ? "checked" : ""}><span class="toggle-control"></span></label>
+            <label class="settings-toggle"><span><strong>Resumo semanal</strong><small>Receba a evolução dos seus projetos por e-mail.</small></span><input id="summaryToggle" type="checkbox" ${resumoAtivo ? "checked" : ""}><span class="toggle-control"></span></label>
+        </section>`;
+
+    document.getElementById("profileForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const dadosPerfil = new FormData(event.currentTarget);
+        localStorage.setItem("nomeConta", dadosPerfil.get("nome"));
+        localStorage.setItem("emailConta", dadosPerfil.get("email"));
+        localStorage.setItem("funcaoConta", dadosPerfil.get("funcao"));
+        document.getElementById("usuario").textContent = dadosPerfil.get("nome");
+        document.getElementById("usuario-header").textContent = dadosPerfil.get("nome");
+        mostrarMensagem("Perfil atualizado com sucesso.", "#3FB950");
+    });
+    document.getElementById("githubToggle").addEventListener("change", (event) => localStorage.setItem("integracaoGithub", event.target.checked));
+    document.getElementById("webhookToggle").addEventListener("change", (event) => localStorage.setItem("webhooksAtivos", event.target.checked));
+    document.getElementById("alertsToggle").addEventListener("change", (event) => localStorage.setItem("alertasSeguranca", event.target.checked));
+    document.getElementById("summaryToggle").addEventListener("change", (event) => localStorage.setItem("resumoSemanal", event.target.checked));
+} else {
+    const ultimaAnalise = JSON.parse(localStorage.getItem("ultimaAnalise") || "null");
+    if (view === "vulnerabilities" && ultimaAnalise) {
+        let analise = ultimaAnalise.analise_ia || "";
+        analise = analise.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
+        let vulnerabilidades = [];
+        try { vulnerabilidades = JSON.parse(analise).vulnerabilidades || []; } catch (_) { /* Mantém o texto bruto para respostas fora do formato. */ }
+
+        areaSummary.innerHTML = [
+            ["Repositório analisado", ultimaAnalise.repo || "GitHub"],
+            ["Riscos encontrados", String(vulnerabilidades.length)],
+            ["Status", "Concluída"]
+        ].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${value}</strong></article>`).join("");
+
+        areaList.innerHTML = vulnerabilidades.length
+            ? vulnerabilidades.map((item) => `<article class="area-row"><i class="fa-solid fa-triangle-exclamation"></i><div><strong>${item.risco || "Ponto de atenção"}</strong><span>${item.arquivo || "Arquivo não informado"} · ${item.descricao || "Sem descrição disponível."}</span></div><b class="area-badge">${item.severidade || "Análise"}</b></article>`).join("")
+            : `<article class="area-row"><i class="fa-solid fa-shield-check"></i><div><strong>Nenhum risco estruturado encontrado</strong><span>A resposta da IA não identificou vulnerabilidades no formato esperado.</span></div><b class="area-badge">Seguro</b></article>`;
+    } else {
+        areaList.innerHTML = page.rows.map(([title, detail, badge, icon]) =>
+            `<article class="area-row"><i class="fa-solid ${icon}"></i><div><strong>${title}</strong><span>${detail}</span></div><b class="area-badge">${badge}</b></article>`
+        ).join("");
+    }
+}
+
+function mostrarMensagem(texto, cor) {
+    const mensagem = document.createElement("div");
+    mensagem.className = "area-message";
+    mensagem.style.background = cor;
+    mensagem.textContent = texto;
+    document.body.appendChild(mensagem);
+    setTimeout(() => mensagem.remove(), 2800);
+}
 
 document.querySelector(`[data-view="${view || "projects"}"]`)?.classList.add("active");
 

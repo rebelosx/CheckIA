@@ -69,6 +69,29 @@
                 <button type="submit">
                     Entrar
                 </button>
+                <div class="auth-links">
+                    <a href="#" id="forgotPasswordLink">Esqueceu a senha?</a>
+                    <a href="#" id="registerLink">Criar uma conta</a>
+                </div>
+            </form>
+
+            <form id="registerForm" class="auth-form-hidden">
+                <h2>Criar conta</h2>
+                <p>Cadastre-se para começar a proteger seus projetos.</p>
+                <div class="input"><label for="registerName">Nome</label><input type="text" id="registerName" placeholder="Digite seu nome" required></div>
+                <div class="input"><label for="registerEmail">Email</label><input type="email" id="registerEmail" placeholder="Digite seu email" required></div>
+                <div class="input"><label for="registerPassword">Senha</label><input type="password" id="registerPassword" placeholder="Mínimo de 6 caracteres" required></div>
+                <div class="input"><label for="registerPasswordConfirm">Confirmar senha</label><input type="password" id="registerPasswordConfirm" placeholder="Repita sua senha" required></div>
+                <button type="submit">Criar conta</button>
+                <div class="auth-links"><a href="#" class="backToLogin">Já tenho uma conta</a></div>
+            </form>
+
+            <form id="recoveryForm" class="auth-form-hidden">
+                <h2>Recuperar senha</h2>
+                <p>Enviaremos um link para redefinir sua senha.</p>
+                <div class="input"><label for="recoveryEmail">Email</label><input type="email" id="recoveryEmail" placeholder="Digite seu email" required></div>
+                <button type="submit">Enviar instruções</button>
+                <div class="auth-links"><a href="#" class="backToLogin">Voltar para o login</a></div>
             </form>
         </div>
     </div>

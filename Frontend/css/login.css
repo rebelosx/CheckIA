@@ -184,6 +184,12 @@ form p{
 
 }
 
+.auth-form-hidden { display: none; }
+
+.auth-links { display: flex; justify-content: space-between; gap: 16px; margin-top: 18px; }
+.auth-links a { color: #79b8ff; font-size: 13px; }
+.auth-links a:hover { color: #fff; text-decoration: underline; }
+
 /* ===========================
    INPUTS
 =========================== */
@@ -333,6 +339,8 @@ form{
     padding:30px;
 
 }
+
+.auth-links { align-items: flex-start; flex-direction: column; }
 
 .cards{
 

@@ -4,13 +4,14 @@ import httpx # [biblioteca para requisições assíncronas]
 import base64
 import google.generativeai as genai
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, field_validator
 from dotenv import load_dotenv # Biblioteca para ler o arquivo .env com segurança
 
 # 1. CONFIGURAÇÃO DE SEGURANÇA
 # Carregamos as variáveis do arquivo .env (onde está sua API_KEY)
 # Isso evita que sua chave fique exposta diretamente no código (Hardcoded)
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
@@ -30,6 +31,13 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 headers = {"Authorization": f"token {GITHUB_TOKEN}"} if GITHUB_TOKEN else {}
 
 app = FastAPI(title="CheckIA - Motor de Análise")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class RepoRequest(BaseModel):
     repo_url: str # Recebe como string para validarmos manualmente
