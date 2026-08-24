@@ -63,7 +63,7 @@ async def analyze_repo(request: RepoRequest):
     owner = match.group(1)
     repo = match.group(2).rstrip("/").replace(".git", "")
 
-    print(f"Iniciando análise para: {owner}/{repo}")
+    print(f"[1/5] Iniciando análise para: {owner}/{repo}", flush=True)
 
     # --- PARTE 2: BUSCAR A ÁRVORE (TREE) NO GITHUB ---
     codigo_para_ia = "" #variável que vai armazenar o código para enviar à IA
@@ -78,7 +78,10 @@ async def analyze_repo(request: RepoRequest):
             if repo_response.status_code != 200:
                 raise HTTPException(status_code=404, detail="Não consegui acessar o repositório. Verifique se o link é público.")
 
-            default_branch = repo_response.json().get("default_branch", "main")
+            repo_data = repo_response.json()
+            default_branch = repo_data.get("default_branch", "main")
+            linguagem = repo_data.get("language") or "Não identificada"
+            print(f"[2/5] Branch principal encontrada: {default_branch}", flush=True)
             github_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/{quote(default_branch, safe='')}?recursive=1"
             response = await client.get(github_url, headers=headers)
 
@@ -86,6 +89,7 @@ async def analyze_repo(request: RepoRequest):
                 raise HTTPException(status_code=502, detail="Não consegui listar os arquivos do repositório.")
 
             tree = response.json().get("tree", [])
+            print(f"[3/5] Estrutura recebida: {len(tree)} itens", flush=True)
 
         except httpx.TimeoutException:
             raise HTTPException(status_code=504, detail="O GitHub demorou demais para responder. Tente novamente.")
@@ -93,6 +97,7 @@ async def analyze_repo(request: RepoRequest):
         # 2. Aplicamos a "Blacklist" para ignorar lixo e arquivos pesados [3]
         blacklist = ['node_modules', '.git', 'package-lock.json', '.png', '.jpg', '.env', '.pem', '.key']
         filtered_files = [f["path"] for f in tree if f["type"] == "blob" and not any(i in f["path"] for i in blacklist)]
+        print(f"[4/5] Arquivos elegíveis para leitura: {len(filtered_files)}", flush=True)
 
         # --- PARTE 3: COLETA DO CONTEÚDO  ---
         # Analisa todos os arquivos de texto encontrados na árvore do repositório.
@@ -118,7 +123,7 @@ async def analyze_repo(request: RepoRequest):
     model = genai.GenerativeModel('gemini-flash-latest') # type: ignore
 
      # 1. Primeiro, verifique no terminal se o código está chegando o print fica fora do prompt para não confundir a IA
-    print(f"Enviando {len(codigo_para_ia)} caracteres para análise...")
+    print(f"[5/5] Enviando {len(codigo_para_ia)} caracteres para análise da IA...", flush=True)
 
     # Criamos o "Prompt de Segurança": definimos a persona da IA e o formato da resposta
     # Pedimos especificamente o formato JSON para que o João e o Jonathan consigam exibir no front [4]
@@ -154,11 +159,13 @@ async def analyze_repo(request: RepoRequest):
 
     # Enviamos tudo para o Google e recebemos a análise
     ai_response = model.generate_content(prompt)
+    print(f"Análise concluída para {owner}/{repo}", flush=True)
     
     # --- PARTE 5: RETORNO DA API ---
     # Devolvemos o resultado final que será usado para alimentar o Dashboard [5]
     return {
         "repo": f"{owner}/{repo}",
+        "linguagem": linguagem,
         "status": "sucesso",
         "analise_ia": ai_response.text
     }

@@ -460,6 +460,8 @@ header p{
 
 }
 
+#chartMessage { color: var(--gray); font-size: 13px; margin-bottom: 12px; }
+
 
 .chart div{
 

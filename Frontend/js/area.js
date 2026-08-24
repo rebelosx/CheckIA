@@ -12,9 +12,15 @@ const dados = {
 };
 
 const view = new URLSearchParams(window.location.search).get("view");
+const repositorioSelecionado = new URLSearchParams(window.location.search).get("repo");
 const page = dados[view] || dados.projects;
 const ultimaAnalise = JSON.parse(localStorage.getItem(`ultimaAnalise_${usuarioLogado}`) || "null");
-const historico = JSON.parse(localStorage.getItem(`historicoAnalises_${usuarioLogado}`) || "[]");
+const chaveHistorico = `historicoAnalises_${usuarioLogado}`;
+const historicoSalvo = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
+const analiseLegada = JSON.parse(localStorage.getItem("ultimaAnalise") || "null");
+const registrosDisponiveis = [...historicoSalvo, ...(ultimaAnalise ? [ultimaAnalise] : []), ...(analiseLegada ? [analiseLegada] : [])];
+const historico = registrosDisponiveis.filter((item, index, registros) => item && registros.findIndex((outro) => outro.repo === item.repo && outro.analise_ia === item.analise_ia) === index);
+if (historico.length !== historicoSalvo.length) localStorage.setItem(chaveHistorico, JSON.stringify(historico));
 
 function obterVulnerabilidades(resultado) {
     if (!resultado?.analise_ia) return [];
@@ -49,10 +55,11 @@ const areaList = document.getElementById("areaList");
 if (view === "projects") {
     const projetos = [...new Map(historico.map((item) => [item.repo, item])).values()];
     areaSummary.innerHTML = [["Projetos analisados", projetos.length], ["Em monitoramento", projetos.length], ["Último status", ultimaAnalise ? "Concluída" : "Sem dados"]].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${escaparHtml(value)}</strong></article>`).join("");
-    areaList.innerHTML = projetos.length ? projetos.map((item) => `<article class="area-row"><i class="fa-brands fa-github"></i><div><strong>${escaparHtml(item.repo)}</strong><span>Última análise: ${dataFormatada(item.criada_em)}</span></div><b class="area-badge">Monitorado</b></article>`).join("") : `<article class="area-row"><i class="fa-solid fa-folder-open"></i><div><strong>Nenhum projeto analisado</strong><span>Conecte um repositório para começar.</span></div></article>`;
+    areaList.innerHTML = projetos.length ? projetos.map((item) => `<a class="area-row" href="area.html?view=reports&repo=${encodeURIComponent(item.repo)}"><i class="fa-brands fa-github"></i><div><strong>${escaparHtml(item.repo)}</strong><span>Última análise: ${dataFormatada(item.criada_em)}</span></div><b class="area-badge">Ver relatórios</b></a>`).join("") : `<article class="area-row"><i class="fa-solid fa-folder-open"></i><div><strong>Nenhum projeto analisado</strong><span>Conecte um repositório para começar.</span></div></article>`;
 } else if (view === "reports") {
-    areaSummary.innerHTML = [["Relatórios gerados", historico.length], ["Com riscos", historico.filter((item) => obterVulnerabilidades(item).length > 0).length], ["Último status", ultimaAnalise ? "Concluída" : "Sem dados"]].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${escaparHtml(value)}</strong></article>`).join("");
-    areaList.innerHTML = historico.length ? [...historico].reverse().map((item) => `<article class="area-row"><i class="fa-solid fa-file-lines"></i><div><strong>Relatório de ${escaparHtml(item.repo)}</strong><span>${dataFormatada(item.criada_em)} · ${obterVulnerabilidades(item).length} risco(s) encontrado(s)</span></div><b class="area-badge">Concluído</b></article>`).join("") : `<article class="area-row"><i class="fa-solid fa-file-circle-plus"></i><div><strong>Nenhum relatório gerado</strong><span>Os relatórios aparecerão após a primeira análise.</span></div></article>`;
+    const relatorios = repositorioSelecionado ? historico.filter((item) => item.repo === repositorioSelecionado) : historico;
+    areaSummary.innerHTML = [["Relatórios gerados", relatorios.length], ["Com riscos", relatorios.filter((item) => obterVulnerabilidades(item).length > 0).length], ["Projeto", repositorioSelecionado || "Todos"]].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${escaparHtml(value)}</strong></article>`).join("");
+    areaList.innerHTML = relatorios.length ? [...relatorios].reverse().map((item) => `<article class="area-row"><i class="fa-solid fa-file-lines"></i><div><strong>Relatório de ${escaparHtml(item.repo)}</strong><span>${dataFormatada(item.criada_em)} · ${obterVulnerabilidades(item).length} risco(s) encontrado(s)</span></div><b class="area-badge">Concluído</b></article>`).join("") : `<article class="area-row"><i class="fa-solid fa-file-circle-plus"></i><div><strong>Nenhum relatório gerado</strong><span>Os relatórios aparecerão após a primeira análise.</span></div></article>`;
 } else {
     areaSummary.innerHTML = view === "settings" ? [["Integrações", localStorage.getItem(`integracaoGithub_${usuarioLogado}`) === "false" ? 0 : 1], ["Análises realizadas", historico.length], ["Notificações", localStorage.getItem(`alertasSeguranca_${usuarioLogado}`) === "false" ? "Inativas" : "Ativas"]].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${escaparHtml(value)}</strong></article>`).join("") : "";
 }

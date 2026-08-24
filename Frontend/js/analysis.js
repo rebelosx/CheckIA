@@ -112,7 +112,33 @@ function iniciarAnalise(tipo, origem) {
         botao.textContent = "Analisando...";
     }
 
-    mostrarMensagem(`Enviando repositório para análise...`, "sucesso");
+    const carregamento = document.createElement("div");
+    carregamento.className = "analysis-loading";
+    carregamento.innerHTML = `
+        <div class="analysis-loading-card">
+            <div class="loading-spinner"><i class="fa-solid fa-spinner"></i></div>
+            <h2>Analisando repositório</h2>
+            <p id="loadingStatus">Acessando a estrutura do projeto...</p>
+            <span id="loadingElapsed">Tempo decorrido: 00:00</span>
+        </div>`;
+    document.body.appendChild(carregamento);
+    const inicio = Date.now();
+    const etapas = [
+        "Acessando a estrutura do projeto...",
+        "Lendo os arquivos elegíveis...",
+        "Verificando configurações e dependências...",
+        "Enviando o projeto para a IA...",
+        "Consolidando vulnerabilidades e melhorias..."
+    ];
+    let etapaAtual = 0;
+    const statusInterval = setInterval(() => {
+        etapaAtual = Math.min(etapaAtual + 1, etapas.length - 1);
+        document.getElementById("loadingStatus").textContent = etapas[etapaAtual];
+    }, 5000);
+    const tempoInterval = setInterval(() => {
+        const segundos = Math.floor((Date.now() - inicio) / 1000);
+        document.getElementById("loadingElapsed").textContent = `Tempo decorrido: ${String(Math.floor(segundos / 60)).padStart(2, "0")}:${String(segundos % 60).padStart(2, "0")}`;
+    }, 1000);
 
     fetch(`${apiBaseUrl}/analyze`, {
         method: "POST",
@@ -128,6 +154,9 @@ function iniciarAnalise(tipo, origem) {
             return data;
         })
         .then((data) => {
+            clearInterval(statusInterval);
+            clearInterval(tempoInterval);
+            carregamento.remove();
             const usuarioAtual = localStorage.getItem("usuario");
             localStorage.setItem(`ultimaAnalise_${usuarioAtual}`, JSON.stringify(data));
             const chaveHistorico = `historicoAnalises_${usuarioAtual}`;
@@ -144,6 +173,9 @@ function iniciarAnalise(tipo, origem) {
             setTimeout(() => window.location.href = "area.html?view=vulnerabilities", 700);
         })
         .catch((error) => {
+            clearInterval(statusInterval);
+            clearInterval(tempoInterval);
+            carregamento.remove();
             mostrarMensagem(error.message || "Não foi possível conectar ao backend.", "erro");
         });
 }

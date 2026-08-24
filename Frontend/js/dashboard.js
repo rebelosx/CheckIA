@@ -26,7 +26,11 @@ if (!usuarioLogado) {
 const usuarioElemento = document.getElementById("usuario");
 
 const ultimaAnalise = JSON.parse(localStorage.getItem(`ultimaAnalise_${usuarioLogado}`) || "null");
-const historico = JSON.parse(localStorage.getItem(`historicoAnalises_${usuarioLogado}`) || "[]");
+const historicoSalvo = JSON.parse(localStorage.getItem(`historicoAnalises_${usuarioLogado}`) || "[]");
+const analiseLegada = JSON.parse(localStorage.getItem("ultimaAnalise") || "null");
+const historico = [...historicoSalvo, ...(ultimaAnalise ? [ultimaAnalise] : []), ...(analiseLegada ? [analiseLegada] : [])]
+    .filter((item, index, registros) => item && registros.findIndex((outro) => outro.repo === item.repo && outro.analise_ia === item.analise_ia) === index);
+if (historico.length !== historicoSalvo.length) localStorage.setItem(`historicoAnalises_${usuarioLogado}`, JSON.stringify(historico));
 let riscosAtuais = [];
 if (ultimaAnalise?.analise_ia) {
     const textoAnalise = ultimaAnalise.analise_ia.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
@@ -184,7 +188,7 @@ if (primeiraLinha) {
         ? [...historico].reverse().map((item) => {
             const riscos = getRiscos(item).length;
             const score = Math.max(0, 100 - (riscos * 10));
-            return `<tr><td>${item.repo || "Repositório GitHub"}</td><td>GitHub</td><td>${score}%</td><td class="${riscos ? "warning" : "safe"}">${riscos ? "Atenção" : "Seguro"}</td></tr>`;
+            return `<tr><td>${item.repo || "Repositório GitHub"}</td><td>${item.linguagem || "Não identificada"}</td><td>${score}%</td><td class="${riscos ? "warning" : "safe"}">${riscos ? "Atenção" : "Seguro"}</td></tr>`;
         }).join("")
         : "<tr><td colspan=\"4\">Nenhuma análise realizada</td></tr>";
 }
@@ -197,32 +201,21 @@ const barras =
     document.querySelectorAll(".chart div");
 
 
-barras.forEach(function (barra, index) {
-
-    const alturaOriginal =
-        barra.style.height;
-
-
-    barra.style.height = "0";
-
-
-    setTimeout(function () {
-
-        barra.style.height =
-            alturaOriginal;
-
-        barra.style.transition =
-            "height 1s ease";
-
-    }, 300 + (index * 150));
-
-});
-
-const historicoRecente = historico.slice(-5);
+const repositorioAtual = ultimaAnalise?.repo;
+const historicoDoRepositorio = repositorioAtual ? historico.filter((item) => item.repo === repositorioAtual) : [];
+const historicoRecente = historicoDoRepositorio.slice(-5);
+const chartMessage = document.getElementById("chartMessage");
+if (chartMessage) {
+    chartMessage.textContent = historicoRecente.length > 1
+        ? `Evolução de ${repositorioAtual}`
+        : "Ainda não há análises suficientes deste repositório para mostrar melhorias.";
+}
 barras.forEach((barra, index) => {
     const item = historicoRecente[index];
     const score = item ? Math.max(0, 100 - (getRiscos(item).length * 10)) : 0;
-    barra.style.height = `${score}%`;
+    barra.style.height = "0";
+    barra.style.transition = "height .6s ease";
+    setTimeout(() => { barra.style.height = `${score}%`; }, 150 + (index * 100));
 });
 
 
