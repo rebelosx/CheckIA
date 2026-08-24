@@ -60,15 +60,50 @@ if (uploadButton && fileInput) {
 const githubButton =
     document.getElementById("githubButton");
 
+const selectedRepository =
+    document.getElementById(
+        "selectedRepository"
+    );
+
+
+let githubConnected = false;
+
+let repositoriosGitHub = [];
+
+let repositorioAtual = null;
+
+
+/* =========================================
+   BOTÃO GITHUB
+========================================= */
+
 if (githubButton) {
 
     githubButton.addEventListener(
         "click",
         function () {
 
-            window.open(
-                "http://127.0.0.1:8000/auth/github",
-                "_blank"
+            /*
+                Se ainda não conectou ao GitHub,
+                inicia OAuth.
+            */
+
+            if (!githubConnected) {
+
+                conectarGitHub();
+
+                return;
+
+            }
+
+
+            /*
+                Se já está conectado,
+                abre novamente a lista de repos.
+            */
+
+            mostrarRepositorios(
+                repositoriosGitHub
             );
 
         }
@@ -76,6 +111,844 @@ if (githubButton) {
 
 }
 
+
+/* =========================================
+   CONECTAR AO GITHUB
+========================================= */
+
+function conectarGitHub() {
+
+    const githubLogin =
+        window.open(
+            "http://127.0.0.1:8000/auth/github",
+            "_blank"
+        );
+
+
+    if (!githubLogin) {
+
+        alert(
+            "O navegador bloqueou a janela de login. Permita pop-ups para continuar."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   RECEBER AVISO DO BACKEND
+========================================= */
+
+window.addEventListener(
+    "message",
+    function (event) {
+
+        /*
+            Segurança:
+
+            só aceitamos mensagens
+            vindas do nosso backend.
+        */
+
+        if (
+            event.origin !==
+            "http://127.0.0.1:8000"
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+            Backend terminou o OAuth.
+        */
+
+        if (
+            event.data &&
+            event.data.type ===
+            "github-connected"
+        ) {
+
+            githubConnected = true;
+
+            carregarRepositorios();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   CARREGAR REPOSITÓRIOS
+========================================= */
+
+async function carregarRepositorios() {
+
+    try {
+
+        githubButton.disabled = true;
+
+
+        githubButton.innerHTML = `
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Carregando...
+        `;
+
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:8000/github/repos",
+                {
+                    method: "GET",
+
+                    /*
+                        Necessário para enviar
+                        o cookie da sessão FastAPI.
+                    */
+                    credentials: "include"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            const textoErro =
+                await response.text();
+
+
+            console.error(
+                "Erro do backend:",
+                response.status,
+                textoErro
+            );
+
+
+            throw new Error(
+                `Backend respondeu com status ${response.status}`
+            );
+
+        }
+
+
+        repositoriosGitHub =
+            await response.json();
+
+
+        githubConnected = true;
+
+
+        githubButton.disabled = false;
+
+
+        githubButton.innerHTML = `
+            <i class="fa-solid fa-folder-open"></i>
+            Selecionar repositório
+        `;
+
+
+        /*
+            Depois do login,
+            abre automaticamente a seleção.
+        */
+
+        mostrarRepositorios(
+            repositoriosGitHub
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar repositórios:",
+            erro
+        );
+
+
+        githubConnected = false;
+
+
+        githubButton.disabled = false;
+
+
+        githubButton.innerHTML = `
+            <i class="fa-brands fa-github"></i>
+            Conectar GitHub
+        `;
+
+
+        alert(
+            "Não foi possível carregar seus repositórios."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   MODAL DOS REPOSITÓRIOS
+========================================= */
+
+function mostrarRepositorios(
+    repositorios
+) {
+
+    /*
+        Evita criar dois modais
+        ao mesmo tempo.
+    */
+
+    const modalExistente =
+        document.querySelector(
+            ".repo-modal-overlay"
+        );
+
+
+    if (modalExistente) {
+
+        modalExistente.remove();
+
+    }
+
+
+    const modal =
+        document.createElement("div");
+
+
+    modal.className =
+        "repo-modal-overlay";
+
+
+    modal.innerHTML = `
+
+        <div class="repo-modal">
+
+            <div class="repo-modal-header">
+
+                <div>
+
+                    <h2>
+                        Selecionar repositório
+                    </h2>
+
+                    <p>
+                        Escolha um projeto do GitHub
+                        para analisar com o CheckIA.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="repo-close"
+                    type="button"
+                    aria-label="Fechar"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="repo-search-wrapper">
+
+                <input
+                    type="text"
+                    class="repo-search"
+                    placeholder="Buscar repositório..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div
+                class="repository-list"
+            ></div>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        modal
+    );
+
+
+    const lista =
+        modal.querySelector(
+            ".repository-list"
+        );
+
+
+    const busca =
+        modal.querySelector(
+            ".repo-search"
+        );
+
+
+    const fechar =
+        modal.querySelector(
+            ".repo-close"
+        );
+
+
+    /* =====================================
+       RENDERIZAR REPOSITÓRIOS
+    ===================================== */
+
+    function renderizarRepositorios(
+        listaRepos
+    ) {
+
+        lista.innerHTML = "";
+
+
+        if (!listaRepos.length) {
+
+            lista.innerHTML = `
+
+                <div class="repo-empty">
+
+                    <i class="fa-solid fa-folder-open"></i>
+
+                    <p>
+                        Nenhum repositório encontrado.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        listaRepos.forEach(
+            function (repo) {
+
+                const item =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                item.type = "button";
+
+                item.className =
+                    "repository-item";
+
+
+                /*
+                    Marcamos visualmente
+                    o repo já selecionado.
+                */
+
+                if (
+                    repositorioAtual &&
+                    repositorioAtual.id === repo.id
+                ) {
+
+                    item.classList.add(
+                        "selected"
+                    );
+
+                }
+
+
+                const nome =
+                    escaparHTML(
+                        repo.name || ""
+                    );
+
+
+                const fullName =
+                    escaparHTML(
+                        repo.full_name || ""
+                    );
+
+
+                const descricao =
+                    escaparHTML(
+                        repo.description || ""
+                    );
+
+
+                const linguagem =
+                    escaparHTML(
+                        repo.language || ""
+                    );
+
+
+                item.innerHTML = `
+
+                    <div class="repository-main">
+
+                        <div class="repository-icon">
+
+                            <i
+                                class="fa-brands fa-github"
+                            ></i>
+
+                        </div>
+
+
+                        <div class="repository-info">
+
+                            <strong>
+                                ${nome}
+                            </strong>
+
+
+                            <span
+                                class="repository-full-name"
+                            >
+                                ${fullName}
+                            </span>
+
+
+                            ${
+                                descricao
+                                    ? `
+                                        <span
+                                            class="repository-description"
+                                        >
+                                            ${descricao}
+                                        </span>
+                                    `
+                                    : ""
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="repository-meta">
+
+                        <span
+                            class="
+                                repository-status
+                                ${
+                                    repo.private
+                                        ? "private"
+                                        : "public"
+                                }
+                            "
+                        >
+
+                            ${
+                                repo.private
+                                    ? "Privado"
+                                    : "Público"
+                            }
+
+                        </span>
+
+
+                        ${
+                            linguagem
+                                ? `
+                                    <span
+                                        class="repository-language"
+                                    >
+                                        ${linguagem}
+                                    </span>
+                                `
+                                : ""
+                        }
+
+                    </div>
+
+                `;
+
+
+                item.addEventListener(
+                    "click",
+                    function () {
+
+                        selecionarRepositorio(
+                            repo
+                        );
+
+
+                        modal.remove();
+
+                    }
+                );
+
+
+                lista.appendChild(
+                    item
+                );
+
+            }
+        );
+
+    }
+
+
+    /*
+        Primeira renderização.
+    */
+
+    renderizarRepositorios(
+        repositorios
+    );
+
+
+    /* =====================================
+       BUSCA
+    ===================================== */
+
+    busca.addEventListener(
+        "input",
+        function () {
+
+            const termo =
+                busca.value
+                    .toLowerCase()
+                    .trim();
+
+
+            const filtrados =
+                repositorios.filter(
+                    function (repo) {
+
+                        const nome =
+                            (
+                                repo.name || ""
+                            ).toLowerCase();
+
+
+                        const fullName =
+                            (
+                                repo.full_name || ""
+                            ).toLowerCase();
+
+
+                        return (
+                            nome.includes(termo)
+                            ||
+                            fullName.includes(termo)
+                        );
+
+                    }
+                );
+
+
+            renderizarRepositorios(
+                filtrados
+            );
+
+        }
+    );
+
+
+    /* =====================================
+       FECHAR
+    ===================================== */
+
+    fechar.addEventListener(
+        "click",
+        function () {
+
+            modal.remove();
+
+        }
+    );
+
+
+    /*
+        Clique fora do modal.
+    */
+
+    modal.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target === modal
+            ) {
+
+                modal.remove();
+
+            }
+
+        }
+    );
+
+
+    /*
+        ESC fecha o modal.
+    */
+
+    function fecharComEsc(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            modal.remove();
+
+            document.removeEventListener(
+                "keydown",
+                fecharComEsc
+            );
+
+        }
+
+    }
+
+
+    document.addEventListener(
+        "keydown",
+        fecharComEsc
+    );
+
+}
+
+
+/* =========================================
+   SELECIONAR REPOSITÓRIO
+========================================= */
+
+function selecionarRepositorio(
+    repo
+) {
+
+    repositorioAtual = repo;
+
+
+    /*
+        Guarda informações úteis
+        para as próximas telas.
+    */
+
+    localStorage.setItem(
+        "repositorioSelecionado",
+        repo.full_name
+    );
+
+
+    localStorage.setItem(
+        "repositorioUrl",
+        repo.html_url
+    );
+
+
+    localStorage.setItem(
+        "repositorioBranch",
+        repo.default_branch || "main"
+    );
+
+
+    if (!selectedRepository) {
+
+        console.error(
+            "Elemento #selectedRepository não encontrado."
+        );
+
+        return;
+
+    }
+
+
+    const nome =
+        escaparHTML(
+            repo.name || ""
+        );
+
+
+    const fullName =
+        escaparHTML(
+            repo.full_name || ""
+        );
+
+
+    const linguagem =
+        escaparHTML(
+            repo.language || ""
+        );
+
+
+    const branch =
+        escaparHTML(
+            repo.default_branch || "main"
+        );
+
+
+    selectedRepository.innerHTML = `
+
+        <div
+            class="selected-repository-header"
+        >
+
+            <span>
+                Repositório selecionado
+            </span>
+
+
+            <span
+                class="selected-repository-check"
+            >
+
+                <i
+                    class="fa-solid fa-check"
+                ></i>
+
+            </span>
+
+        </div>
+
+
+        <div
+            class="selected-repository-content"
+        >
+
+            <div
+                class="selected-repository-icon"
+            >
+
+                <i
+                    class="fa-brands fa-github"
+                ></i>
+
+            </div>
+
+
+            <div
+                class="selected-repository-info"
+            >
+
+                <strong>
+                    ${nome}
+                </strong>
+
+
+                <span>
+                    ${fullName}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="selected-repository-meta"
+        >
+
+            <span
+                class="
+                    repo-visibility
+                    ${
+                        repo.private
+                            ? "private"
+                            : "public"
+                    }
+                "
+            >
+
+                ${
+                    repo.private
+                        ? "Privado"
+                        : "Público"
+                }
+
+            </span>
+
+
+            ${
+                linguagem
+                    ? `
+                        <span
+                            class="repo-language"
+                        >
+                            ${linguagem}
+                        </span>
+                    `
+                    : ""
+            }
+
+
+            <span
+                class="repo-branch"
+            >
+
+                <i
+                    class="fa-solid fa-code-branch"
+                ></i>
+
+                ${branch}
+
+            </span>
+
+        </div>
+
+    `;
+
+
+    selectedRepository.classList.remove(
+        "hidden"
+    );
+
+
+    /*
+        O botão permanece disponível
+        para trocar de repo.
+    */
+
+    githubButton.innerHTML = `
+        <i class="fa-solid fa-repeat"></i>
+        Selecionar repositório
+    `;
+
+
+    githubButton.disabled = false;
+
+}
+
+
+/* =========================================
+   ESCAPAR HTML
+========================================= */
+
+/*
+    Evita inserir diretamente no HTML
+    textos vindos da API do GitHub.
+*/
+
+function escaparHTML(texto) {
+
+    return String(texto)
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
 
 /* =========================================
    MODAL GITHUB

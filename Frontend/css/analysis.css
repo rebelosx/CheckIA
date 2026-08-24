@@ -1,9 +1,24 @@
-/* Conteudo especifico da pagina de nova analise. */
+/* =========================================
+   CONTEÚDO ESPECÍFICO DA PÁGINA DE ANÁLISE
+========================================= */
 
-.analysis-content { padding-bottom: 42px; }
+.analysis-content {
+    padding-bottom: 42px;
+}
 
-.analysis-content .page-header { align-items: flex-start; gap: 24px; }
-.analysis-content .page-header h1 { margin-top: 4px; }
+.analysis-content .page-header {
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.analysis-content .page-header h1 {
+    margin-top: 4px;
+}
+
+
+/* =========================================
+   STATUS DO HEADER
+========================================= */
 
 .header-status {
     align-items: center;
@@ -18,7 +33,17 @@
     padding: 12px 18px;
 }
 
-.status-dot { background: var(--green); border-radius: 50%; height: 8px; width: 8px; }
+.status-dot {
+    background: var(--green);
+    border-radius: 50%;
+    height: 8px;
+    width: 8px;
+}
+
+
+/* =========================================
+   INTRO / SECURITY ENGINE
+========================================= */
 
 .intro-card,
 .security-engine {
@@ -28,9 +53,28 @@
     margin-bottom: 30px;
 }
 
-.intro-card { align-items: center; display: flex; gap: 20px; padding: 25px; }
-.intro-icon { color: var(--blue); flex-shrink: 0; font-size: 35px; }
-.intro-card h2 { font-size: 20px; margin: 4px 0; }
+.intro-card {
+    align-items: center;
+    display: flex;
+    gap: 20px;
+    padding: 25px;
+}
+
+.intro-icon {
+    color: var(--blue);
+    flex-shrink: 0;
+    font-size: 35px;
+}
+
+.intro-card h2 {
+    font-size: 20px;
+    margin: 4px 0;
+}
+
+
+/* =========================================
+   OPÇÕES DE ANÁLISE
+========================================= */
 
 .analysis-options {
     display: grid;
@@ -46,21 +90,33 @@
     display: flex;
     flex-direction: column;
     padding: 25px;
-    transition: .3s;
+    transition: 0.3s;
 }
 
 .analysis-card:hover {
     border-color: var(--blue);
-    box-shadow: 0 10px 30px rgba(47, 129, 247, .2);
+    box-shadow: 0 10px 30px rgba(47, 129, 247, 0.2);
     transform: translateY(-5px);
 }
 
-.card-top { align-items: center; display: flex; justify-content: space-between; margin-bottom: 20px; }
-.option-icon { color: var(--blue); font-size: 28px; }
-.option-icon.code { color: var(--green); }
+.card-top {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.option-icon {
+    color: var(--blue);
+    font-size: 28px;
+}
+
+.option-icon.code {
+    color: var(--green);
+}
 
 .recommended {
-    background: rgba(63, 185, 80, .1);
+    background: rgba(63, 185, 80, 0.1);
     border: 1px solid var(--green);
     border-radius: 6px;
     color: var(--green);
@@ -69,12 +125,43 @@
     padding: 4px 8px;
 }
 
-.analysis-card h3 { font-size: 20px; margin-bottom: 8px; }
-.analysis-card > p { font-size: 14px; line-height: 1.5; min-height: 60px; }
+.analysis-card h3 {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
 
-.feature-list { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
-.feature-list span { color: var(--gray); font-size: 13px; }
-.feature-list i { color: var(--green); margin-right: 8px; }
+.analysis-card > p {
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 60px;
+}
+
+
+/* =========================================
+   FEATURES
+========================================= */
+
+.feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.feature-list span {
+    color: var(--gray);
+    font-size: 13px;
+}
+
+.feature-list i {
+    color: var(--green);
+    margin-right: 8px;
+}
+
+
+/* =========================================
+   BOTÕES
+========================================= */
 
 .primary-button,
 .secondary-button {
@@ -90,13 +177,37 @@
     width: 100%;
 }
 
-.primary-button { background: var(--blue); color: #fff; }
-.primary-button:hover { background: #1f6feb; }
-.secondary-button { background: transparent; border: 1px solid var(--border); color: var(--white); }
-.secondary-button:hover { background: var(--hover); }
+.primary-button {
+    background: var(--blue);
+    color: #fff;
+}
+
+.primary-button:hover {
+    background: #1f6feb;
+}
+
+.secondary-button {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--white);
+}
+
+.secondary-button:hover {
+    background: var(--hover);
+}
+
+
+/* =========================================
+   UPLOAD / PREVIEW DE CÓDIGO
+========================================= */
 
 .upload-area,
-.code-preview { background: var(--background); border: 1px solid var(--border); border-radius: 10px; margin: 15px 0; }
+.code-preview {
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 15px 0;
+}
 
 .upload-area {
     align-items: center;
@@ -108,40 +219,688 @@
     min-height: 100px;
 }
 
-.upload-area:hover { border-color: var(--blue); }
-.upload-area i { color: var(--blue); font-size: 24px; margin-bottom: 6px; }
-.upload-area strong { font-size: 13px; }
+.upload-area:hover {
+    border-color: var(--blue);
+}
+
+.upload-area i {
+    color: var(--blue);
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+
+.upload-area strong {
+    font-size: 13px;
+}
+
 .upload-area span,
-.upload-area small { color: var(--gray); font-size: 11px; margin-top: 3px; }
+.upload-area small {
+    color: var(--gray);
+    font-size: 11px;
+    margin-top: 3px;
+}
 
-.code-preview { min-height: 100px; padding: 12px 0; }
-.code-preview code { color: var(--green); display: block; font-family: monospace; font-size: 12px; line-height: 1.6; padding-left: 12px; }
-.line-number { color: var(--gray); display: inline-block; width: 25px; }
+.code-preview {
+    min-height: 100px;
+    padding: 12px 0;
+}
 
-.security-engine { padding: 25px; }
-.section-heading h2 { font-size: 20px; margin-bottom: 25px; }
+.code-preview code {
+    color: var(--green);
+    display: block;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    padding-left: 12px;
+}
 
-.engine-grid { display: grid; gap: 20px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.engine-item { align-items: center; background: var(--background); border: 1px solid var(--border); border-radius: 10px; display: flex; gap: 15px; padding: 18px; }
-.engine-icon { color: var(--blue); flex-shrink: 0; font-size: 28px; }
+.line-number {
+    color: var(--gray);
+    display: inline-block;
+    width: 25px;
+}
+
+
+/* =========================================
+   SECURITY ENGINE
+========================================= */
+
+.security-engine {
+    padding: 25px;
+}
+
+.section-heading h2 {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+.engine-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.engine-item {
+    align-items: center;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex;
+    gap: 15px;
+    padding: 18px;
+}
+
+.engine-icon {
+    color: var(--blue);
+    flex-shrink: 0;
+    font-size: 28px;
+}
+
 .engine-item strong,
-.engine-item span { display: block; }
-.engine-item strong { font-size: 14px; margin-bottom: 4px; }
-.engine-item span { color: var(--gray); font-size: 12px; }
+.engine-item span {
+    display: block;
+}
+
+.engine-item strong {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.engine-item span {
+    color: var(--gray);
+    font-size: 12px;
+}
+
+
+/* =========================================
+   RESPONSIVIDADE PRINCIPAL
+========================================= */
 
 @media (max-width: 1200px) {
-    .analysis-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .engine-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .analysis-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .engine-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 900px) {
-    .analysis-content .page-header { flex-direction: column; }
-    .header-status { width: 100%; }
+
+    .analysis-content .page-header {
+        flex-direction: column;
+    }
+
+    .header-status {
+        width: 100%;
+    }
 }
 
 @media (max-width: 600px) {
+
     .analysis-options,
-    .engine-grid { grid-template-columns: 1fr; }
+    .engine-grid {
+        grid-template-columns: 1fr;
+    }
+
     .intro-card,
-    .security-engine { padding: 20px; }
+    .security-engine {
+        padding: 20px;
+    }
+}
+
+
+/* =========================================
+   MODAL DE REPOSITÓRIOS
+========================================= */
+
+.repo-modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    align-items: center;
+    display: flex;
+    justify-content: center;
+
+    padding: 24px;
+
+    background: rgba(5, 10, 18, 0.78);
+
+    backdrop-filter: blur(6px);
+
+    z-index: 9999;
+}
+
+.repo-modal {
+    width: min(720px, 100%);
+    max-height: 80vh;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #171e28;
+
+    border: 1px solid #2b3544;
+    border-radius: 18px;
+
+    box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.45);
+
+    overflow: hidden;
+}
+
+.repo-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 24px 26px 18px;
+}
+
+.repo-modal-header h2 {
+    margin: 0 0 6px;
+
+    color: #f4f7fb;
+
+    font-size: 22px;
+}
+
+.repo-modal-header p {
+    margin: 0;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+}
+
+.repo-close {
+    width: 38px;
+    height: 38px;
+
+    border: 1px solid #344052;
+    border-radius: 10px;
+
+    background: transparent;
+
+    color: #94a3b8;
+
+    cursor: pointer;
+
+    font-size: 24px;
+    line-height: 1;
+
+    transition: 0.2s;
+}
+
+.repo-close:hover {
+    background: #222c3a;
+    color: #ffffff;
+}
+
+
+/* =========================================
+   BUSCA DE REPOSITÓRIOS
+========================================= */
+
+.repo-search-wrapper {
+    padding: 0 26px 18px;
+}
+
+.repo-search {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 13px 15px;
+
+    border: 1px solid #344052;
+    border-radius: 10px;
+
+    outline: none;
+
+    background: #0e141d;
+
+    color: #ffffff;
+
+    font-size: 14px;
+}
+
+.repo-search::placeholder {
+    color: #66758b;
+}
+
+.repo-search:focus {
+    border-color: #2f80ed;
+
+    box-shadow:
+        0 0 0 3px rgba(47, 128, 237, 0.12);
+}
+
+
+/* =========================================
+   LISTA DE REPOSITÓRIOS
+========================================= */
+
+.repository-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    padding: 0 26px 26px;
+
+    overflow-y: auto;
+}
+
+.repository-item {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 16px;
+
+    text-align: left;
+
+    border: 1px solid #2c3747;
+    border-radius: 12px;
+
+    background: #111822;
+
+    color: #ffffff;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s,
+        background 0.2s,
+        transform 0.2s;
+}
+
+.repository-item:hover {
+    background: #172131;
+
+    border-color: #2f80ed;
+
+    transform: translateY(-1px);
+}
+
+
+/* Repositório que já está selecionado */
+
+.repository-item.selected {
+    border-color: #39d98a;
+
+    background:
+        rgba(57, 217, 138, 0.06);
+}
+
+.repository-main {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 14px;
+
+    min-width: 0;
+}
+
+.repository-icon {
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: rgba(47, 128, 237, 0.12);
+
+    color: #2f80ed;
+
+    font-size: 20px;
+}
+
+.repository-info {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+
+    min-width: 0;
+}
+
+.repository-info strong {
+    color: #f4f7fb;
+
+    font-size: 15px;
+}
+
+.repository-full-name {
+    color: #7f8da3;
+
+    font-size: 12px;
+}
+
+.repository-description {
+    max-width: 420px;
+
+    margin-top: 5px;
+
+    color: #9aa8bb;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.repository-meta {
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+
+    gap: 7px;
+
+    flex-shrink: 0;
+}
+
+.repository-status {
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.repository-status.public {
+    color: #39d98a;
+
+    background:
+        rgba(57, 217, 138, 0.1);
+
+    border:
+        1px solid rgba(57, 217, 138, 0.35);
+}
+
+.repository-status.private {
+    color: #f5c451;
+
+    background:
+        rgba(245, 196, 81, 0.1);
+
+    border:
+        1px solid rgba(245, 196, 81, 0.35);
+}
+
+.repository-language {
+    color: #8695aa;
+
+    font-size: 12px;
+}
+
+.repo-empty {
+    padding: 40px 20px;
+
+    text-align: center;
+
+    color: #8593a8;
+}
+
+.repo-empty i {
+    display: block;
+
+    margin-bottom: 10px;
+
+    font-size: 26px;
+}
+
+
+/* =========================================
+   REPOSITÓRIO SELECIONADO
+========================================= */
+
+/*
+   Esse bloco começa escondido.
+   O JavaScript remove a classe "hidden"
+   depois que o usuário escolhe um repo.
+*/
+
+.hidden {
+    display: none !important;
+}
+
+
+/*
+   Quadrante que aparece dentro do card
+   de GitHub depois da seleção.
+*/
+
+.selected-repository {
+    margin-bottom: 15px;
+
+    padding: 15px;
+
+    background: #111821;
+
+    border: 1px solid #344052;
+    border-radius: 12px;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s;
+}
+
+.selected-repository:hover {
+    border-color: var(--blue);
+}
+
+
+/* Cabeçalho */
+
+.selected-repository-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 13px;
+
+    color: #8795a9;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+
+/* Check verde */
+
+.selected-repository-check {
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background:
+        rgba(57, 217, 138, 0.1);
+
+    color: #39d98a;
+}
+
+
+/* Conteúdo principal */
+
+.selected-repository-content {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+/* Ícone GitHub */
+
+.selected-repository-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background:
+        rgba(47, 128, 237, 0.12);
+
+    color: var(--blue);
+
+    font-size: 21px;
+}
+
+
+/* Nome */
+
+.selected-repository-info {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+.selected-repository-info strong {
+    color: var(--white);
+
+    font-size: 15px;
+}
+
+.selected-repository-info span {
+    margin-top: 3px;
+
+    color: var(--gray);
+
+    font-size: 12px;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+/* Informações: Público / Linguagem / Branch */
+
+.selected-repository-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 7px;
+
+    margin-top: 13px;
+}
+
+.repo-visibility,
+.repo-language,
+.repo-branch {
+    padding: 5px 8px;
+
+    border-radius: 7px;
+
+    background: #192230;
+
+    color: #96a4b7;
+
+    font-size: 11px;
+}
+
+
+/* Público */
+
+.repo-visibility.public {
+    background:
+        rgba(57, 217, 138, 0.1);
+
+    border:
+        1px solid rgba(57, 217, 138, 0.25);
+
+    color: #39d98a;
+}
+
+
+/* Privado */
+
+.repo-visibility.private {
+    background:
+        rgba(245, 196, 81, 0.1);
+
+    border:
+        1px solid rgba(245, 196, 81, 0.25);
+
+    color: #f5c451;
+}
+
+
+/* Branch */
+
+.repo-branch i {
+    margin-right: 4px;
+}
+
+
+/* =========================================
+   RESPONSIVIDADE DO MODAL
+========================================= */
+
+@media (max-width: 650px) {
+
+    .repository-item {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .repository-meta {
+        align-items: flex-start;
+        flex-direction: row;
+    }
+
+    .repository-description {
+        max-width: 100%;
+    }
+
+    .repo-modal-overlay {
+        padding: 14px;
+    }
+
+    .repo-modal-header {
+        padding: 20px 20px 15px;
+    }
+
+    .repo-search-wrapper {
+        padding: 0 20px 15px;
+    }
+
+    .repository-list {
+        padding: 0 20px 20px;
+    }
 }
