@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova Análise | Check IA</title>
+    <title>Nova Análise</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +26,7 @@
     <aside class="sidebar">
         <div>
             <a class="brand" href="dashboard.html" aria-label="Ir ao dashboard">
-                <img class="brand-logo brand-logo--sidebar" src="assets/check-ia-logo.png" alt="Check IA">
+                <img class="brand-logo brand-logo--sidebar" src="assets/logo branca transparente.png" data-logo-dark="assets/logo branca transparente.png" data-logo-light="assets/logo preta transparente.png" alt="Check IA">
             </a>
 
             <nav>
@@ -44,10 +44,11 @@
             </nav>
         </div>
 
-        <div class="profile">
-            <i class="fa-solid fa-user"></i>
+        <a class="profile" href="area.html?view=settings" aria-label="Abrir configurações do perfil">
+            <span class="profile-avatar" id="profileAvatar">👤</span>
             <div><strong id="usuario">Usuário</strong><p>Analista</p></div>
-        </div>
+        </a>
+        <button class="logout-button" id="logoutButton" type="button"><i class="fa-solid fa-right-from-bracket"></i>Sair</button>
     </aside>
 
     <!-- =====================================
@@ -58,22 +59,10 @@
         <!-- HEADER -->
         <header class="page-header">
             <div>
-                <span class="eyebrow">CHECK IA ENGINE</span>
                 <h1>Nova análise</h1>
-                <p>Analise sua aplicação e descubra possíveis riscos de segurança antes da publicação.</p>
+                <p>Verifique um repositório antes de publicar sua aplicação.</p>
             </div>
 
-            <div class="page-header-actions">
-                <div class="header-status">
-                    <span class="status-dot"></span>
-                    Sistema operacional
-                </div>
-
-                <div class="header-profile" aria-label="Perfil do usuário">
-                    <i class="fa-solid fa-user"></i>
-                    <strong id="usuario-header">Usuário</strong>
-                </div>
-            </div>
         </header>
 
         <!-- INTRO CARD -->
@@ -83,9 +72,8 @@
             </div>
 
             <div>
-                <span class="eyebrow">CHECK IA ENGINE</span>
-                <h2>Segurança começa antes do deploy.</h2>
-                <p>Escolha uma fonte para iniciar uma análise automatizada do seu projeto.</p>
+                <h2>Verificar repositório</h2>
+                <p>Informe um link público do GitHub para iniciar.</p>
             </div>
         </section>
 
@@ -102,7 +90,7 @@
                 </div>
 
                 <h3>Repositório GitHub</h3>
-                <p>Insira o link público do seu repositório para analisar automaticamente os arquivos do projeto.</p>
+                <p>O Check IA analisa os arquivos do projeto e aponta falhas e melhorias.</p>
 
                 <div class="feature-list">
                     <span><i class="fa-solid fa-check"></i> Análise de dependências</span>
@@ -112,7 +100,7 @@
 
                 <button class="primary-button" id="githubButton">
                     <i class="fa-brands fa-github"></i>
-                    Conectar GitHub
+                    Analisar repositório
                 </button>
             </article>
 
@@ -122,7 +110,6 @@
         <section class="panel security-engine">
             <div class="section-heading">
                 <div>
-                    <span class="eyebrow">CHECK IA ENGINE</span>
                     <h2>O que será analisado?</h2>
                 </div>
             </div>
@@ -174,7 +161,8 @@
 
 </div>
 
-<script src="js/analysis.js"></script>
+<script src="js/theme.js?v=20260824"></script>
+<script src="js/analysis.js?v=20260824"></script>
 
 </body>
 </html>

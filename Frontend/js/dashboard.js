@@ -25,10 +25,18 @@ if (!usuarioLogado) {
 
 const usuarioElemento = document.getElementById("usuario");
 
+const ultimaAnalise = JSON.parse(localStorage.getItem(`ultimaAnalise_${usuarioLogado}`) || "null");
+const historico = JSON.parse(localStorage.getItem(`historicoAnalises_${usuarioLogado}`) || "[]");
+let riscosAtuais = [];
+if (ultimaAnalise?.analise_ia) {
+    const textoAnalise = ultimaAnalise.analise_ia.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
+    try { riscosAtuais = JSON.parse(textoAnalise).vulnerabilidades || []; } catch (_) { riscosAtuais = []; }
+}
+
 if (usuarioElemento && usuarioLogado) {
 
     // Pega somente o nome antes do @
-    let nomeUsuario = usuarioLogado.split("@")[0];
+    let nomeUsuario = localStorage.getItem("nomeConta") || usuarioLogado.split("@")[0];
 
     // Primeira letra maiúscula
     nomeUsuario =
@@ -46,51 +54,7 @@ if (usuarioElemento && usuarioLogado) {
 
 
 /* =====================================================
-   3. DADOS DOS PROJETOS
-===================================================== */
-
-const projetos = [
-
-    {
-        nome: "API Financeira",
-        linguagem: "Java",
-        score: 96,
-        status: "Seguro"
-    },
-
-    {
-        nome: "E-commerce AI",
-        linguagem: "JavaScript",
-        score: 78,
-        status: "Atenção"
-    },
-
-    {
-        nome: "Sistema Login",
-        linguagem: "Python",
-        score: 52,
-        status: "Risco"
-    },
-
-    {
-        nome: "Aplicação Web",
-        linguagem: "PHP",
-        score: 89,
-        status: "Seguro"
-    },
-
-    {
-        nome: "API Check IA",
-        linguagem: "Node.js",
-        score: 94,
-        status: "Seguro"
-    }
-
-];
-
-
-/* =====================================================
-   4. PESQUISA DE PROJETOS
+   3. PESQUISA DE PROJETOS
 ===================================================== */
 
 const campoPesquisa = document.querySelector(".search input");
@@ -173,13 +137,15 @@ const scoreElemento =
 
 if (scoreElemento) {
 
-    let valorFinal = 94;
+    const scores = historico.map((item) => Math.max(0, 100 - (getRiscos(item).length * 10)));
+    let valorFinal = scores.length ? Math.round(scores.reduce((total, score) => total + score, 0) / scores.length) : 0;
 
     let valorAtual = 0;
 
-
-    const intervalo =
-        setInterval(function () {
+    if (valorFinal === 0) {
+        scoreElemento.textContent = "-";
+    } else {
+        const intervalo = setInterval(function () {
 
             valorAtual++;
 
@@ -193,10 +159,35 @@ if (scoreElemento) {
 
             }
 
-        }, 20);
+            }, 20);
+        }
 
 }
 
+function getRiscos(resultado) {
+    if (!resultado?.analise_ia) return [];
+    const texto = resultado.analise_ia.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
+    try { return JSON.parse(texto).vulnerabilidades || []; } catch (_) { return []; }
+}
+
+const todosOsRiscos = historico.flatMap(getRiscos);
+const scoreMedio = historico.length ? Math.round(historico.reduce((total, item) => total + Math.max(0, 100 - (getRiscos(item).length * 10)), 0) / historico.length) : null;
+const valoresCards = document.querySelectorAll(".security-card h3");
+if (valoresCards[0]) valoresCards[0].textContent = scoreMedio === null ? "-" : `${scoreMedio}%`;
+if (valoresCards[1]) valoresCards[1].textContent = String(new Set(historico.map((item) => item.repo)).size);
+if (valoresCards[2]) valoresCards[2].textContent = String(todosOsRiscos.length);
+if (valoresCards[3]) valoresCards[3].textContent = ultimaAnalise ? "Agora" : "Nenhuma";
+
+const primeiraLinha = document.querySelector("tbody");
+if (primeiraLinha) {
+    primeiraLinha.innerHTML = historico.length
+        ? [...historico].reverse().map((item) => {
+            const riscos = getRiscos(item).length;
+            const score = Math.max(0, 100 - (riscos * 10));
+            return `<tr><td>${item.repo || "Repositório GitHub"}</td><td>GitHub</td><td>${score}%</td><td class="${riscos ? "warning" : "safe"}">${riscos ? "Atenção" : "Seguro"}</td></tr>`;
+        }).join("")
+        : "<tr><td colspan=\"4\">Nenhuma análise realizada</td></tr>";
+}
 
 /* =====================================================
    7. GRÁFICO
@@ -225,6 +216,13 @@ barras.forEach(function (barra, index) {
 
     }, 300 + (index * 150));
 
+});
+
+const historicoRecente = historico.slice(-5);
+barras.forEach((barra, index) => {
+    const item = historicoRecente[index];
+    const score = item ? Math.max(0, 100 - (getRiscos(item).length * 10)) : 0;
+    barra.style.height = `${score}%`;
 });
 
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check IA</title>
+    <title>Projetos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
         <aside class="sidebar">
             <div>
                 <a class="brand" href="dashboard.html" aria-label="Ir ao dashboard">
-                    <img class="brand-logo brand-logo--sidebar" src="assets/check-ia-logo.png" alt="Check IA">
+                    <img class="brand-logo brand-logo--sidebar" src="assets/logo branca transparente.png" data-logo-dark="assets/logo branca transparente.png" data-logo-light="assets/logo preta transparente.png" alt="Check IA">
                 </a>
                 <nav>
                     <a href="dashboard.html"><i class="fa-solid fa-house"></i>Dashboard</a>
@@ -28,24 +28,20 @@
                     <a data-view="settings" href="area.html?view=settings"><i class="fa-solid fa-gear"></i>Configurações</a>
                 </nav>
             </div>
-            <div class="profile">
-                <i class="fa-solid fa-user"></i>
+            <a class="profile" href="area.html?view=settings" aria-label="Abrir configurações do perfil">
+                <span class="profile-avatar" id="profileAvatar">👤</span>
                 <div><strong id="usuario">Usuário</strong><p>Analista</p></div>
-            </div>
+            </a>
+            <button class="logout-button" id="logoutButton" type="button"><i class="fa-solid fa-right-from-bracket"></i>Sair</button>
         </aside>
         <main class="content area-content">
             <header>
                 <div>
-                    <p class="eyebrow">CHECK IA</p>
                     <h1 id="areaTitle">Projetos</h1>
                     <p id="areaDescription">Acompanhe os ativos monitorados pela sua equipe.</p>
                 </div>
                 <div class="page-header-actions">
                     <a class="area-action" id="areaAction" href="analysis.html"><i class="fa-solid fa-plus"></i> Nova análise</a>
-                    <div class="header-profile" aria-label="Perfil do usuário">
-                        <i class="fa-solid fa-user"></i>
-                        <strong id="usuario-header">Usuário</strong>
-                    </div>
                 </div>
             </header>
             <section class="area-summary" id="areaSummary"></section>
@@ -55,6 +51,7 @@
             </section>
         </main>
     </div>
-    <script src="js/area.js"></script>
+    <script src="js/theme.js?v=20260824"></script>
+    <script src="js/area.js?v=20260824"></script>
 </body>
 </html>

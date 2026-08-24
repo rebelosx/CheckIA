@@ -19,11 +19,13 @@ body{
 
     font-family:var(--font-sans);
 
-    background:#0D1117;
+     background:var(--background);
 
     color:#F0F6FC;
 
     min-height:100vh;
+
+    filter:grayscale(1);
 
 }
 
@@ -33,29 +35,29 @@ body{
 
     --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-    --background:#0D1117;
+    --background:#000;
 
-    --sidebar:#161B22;
+    --sidebar:#000;
 
-    --card:#21262D;
+    --card:#0a0a0a;
 
-    --hover:#30363D;
+    --hover:#171717;
 
-    --border:#30363D;
+    --border:#2a2a2a;
 
-    --blue:#2F81F7;
+    --blue:#fff;
 
-    --green:#3FB950;
+    --green:#d4d4d4;
 
-    --red:#F85149;
+    --red:#a3a3a3;
 
     --yellow:#D29922;
 
-    --white:#F0F6FC;
+    --white:#fff;
 
-    --gray:#8B949E;
+    --gray:#a3a3a3;
 
-    --radius:12px;
+    --radius:6px;
 
     --space-page:28px;
 
@@ -76,6 +78,8 @@ a{
 button{
 
     cursor:pointer;
+
+    font-family:var(--font-sans);
 
     border:none;
 
@@ -126,6 +130,64 @@ select{
     background:#2F81F7;
 
 }
+
+body.light-theme {
+    --background: #f6f8fa;
+    --sidebar: #ffffff;
+    --card: #ffffff;
+    --hover: #f0f3f6;
+    --border: #d0d7de;
+    --white: #1f2328;
+    --gray: #656d76;
+    background: var(--background);
+    color: var(--white);
+}
+
+body.light-theme .dashboard,
+body.light-theme .scanner-page { background: var(--background); }
+body.light-theme .sidebar,
+body.light-theme .panel,
+body.light-theme .right,
+body.light-theme .security-card { background: var(--card); }
+body.light-theme .sidebar { border-color: var(--border); }
+body.light-theme .sidebar nav a:hover,
+body.light-theme .sidebar nav .active,
+body.light-theme tr:hover,
+body.light-theme thead { background: var(--hover); }
+body.light-theme .sidebar nav .active { box-shadow: inset 3px 0 var(--blue), 0 0 0 1px rgba(47, 129, 247, .16); color: var(--white); }
+body.light-theme .search { background: #fff; border-color: var(--border); box-shadow: 0 2px 8px rgba(24, 34, 48, .06); }
+body.light-theme .search input { background: transparent; color: var(--white); }
+body.light-theme .search input::placeholder { color: var(--gray); }
+body.light-theme .panel,
+body.light-theme .security-card,
+body.light-theme .area-stat,
+body.light-theme .area-panel { border-color: var(--border); box-shadow: 0 1px 2px rgba(31, 35, 40, .04); }
+body.light-theme input,
+body.light-theme textarea,
+body.light-theme select { background: #fff; color: var(--white); }
+body.light-theme .left { background: var(--background); }
+body.light-theme .right { background: var(--sidebar); }
+body.light-theme form { background: var(--card); border-color: var(--border); }
+body.light-theme .input label { color: var(--white); }
+body.light-theme .scanner-header { background: rgba(255, 255, 255, .9); }
+body.light-theme .scanner-card,
+body.light-theme .scan-step.active,
+body.light-theme .metric-card { background: var(--card); }
+body.light-theme .step-icon { background: var(--hover); }
+body.light-theme .scanner-title p,
+body.light-theme .step-content span,
+body.light-theme .metric-card span,
+body.light-theme .ai-message p { color: var(--gray); }
+body.light-theme .sidebar nav a { color: var(--gray); }
+body.light-theme { --blue:#24292f; --green:#57606a; --red:#6e7781; }
+
+.profile { cursor: pointer; }
+.profile-avatar { align-items: center; background: var(--blue); border-radius: 50%; display: flex; flex-shrink: 0; font-size: 20px; height: 40px; justify-content: center; overflow: hidden; width: 40px; }
+.profile-avatar-image { background-position: center; background-size: cover; font-size: 0; }
+.system-notification { background: var(--card); border: 1px solid var(--green); border-radius: 10px; bottom: 24px; box-shadow: 0 12px 30px rgba(0, 0, 0, .3); display: flex; flex-direction: column; gap: 4px; opacity: 0; padding: 14px 18px; position: fixed; right: 24px; transform: translateY(12px); transition: .25s; z-index: 20; }
+.system-notification.visible { opacity: 1; transform: translateY(0); }
+.system-notification strong { color: var(--green); font-size: 14px; }
+.system-notification span { color: var(--gray); font-size: 13px; }
 
 /* Container */
 
@@ -320,15 +382,21 @@ body{
 
 .brand-logo--sidebar{
 
-    width:205px;
+    height:40px;
+    object-fit:contain;
+    width:40px;
 }
 
 .brand-logo--login{
 
-    width:250px;
+    height:auto;
+    object-fit:contain;
+    width:min(100%, 500px);
 }
 
 .brand-logo--header{
 
-    width:190px;
+    height:42px;
+    object-fit:contain;
+    width:42px;
 }

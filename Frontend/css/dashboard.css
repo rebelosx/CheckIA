@@ -14,7 +14,7 @@
 
     min-height:100vh;
 
-    background:#0D1117;
+    background:var(--background);
 
 }
 
@@ -27,9 +27,9 @@
 
     width:260px;
 
-    background:#161B22;
+    background:var(--sidebar);
 
-    border-right:1px solid #30363D;
+    border-right:1px solid var(--border);
 
     padding:25px;
 
@@ -38,26 +38,21 @@
     flex-direction:column;
 
     justify-content:flex-start;
-
+    flex-shrink:0;
+    height:100vh;
+    overflow-y:auto;
+    position:sticky;
+    top:0;
 }
-
 
 .brand{
-
-    display:flex;
-
     align-items:center;
-
+    display:flex;
     gap:12px;
-
     margin-bottom:20px;
-
 }
 
-
 .brand i{
-
-    font-size:32px;
 
     color:#2F81F7;
 
@@ -85,7 +80,6 @@
     gap:10px;
 
 }
-
 
 .sidebar nav a{
 
@@ -116,6 +110,9 @@
     color:#F0F6FC;
 
 }
+
+.content .panel,
+.security-card { border-radius: 6px; }
 
 
 .sidebar nav i{
@@ -172,6 +169,28 @@
 
 }
 
+.logout-button {
+    align-items: center;
+    background: transparent;
+    border-top: 1px solid var(--border);
+    color: var(--gray);
+    display: flex;
+    font-size: 13px;
+    gap: 12px;
+    justify-content: flex-start;
+    margin-top: 14px;
+    padding: 14px 0 0;
+    width: 100%;
+}
+
+.logout-button:hover { color: var(--white); }
+.logout-button i { color: var(--red); width: 20px; }
+
+.sidebar nav i,
+.security-card i,
+.search i { color: var(--white); }
+.table-header button { background: var(--white); color: var(--background); }
+
 
 
 
@@ -190,6 +209,7 @@
     padding:28px;
 
     overflow:auto;
+    height:100vh;
 
 }
 
@@ -281,7 +301,7 @@ header p{
 
     gap:10px;
 
-    background:#161B22;
+    background:var(--card);
 
     border:1px solid #30363D;
 
@@ -301,9 +321,9 @@ header p{
 
 .search input{
 
-    background:none;
+    background:transparent;
 
-    color:white;
+    color:var(--white);
 
     width:220px;
 
@@ -491,6 +511,12 @@ height:0;
 
     width:auto;
 
+    border-radius:6px;
+
+    font-size:14px;
+
+    font-weight:600;
+
     padding:12px 20px;
 
     background:#2F81F7;
@@ -612,6 +638,10 @@ tr:hover{
 .sidebar{
 
     width:100%;
+    height:auto;
+    max-height:none;
+    overflow:visible;
+    position:static;
 
 }
 
@@ -625,6 +655,8 @@ header{
     gap:20px;
 
 }
+
+.content { height:auto; }
 
 
 .search{

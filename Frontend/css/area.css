@@ -26,7 +26,7 @@
     align-items: center;
     gap: 8px;
     background: var(--blue);
-    border-radius: 8px;
+    border-radius: 6px;
     color: #fff;
     font-size: 14px;
     font-weight: 700;
@@ -45,14 +45,14 @@
 .area-stat {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 6px;
     padding: 20px;
 }
 
 .area-stat span { color: var(--gray); display: block; font-size: 13px; }
 .area-stat strong { display: block; font-size: 27px; margin-top: 8px; }
 
-.area-panel { padding: 0; overflow: hidden; }
+.area-panel { padding: 0; overflow: hidden; border-radius: 6px; }
 .area-panel .table-header { padding: 22px 24px; border-bottom: 1px solid var(--border); }
 
 .area-list { padding: 4px 24px; }
@@ -74,6 +74,14 @@
 .settings-form label { color: var(--gray); display: flex; flex-direction: column; font-size: 13px; font-weight: 600; gap: 8px; }
 .settings-form input { background: var(--background); border: 1px solid var(--border); border-radius: 8px; color: var(--white); font-size: 14px; min-height: 46px; padding: 0 14px; }
 .settings-form input:focus { border-color: var(--blue); }
+.avatar-settings { align-items: center; display: flex; gap: 16px; margin-bottom: 20px; }
+.avatar-settings .profile-avatar { font-size: 26px; height: 56px; width: 56px; }
+.avatar-controls { display: grid; gap: 8px; }
+.avatar-controls label { color: var(--gray); font-size: 12px; }
+.avatar-controls input[type="text"], .avatar-controls input[type="file"] { color: var(--gray); font-size: 13px; max-width: 240px; }
+.avatar-color { background: transparent; border: 1px solid var(--border); cursor: pointer; height: 32px; max-width: 56px; padding: 2px; }
+.avatar-reset { background: transparent; border: 1px solid var(--border); color: var(--gray); font-size: 13px; min-height: 40px; padding: 0 12px; width: fit-content; }
+.avatar-reset:hover { background: var(--hover); color: var(--white); }
 .settings-save { align-self: end; border: 0; cursor: pointer; min-height: 46px; }
 .settings-toggle { align-items: center; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: 18px; padding: 16px 0; }
 .settings-toggle:first-of-type { border-top: 0; }
@@ -94,3 +102,8 @@
     .settings-form { grid-template-columns: 1fr; }
     .settings-save { width: 100%; }
 }
+
+.settings-icon,
+.area-row i { color: var(--white); }
+.area-action { background: var(--white); color: var(--background); }
+.area-action:hover { background: var(--gray); }

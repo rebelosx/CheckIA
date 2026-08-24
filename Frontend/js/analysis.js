@@ -14,7 +14,7 @@ if (!usuario) {
 const usuarioElemento = document.getElementById("usuario");
 
 if (usuarioElemento && usuario) {
-    let nome = usuario.split("@")[0];
+    let nome = localStorage.getItem("nomeConta") || usuario.split("@")[0];
     nome = nome.charAt(0).toUpperCase() + nome.slice(1);
     usuarioElemento.textContent = nome;
 
@@ -49,8 +49,8 @@ function mostrarModalGitHub() {
             <div class="modal-icon">
                 <i class="fa-brands fa-github"></i>
             </div>
-            <h2>Conectar repositório</h2>
-            <p>Informe a URL pública do repositório que deseja analisar.</p>
+            <h2>Informar repositório</h2>
+            <p>Envie o link público do projeto. Não é necessário conectar sua conta GitHub.</p>
             <input id="githubUrl" type="url" placeholder="https://github.com/usuario/projeto">
             <div class="modal-actions">
                 <button class="cancel-modal">Cancelar</button>
@@ -81,8 +81,8 @@ function mostrarModalGitHub() {
             return;
         }
 
-        if (!url.includes("github.com")) {
-            mostrarMensagem("Informe uma URL válida do GitHub.", "erro");
+        if (!/^https?:\/\/github\.com\/[^/]+\/[^/]+\/?$/.test(url)) {
+            mostrarMensagem("Informe o link público no formato github.com/usuario/projeto.", "erro");
             return;
         }
 
@@ -128,7 +128,18 @@ function iniciarAnalise(tipo, origem) {
             return data;
         })
         .then((data) => {
-            localStorage.setItem("ultimaAnalise", JSON.stringify(data));
+            const usuarioAtual = localStorage.getItem("usuario");
+            localStorage.setItem(`ultimaAnalise_${usuarioAtual}`, JSON.stringify(data));
+            const chaveHistorico = `historicoAnalises_${usuarioAtual}`;
+            const historico = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
+            historico.push({ ...data, criada_em: new Date().toISOString() });
+            localStorage.setItem(chaveHistorico, JSON.stringify(historico));
+            const textoAnalise = String(data.analise_ia || "").replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
+            let quantidadeRiscos = 0;
+            try { quantidadeRiscos = JSON.parse(textoAnalise).vulnerabilidades?.length || 0; } catch (_) { }
+            localStorage.setItem(`notificacaoPendente_${usuarioAtual}`, JSON.stringify({
+                id: Date.now(), repo: data.repo, riscos: quantidadeRiscos
+            }));
             mostrarMensagem("Análise concluída com sucesso!", "sucesso");
             setTimeout(() => window.location.href = "area.html?view=vulnerabilities", 700);
         })

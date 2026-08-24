@@ -107,6 +107,7 @@ form.addEventListener("submit",(e)=>{
     mostrarMensagem("Login realizado com sucesso!","#3FB950");
 
     localStorage.setItem("usuario",email.value);
+    localStorage.setItem(`tema_${email.value}`, localStorage.getItem("tema_global") || "dark");
 
     setTimeout(()=>{
 

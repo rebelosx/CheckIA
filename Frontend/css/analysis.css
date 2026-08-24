@@ -2,7 +2,8 @@
 
 .analysis-content {
     font-family: var(--font-sans);
-    padding: var(--space-page);
+    max-width: 1440px;
+    padding: 32px;
 }
 
 .analysis-content .eyebrow {
@@ -13,7 +14,7 @@
     margin-bottom: 6px;
 }
 
-.analysis-content .page-header { align-items: flex-start; gap: 20px; margin-bottom: 28px; }
+.analysis-content .page-header { align-items: flex-start; margin-bottom: 24px; }
 .analysis-content .page-header h1 { margin-top: 4px; }
 
 .page-header-actions {
@@ -38,32 +39,27 @@
 
 .status-dot { background: var(--green); border-radius: 50%; height: 8px; width: 8px; }
 
-.intro-card { align-items: center; display: flex; gap: 16px; }
-.intro-icon { color: var(--blue); flex-shrink: 0; font-size: 30px; }
-.intro-card h2 { margin: 2px 0; }
+.intro-card { align-items: flex-start; display: flex; gap: 16px; margin-bottom: 20px; padding: 20px 24px; }
+.intro-icon { align-items: center; background: rgba(47, 129, 247, .1); border-radius: 6px; color: var(--blue); display: flex; flex-shrink: 0; font-size: 22px; height: 40px; justify-content: center; width: 40px; }
+.intro-card h2 { font-size: 18px; margin: 0 0 4px; }
+.intro-card p { font-size: 14px; }
 
 .analysis-options {
-    display: grid;
-    gap: 16px;
-    grid-template-columns: minmax(0, 1fr);
     margin-bottom: 20px;
 }
 
 .analysis-card {
-    display: flex;
-    flex-direction: column;
+    max-width: none;
+    padding: 24px;
     transition: .3s;
-    width: 100%;
 }
 
 .analysis-options .analysis-card {
-    justify-self: center;
-    max-width: none;
+    width: 100%;
 }
 
 .github-card {
-    align-items: center;
-    text-align: center;
+    text-align: left;
 }
 
 .github-card .card-top,
@@ -72,31 +68,31 @@
 }
 
 .github-card .card-top {
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
 
 .github-card > p {
+    font-size: 14px;
+    line-height: 1.55;
     max-width: 620px;
-    min-height: auto;
 }
 
 .github-card .feature-list {
-    align-items: center;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 20px 0 26px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 20px 0 24px;
 }
 
 .github-card .primary-button {
-    max-width: 420px;
+    max-width: 240px;
 }
 
-.analysis-card:hover {
-    border-color: var(--blue);
-    box-shadow: 0 10px 30px rgba(47, 129, 247, .2);
-    transform: translateY(-5px);
-}
+.analysis-card,
+.intro-card,
+.security-engine,
+.modal { border-radius: 6px; }
+
+.analysis-card:hover { border-color: var(--blue); }
 
 .card-top { align-items: center; display: flex; justify-content: space-between; margin-bottom: 20px; }
 .option-icon { color: var(--blue); font-size: 28px; }
@@ -112,8 +108,8 @@
     padding: 4px 8px;
 }
 
-.analysis-card h3 { margin-bottom: 6px; }
-.analysis-card > p { min-height: 48px; }
+.analysis-card h3 { font-size: 18px; margin-bottom: 6px; }
+.analysis-card > p { min-height: 0; }
 
 .feature-list { display: flex; flex-direction: column; gap: 8px; margin: 16px 0 20px; }
 .feature-list span { color: var(--gray); font-size: 13px; }
@@ -122,7 +118,7 @@
 .primary-button,
 .secondary-button {
     align-items: center;
-    border-radius: 8px;
+    border-radius: 6px;
     display: flex;
     font-size: 15px;
     font-weight: 600;
@@ -152,7 +148,7 @@
 .modal {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 6px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
     max-width: 620px;
     padding: 30px;
@@ -210,8 +206,8 @@
 
 .section-heading h2 { margin-bottom: 18px; }
 
-.engine-grid { display: grid; gap: 16px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.engine-item { align-items: center; background: var(--background); border: 1px solid var(--border); border-radius: 10px; display: flex; gap: 12px; padding: 14px; }
+.engine-grid { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.engine-item { align-items: center; background: var(--background); border: 1px solid var(--border); border-radius: 6px; display: flex; gap: 12px; padding: 14px; }
 .engine-icon { color: var(--blue); flex-shrink: 0; font-size: 28px; }
 .engine-item strong,
 .engine-item span { display: block; }
@@ -219,7 +215,6 @@
 .engine-item span { color: var(--gray); font-size: 13px; }
 
 @media (max-width: 1200px) {
-    .analysis-options { grid-template-columns: minmax(0, 1fr); }
     .engine-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -230,15 +225,24 @@
 }
 
 @media (max-width: 600px) {
-    .analysis-options,
     .engine-grid { grid-template-columns: 1fr; }
+    .analysis-content { padding: 20px; }
     .intro-card,
     .security-engine { padding: 20px; }
 
     .page-header-actions { align-items: flex-start; flex-direction: column; gap: 16px; }
     .header-status { width: 100%; }
-    .github-card .feature-list { align-items: flex-start; flex-direction: column; }
+    .github-card .feature-list { grid-template-columns: 1fr; }
+    .github-card .primary-button { max-width: none; }
     .modal { padding: 24px 20px; }
     .modal-actions { flex-direction: column-reverse; }
     .modal-actions button { width: 100%; }
 }
+
+.option-icon,
+.intro-icon,
+.engine-icon { color: var(--white); }
+.primary-button,
+.confirm-github { background: var(--white); color: var(--background); }
+.primary-button:hover,
+.confirm-github:hover { background: var(--gray); }

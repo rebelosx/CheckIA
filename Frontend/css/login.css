@@ -4,29 +4,36 @@
 =========================== */
 
 .container{
-
+    align-items: stretch;
+    background:var(--background);
     display:flex;
     width:100%;
     min-height:100vh;
-
 }
 
+.theme-switch { align-items: center; color: var(--gray); display: flex; font-size: 13px; gap: 10px; position: fixed; right: 28px; top: 24px; z-index: 5; }
+.theme-switch input { height: 0; opacity: 0; position: absolute; width: 0; }
+.theme-switch .toggle-control { background: var(--hover); border-radius: 20px; display: inline-block; height: 24px; position: relative; width: 44px; }
+.theme-switch .toggle-control::after { background: var(--gray); border-radius: 50%; content: ""; height: 18px; left: 3px; position: absolute; top: 3px; transition: .2s; width: 18px; }
+.theme-switch input:checked + .toggle-control { background: var(--white); }
+.theme-switch input:checked + .toggle-control::after { background: var(--background); transform: translateX(20px); }
+
 /* ===========================
-   LADO ESQUERDO
+    LADO ESQUERDO
 =========================== */
 
 .left{
 
+    background:var(--background);
+    min-height:100vh;
     width:55%;
-    background:#0D1117;
-
     display:flex;
 
     flex-direction:column;
 
     justify-content:center;
 
-    padding:70px;
+    padding:clamp(32px, 5vw, 70px);
 
 }
 
@@ -36,9 +43,9 @@
 
     align-items:center;
 
-    gap:15px;
-
-    margin-bottom:40px;
+    gap:0;
+    margin-bottom:28px;
+    max-width:560px;
 
 }
 
@@ -58,11 +65,11 @@
 
 .left h2{
 
-    font-size:40px;
+    font-size:clamp(28px, 3.2vw, 40px);
 
-    line-height:55px;
+    line-height:1.25;
 
-    margin-bottom:25px;
+    margin-bottom:14px;
 
     max-width:650px;
 
@@ -76,9 +83,15 @@
 
     max-width:520px;
 
-    margin-bottom:50px;
+    margin-bottom:28px;
 
 }
+
+body.light-theme .left h2,
+body.light-theme .cards span,
+body.light-theme form h2 { color: var(--white); }
+body.light-theme .left p,
+body.light-theme form p { color: var(--gray); }
 
 /* ===========================
    CARDS
@@ -88,7 +101,7 @@
 
     display:grid;
 
-    grid-template-columns:repeat(2,250px);
+    grid-template-columns:repeat(2, minmax(0, 250px));
 
     gap:20px;
 
@@ -146,7 +159,7 @@
 
     width:45%;
 
-    background:#161B22;
+    background:var(--sidebar);
 
     display:flex;
 
@@ -154,17 +167,20 @@
 
     align-items:center;
 
+    min-height:100vh;
+    padding:32px;
+
 }
 
 form{
 
-    width:420px;
+    width:min(100%, 420px);
 
     background:#21262D;
 
     border:1px solid #30363D;
 
-    border-radius:18px;
+    border-radius:6px;
 
     padding:45px;
 
@@ -224,7 +240,7 @@ form p{
 
     height:52px;
 
-    border-radius:10px;
+    border-radius:6px;
 
     padding-left:18px;
 
@@ -324,6 +340,16 @@ button:hover{
 
 }
 
+.cards i { color: var(--white); }
+button { background: var(--white); color: var(--background); }
+button:hover { background: var(--gray); }
+.auth-links a { color: var(--white); }
+.avatar-reset { background: transparent; border: 1px solid var(--border); font-size: 13px; height: 40px; margin-top: 4px; padding: 0 12px; width: fit-content; }
+
+.cards .card { background: var(--card); border-color: var(--border); }
+.input input { background: var(--background); border-color: var(--border); color: var(--white); }
+form { background: var(--card); border-color: var(--border); }
+
 .left h2{
 
     font-size:30px;
@@ -349,3 +375,18 @@ form{
 }
 
 }
+
+/* Contraste comum aos dois temas */
+body .left h2,
+body .cards span,
+body form h2 { color: var(--white); }
+body .left p,
+body form p { color: var(--gray); }
+body .cards .card { background: var(--card); border-color: var(--border); }
+body .input label { color: var(--white); }
+body .input input { background: var(--background); border-color: var(--border); color: var(--white); }
+body form { background: var(--card); border-color: var(--border); }
+body button { background: var(--white); color: var(--background); }
+body button:hover { background: var(--gray); }
+body .cards i { color: var(--white); }
+body .auth-links a { color: var(--white); }

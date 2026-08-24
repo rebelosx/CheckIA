@@ -2,6 +2,7 @@ import os
 import re
 import httpx # [biblioteca para requisições assíncronas]
 import base64
+from urllib.parse import quote
 import google.generativeai as genai
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -65,22 +66,24 @@ async def analyze_repo(request: RepoRequest):
     print(f"Iniciando análise para: {owner}/{repo}")
 
     # --- PARTE 2: BUSCAR A ÁRVORE (TREE) NO GITHUB ---
-    # Montamos o link da API do GitHub para listar tudo
-    github_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/main?recursive=1"
-
     codigo_para_ia = "" #variável que vai armazenar o código para enviar à IA
 
     # Configuração de Timeout
     # 10 segundos para resposta total e 5 segundos para conectar
-    timeout_config = httpx.Timeout(10.0, connect=5.0)
+    timeout_config = httpx.Timeout(30.0, connect=10.0)
     
     async with httpx.AsyncClient(timeout=timeout_config) as client:
         try:
-            # 1. Busca a árvore de arquivos de forma assíncrona
+            repo_response = await client.get(f"https://api.github.com/repos/{owner}/{repo}", headers=headers)
+            if repo_response.status_code != 200:
+                raise HTTPException(status_code=404, detail="Não consegui acessar o repositório. Verifique se o link é público.")
+
+            default_branch = repo_response.json().get("default_branch", "main")
+            github_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/{quote(default_branch, safe='')}?recursive=1"
             response = await client.get(github_url, headers=headers)
 
             if response.status_code != 200:
-                return {"error": "Não consegui acessar o repositório. Verifique o Token ou se o repo é público."}
+                raise HTTPException(status_code=502, detail="Não consegui listar os arquivos do repositório.")
 
             tree = response.json().get("tree", [])
 
@@ -92,8 +95,8 @@ async def analyze_repo(request: RepoRequest):
         filtered_files = [f["path"] for f in tree if f["type"] == "blob" and not any(i in f["path"] for i in blacklist)]
 
         # --- PARTE 3: COLETA DO CONTEÚDO  ---
-        # Percorremos os arquivos filtrados (limitando a 10 para não estourar o limite gratuito agora)
-        for path in filtered_files[:10]: 
+        # Analisa todos os arquivos de texto encontrados na árvore do repositório.
+        for path in filtered_files:
             content_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
             res = await client.get(content_url, headers=headers)
         
