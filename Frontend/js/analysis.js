@@ -57,12 +57,23 @@ if (uploadButton && fileInput) {
    GITHUB
 ========================================= */
 
-const githubButton = document.getElementById("githubButton");
+const githubButton =
+    document.getElementById("githubButton");
 
 if (githubButton) {
-    githubButton.addEventListener("click", function () {
-        mostrarModalGitHub();
-    });
+
+    githubButton.addEventListener(
+        "click",
+        function () {
+
+            window.open(
+                "http://127.0.0.1:8000/auth/github",
+                "_blank"
+            );
+
+        }
+    );
+
 }
 
 
