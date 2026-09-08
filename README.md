@@ -12,17 +12,17 @@
 
 ## 📌 Sobre o Projeto
 
-O **CheckIA** é uma plataforma inovadora de análise e auditoria automatizada de segurança para aplicações desenvolvidas sob o ecossistema de **Inteligência Artificial (Vibe Coding)** [8, 15]. No cenário tecnológico atual, a velocidade de geração de código por assistentes (como ChatGPT, Cursor, v0 e Bolt.new) é sem precedentes; no entanto, essas ferramentas frequentemente geram códigos com brechas críticas, falta de sanitização, más práticas e riscos de conformidade [8, 15, 18]. 
+O **CheckIA** é uma plataforma inovadora de análise e auditoria automatizada de segurança para aplicações desenvolvidas sob o ecossistema de **Inteligência Artificial (Vibe Coding)**. No cenário tecnológico atual, a velocidade de geração de código por assistentes (como ChatGPT, Cursor, v0 e Bolt.new) é sem precedentes; no entanto, essas ferramentas frequentemente geram códigos com brechas críticas, falta de sanitização, más práticas e riscos de conformidade. 
 
-O **CheckIA** atua como uma barreira de segurança pré-produção [9]. Ele varre repositórios Git, analisa o código estaticamente com o apoio de Large Language Models (LLMs) treinadas em segurança da informação, e entrega um diagnóstico claro, listando vulnerabilidades por níveis de severidade com sugestões exatas de código para correção [8, 9, 20].
+O **CheckIA** atua como uma barreira de segurança pré-produção. Ele varre repositórios Git, analisa o código estaticamente com o apoio de Large Language Models (LLMs) treinadas em segurança da informação, e entrega um diagnóstico claro, listando vulnerabilidades por níveis de severidade com sugestões exatas de código para correção.
 
-> 🚀 **Parceria Acadêmico-Corporativa**: Projeto desenvolvido no **Centro Universitário ENIAC** [8, 15] sob a mentoria de **Gustavo Domingos Cardoso**, CEO da **Lobios** [8].
+> 🚀 **Parceria Acadêmico-Corporativa**: Projeto desenvolvido no **Centro Universitário ENIAC** sob a mentoria de **Gustavo Domingos Cardoso**, CEO da **Lobios**.
 
 ---
 
 ## 🏗️ Fluxo e Arquitetura de Dados
 
-O motor de análise do CheckIA foi desenhado para ser rápido, resiliente e escalável [17, 23]. O fluxo de processamento de dados desde a submissão até a exibição segue a arquitetura descrita abaixo:
+O motor de análise do CheckIA foi desenhado para ser rápido, resiliente e escalável. O fluxo de processamento de dados desde a submissão até a exibição segue a arquitetura descrita abaixo:
 
 ```mermaid
 sequenceDiagram
@@ -58,23 +58,23 @@ sequenceDiagram
 
 ## ⚙️ Minhas Contribuições (Backend, Infraestrutura & IA)
 
-Como desenvolvedor responsável pelas áreas de **Backend, Integrações de Infraestrutura e IA**, idealizei e implementei os seguintes pilares [23, 28]:
+Como desenvolvedor responsável pelas áreas de **Backend, Integrações de Infraestrutura e IA**, idealizei e implementei os seguintes pilares:
 
 ### 🧠 1. Auditoria Inteligente e Engenharia de Prompt (Gemini SDK)
-*   **Integração com Gemini API**: Configurei e gerenciei o SDK oficial do Google Generative AI para atuar como o núcleo analítico de segurança do sistema [23, 28].
-*   **Structured Outputs (JSON Estrito)**: Moldei as diretrizes do sistema para que a IA processe o código e retorne **exclusivamente um JSON válido e estritamente tipado**, contendo: `arquivo`, `risco`, `severidade` (Baixa/Média/Alta/Crítica), `descricao` e `correcao` (código corrigido pronto) [20, 23, 28]. Isso eliminou falhas de parsing de strings brutas e garantiu 100% de integração estável com o frontend.
+*   **Integração com Gemini API**: Configurei e gerenciei o SDK oficial do Google Generative AI para atuar como o núcleo analítico de segurança do sistema.
+*   **Structured Outputs (JSON Estrito)**: Moldei as diretrizes do sistema para que a IA processe o código e retorne **exclusivamente um JSON válido e estritamente tipado**, contendo: `arquivo`, `risco`, `severidade` (Baixa/Média/Alta/Crítica), `descricao` e `correcao` (código corrigido pronto). Isso eliminou falhas de parsing de strings brutas e garantiu 100% de integração estável com o frontend.
 
 ### 🔌 2. Integração Não-Bloqueante com GitHub API
-*   **Mapeamento Recursivo**: Desenvolvi rotas assíncronas para buscar recursivamente a árvore do repositório (`/git/trees/main?recursive=1`), permitindo analisar diretórios profundos sem gargalos [19, 23, 28].
-*   **Filtro Inteligente de Arquivos (Blacklist)**: Criei uma lógica robusta que descarta pacotes pesados (`node_modules`), logs, metadados e arquivos não-textuais (imagens, PDFs, zips, package-lock.json) [20, 23, 28]. Isso resultou em uma **redução drástica no consumo de tokens** e acelerou o tempo de resposta do modelo.
+*   **Mapeamento Recursivo**: Desenvolvi rotas assíncronas para buscar recursivamente a árvore do repositório (`/git/trees/main?recursive=1`), permitindo analisar diretórios profundos sem gargalos.
+*   **Filtro Inteligente de Arquivos (Blacklist)**: Criei uma lógica robusta que descarta pacotes pesados (`node_modules`), logs, metadados e arquivos não-textuais (imagens, PDFs, zips, package-lock.json). Isso resultou em uma **redução drástica no consumo de tokens** e acelerou o tempo de resposta do modelo.
 
 ### 🛡️ 3. Resiliência de Servidor e Código de Produção
-*   **Programação Assíncrona com FastAPI e HTTPX**: Substituí o uso de requisições bloqueantes tradicionais pelo cliente assíncrono **`httpx.AsyncClient`**, permitindo o processamento de concorrência com excelente performance [13].
-*   **Validação Automatizada com Regex**: Implementei uma camada preventiva de validação de dados com **Pydantic** usando expressões regulares estritas, bloqueando entradas malformadas ou nocivas antes do início do processamento no servidor [13].
-*   **Segurança e Tratamento de Exceções**: Configurei o controle de variáveis críticas via `.env` utilizando `python-dotenv` [12], gerenciei de forma limpa erros de rede por meio de *timeouts* inteligentes e criei tratamentos `try/except` robustos contra falhas de decodificação de Base64 em arquivos do Git [Image 7].
+*   **Programação Assíncrona com FastAPI e HTTPX**: Substituí o uso de requisições bloqueantes tradicionais pelo cliente assíncrono **`httpx.AsyncClient`**, permitindo o processamento de concorrência com excelente performance.
+*   **Validação Automatizada com Regex**: Implementei uma camada preventiva de validação de dados com **Pydantic** usando expressões regulares estritas, bloqueando entradas malformadas ou nocivas antes do início do processamento no servidor.
+*   **Segurança e Tratamento de Exceções**: Configurei o controle de variáveis críticas via `.env` utilizando `python-dotenv`, gerenciei de forma limpa erros de rede por meio de *timeouts* inteligentes e criei tratamentos `try/except` robustos contra falhas de decodificação de Base64 em arquivos do Git.
 
 ### 🎨 4. Design Assistido por IA (Frontend & UX)
-*   **Apoio Estético com GitHub Copilot**: Atuei na refatoração visual e no esboço da interface estática do projeto [User Query]. Empregando o Copilot integrado no VS Code, estruturei e acelerei a construção de telas limpas e responsivas em HTML5/CSS3 com classes utilitárias do Tailwind CSS, preparando as visualizações de dashboards de gráficos e código antes de acoplá-las à API [Image 7].
+*   **Apoio Estético com GitHub Copilot**: Atuei na refatoração visual e no esboço da interface estática do projeto [User Query]. Empregando o Copilot integrado no VS Code, estruturei e acelerei a construção de telas limpas e responsivas em HTML5/CSS3 com classes utilitárias do Tailwind CSS, preparando as visualizações de dashboards de gráficos e código antes de acoplá-las à API.
 
 ---
 
@@ -105,11 +105,11 @@ Como desenvolvedor responsável pelas áreas de **Backend, Integrações de Infr
 
 O desenvolvimento do CheckIA representou uma guinada significativa em meu crescimento profissional, consolidando habilidades essenciais para atuar como engenheiro de software de mercado:
 
-*   **Padrões de Programação Assíncrona**: Entendimento prático de como orquestrar múltiplos microsserviços em rede concorrentemente sem degradar o poder de processamento do servidor [13].
-*   **Resiliência e Engenharia Defensiva**: Aprendizado sobre manipulação preventiva de *Rate Limits* [13] de APIs com tokens de autenticação, tratamento inteligente de erros de rede por timeouts e validação de dados de ponta a ponta.
+*   **Padrões de Programação Assíncrona**: Entendimento prático de como orquestrar múltiplos microsserviços em rede concorrentemente sem degradar o poder de processamento do servidor.
+*   **Resiliência e Engenharia Defensiva**: Aprendizado sobre manipulação preventiva de *Rate Limits* de APIs com tokens de autenticação, tratamento inteligente de erros de rede por timeouts e validação de dados de ponta a ponta.
 *   **Integração Avançada de LLMs**: Transição do uso convencional de prompts de texto de chats informais para a verdadeira engenharia de prompts de sistema de produção, com formatações de saída que interagem dinamicamente com sistemas de front-end.
-*   **Autonomia Autodidata**: Capacidade comprovada de estudar documentações técnicas complexas de APIs de IA de forma independente para extrair as soluções necessárias aos problemas práticos de engenharia [Image 7].
-*   **Trabalho Colaborativo**: Compreensão profunda sobre arquitetura modular em equipes, separando com rigidez responsabilidades em diretórios independentes (`Backend` e `Frontend`) para otimizar o versionamento compartilhado [Image 7].
+*   **Autonomia Autodidata**: Capacidade comprovada de estudar documentações técnicas complexas de APIs de IA de forma independente para extrair as soluções necessárias aos problemas práticos de engenharia.
+*   **Trabalho Colaborativo**: Compreensão profunda sobre arquitetura modular em equipes, separando com rigidez responsabilidades em diretórios independentes (`Backend` e `Frontend`) para otimizar o versionamento compartilhado.
 
 ---
 
@@ -118,7 +118,7 @@ O desenvolvimento do CheckIA representou uma guinada significativa em meu cresci
 ### Pré-requisitos
 *   Python 3.12 instalado
 *   Uma chave de API do Google Gemini (`GEMINI_API_KEY`)
-*   Um Token de Acesso Pessoal do GitHub (`GITHUB_TOKEN`) - *Recomendado para evitar limites de taxa* [13]
+*   Um Token de Acesso Pessoal do GitHub (`GITHUB_TOKEN`) - *Recomendado para evitar limites de taxa*
 
 ### Passo a Passo
 
@@ -143,7 +143,7 @@ O desenvolvimento do CheckIA representou uma guinada significativa em meu cresci
    ```
 
 4. **Configure as Variáveis de Ambiente:**
-   Crie um arquivo `.env` na raiz da pasta `Backend` com o seguinte conteúdo [12]:
+   Crie um arquivo `.env` na raiz da pasta `Backend` com o seguinte conteúdo:
    ```env
    GEMINI_API_KEY=sua_chave_do_gemini_aqui
    GITHUB_TOKEN=seu_token_do_github_aqui
