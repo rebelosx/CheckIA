@@ -158,5 +158,5 @@ O desenvolvimento do CheckIA representou uma guinada significativa em meu cresci
 ---
 
 <p align="center">
-  Desenvolvido com orgulho por <b>Arthur Machado</b> e equipe 🚀
+  Desenvolvido com orgulho por <b>Arthur Machado, Jhonathan Guimarães e João Victor</b> 🚀
 </p>
