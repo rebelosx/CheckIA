@@ -83,19 +83,19 @@ Como desenvolvedor responsável pelas áreas de **Backend, Integrações de Infr
 <table>
   <tr>
     <td><b>Backend & API</b></td>
-    <td>Python 3.12, FastAPI, Pydantic, Uvicorn, HTTPX, python-dotenv [12, 13, 23]</td>
+    <td>Python 3.12, FastAPI, Pydantic, Uvicorn, HTTPX, python-dotenv </td>
   </tr>
   <tr>
     <td><b>Inteligência Artificial</b></td>
-    <td>Google Gemini AI SDK (Structured JSON Outputs), GitHub Copilot [20, 23]</td>
+    <td>Google Gemini AI SDK (Structured JSON Outputs), GitHub Copilot </td>
   </tr>
   <tr>
     <td><b>Serviços Externos</b></td>
-    <td>GitHub REST API (v3) [13, 23]</td>
+    <td>GitHub REST API (v3) </td>
   </tr>
   <tr>
     <td><b>Frontend & UI</b></td>
-    <td>HTML5, CSS3, Tailwind CSS [Image 7]</td>
+    <td>HTML5, CSS3, Tailwind CSS </td>
   </tr>
 </table>
 
