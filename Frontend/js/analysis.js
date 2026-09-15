@@ -72,6 +72,48 @@ let repositoriosGitHub = [];
 
 let repositorioAtual = null;
 
+async function carregarUsuarioGitHub() {
+    try {
+        const response = await fetch(
+            "http://127.0.0.1:8000/github/me",
+            {
+                method: "GET",
+                credentials: "include"
+            }
+        );
+
+        if (!response.ok) {
+            console.log("Usuário GitHub não conectado.");
+            return;
+        }
+
+        const usuarioGitHub = await response.json();
+
+        console.log("Usuário GitHub:", usuarioGitHub);
+
+        if (usuarioGitHub.login) {
+            localStorage.setItem(
+                "usuario",
+                usuarioGitHub.login
+            );
+
+            if (usuarioElemento) {
+                usuarioElemento.textContent =
+                    usuarioGitHub.name ||
+                    usuarioGitHub.login;
+            }
+        }
+
+    } catch (erro) {
+        console.error(
+            "Erro ao carregar usuário GitHub:",
+            erro
+        );
+    }
+}
+
+carregarUsuarioGitHub();
+
 
 /* =========================================
    BOTÃO GITHUB
@@ -142,7 +184,7 @@ function conectarGitHub() {
 
 window.addEventListener(
     "message",
-    function (event) {
+    async function (event) {
 
         /*
             Segurança:
@@ -167,16 +209,14 @@ window.addEventListener(
 
         if (
             event.data &&
-            event.data.type ===
-            "github-connected"
+            event.data.type === "github-connected"
         ) {
-
             githubConnected = true;
 
+            await carregarUsuarioGitHub();
+
             carregarRepositorios();
-
         }
-
     }
 );
 
