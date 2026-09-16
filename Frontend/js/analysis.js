@@ -930,6 +930,18 @@ function selecionarRepositorio(
             </span>
 
         </div>
+        <div class="selected-repository-actions">
+        <button
+            type="button"
+            class="remove-github-button"
+            id="removeGithubButton"
+        >
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Remover conta
+        </button>
+</div>
+
+
 
     `;
 
@@ -937,6 +949,16 @@ function selecionarRepositorio(
     selectedRepository.classList.remove(
         "hidden"
     );
+
+    const removeGithubButton =
+        document.getElementById("removeGithubButton");
+
+    if (removeGithubButton) {
+        removeGithubButton.addEventListener(
+            "click",
+            removerContaGitHub
+        );
+    }
 
 
     /*
@@ -954,6 +976,80 @@ function selecionarRepositorio(
 
 }
 
+/* =========================================
+   REMOVER CONTA DO GITHUB
+========================================= */
+
+async function removerContaGitHub() {
+    const confirmar = confirm(
+        "Tem certeza que deseja remover a conta do GitHub?"
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            "http://127.0.0.1:8000/auth/github/logout",
+            {
+                method: "POST",
+                credentials: "include"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Não foi possível desconectar o GitHub."
+            );
+        }
+
+        // Limpa o estado do frontend
+        githubConnected = false;
+        repositoriosGitHub = [];
+        repositorioAtual = null;
+
+        localStorage.removeItem(
+            "repositorioSelecionado"
+        );
+
+        localStorage.removeItem(
+            "repositorioUrl"
+        );
+
+        localStorage.removeItem(
+            "repositorioBranch"
+        );
+
+        // Limpa o card
+        selectedRepository.innerHTML = "";
+        selectedRepository.classList.add("hidden");
+
+        // Volta o botão principal
+        githubButton.innerHTML = `
+            <i class="fa-brands fa-github"></i>
+            Conectar GitHub
+        `;
+
+        githubButton.disabled = false;
+
+        mostrarMensagem(
+            "Conta do GitHub desconectada.",
+            "sucesso"
+        );
+
+    } catch (erro) {
+        console.error(
+            "Erro ao remover conta GitHub:",
+            erro
+        );
+
+        mostrarMensagem(
+            "Não foi possível desconectar a conta do GitHub.",
+            "erro"
+        );
+    }
+}
 
 /* =========================================
    ESCAPAR HTML
@@ -1155,4 +1251,51 @@ function mostrarMensagem(texto, tipo = "sucesso") {
     setTimeout(function () {
         mensagem.remove();
     }, 2500);
+}
+
+/* =========================================
+   Valicação de sessão antes de iniciar a análise
+========================================= */
+
+const startVerificationButton =
+    document.getElementById(
+        "startVerificationButton"
+    );
+
+if (startVerificationButton) {
+    startVerificationButton.addEventListener(
+        "click",
+        function () {
+
+            const repositorio =
+                localStorage.getItem(
+                    "repositorioSelecionado"
+                );
+
+            if (!repositorio) {
+                mostrarMensagem(
+                    "Selecione um repositório antes de começar a verificação.",
+                    "erro"
+                );
+
+                return;
+            }
+
+            console.log(
+                "Iniciando verificação:",
+                repositorio
+            );
+
+            mostrarMensagem(
+                "Repositório pronto para análise.",
+                "sucesso"
+            );
+
+            // Futuramente:
+            // chamar API do Gemini
+            // enviar código do repositório
+            // receber análise
+            // mostrar relatório
+        }
+    );
 }
