@@ -16,7 +16,7 @@ O **CheckIA** é uma plataforma inovadora de análise e auditoria automatizada d
 
 O **CheckIA** atua como uma barreira de segurança pré-produção. Ele varre repositórios Git, analisa o código estaticamente com o apoio de Large Language Models (LLMs) treinadas em segurança da informação, e entrega um diagnóstico claro, listando vulnerabilidades por níveis de severidade com sugestões exatas de código para correção.
 
-> 🚀 **Parceria Acadêmico-Corporativa**: Projeto desenvolvido no **Centro Universitário ENIAC** sob a mentoria de **Gustavo Domingos Cardoso**, CEO da **Lobios**.
+> 🚀 **Parceria Acadêmico-Corporativa**: Projeto desenvolvido no **Centro Universitário ENIAC**.
 
 ---
 
