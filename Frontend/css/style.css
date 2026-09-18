@@ -56,20 +56,7 @@ body{
     --gray:#8B949E;
 
 }
-body.light-theme{
-    --background:#F6F8FA;
-    --sidebar:#FFFFFF;
-    --card:#FFFFFF;
-    --hover:#EAEEF2;
-    --border:#D0D7DE;
-    --white:#0D1117;
-    --gray:#57606A;
-}
 
-body.light-theme{
-    background:var(--background);
-    color:var(--white);
-}
 /* Links */
 
 a{
