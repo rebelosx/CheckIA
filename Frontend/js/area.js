@@ -4,32 +4,6 @@ if (!usuarioLogado) {
     window.location.href = "index.html";
 }
 
-const chaveConta = `_${usuarioLogado}`;
-
-// 1. Aplica o tema via variáveis CSS sem alterar a estrutura da página
-function aplicarTema(eClaro) {
-    const root = document.documentElement;
-    if (eClaro) {
-        root.style.setProperty("--background", "#f6f8fa");
-        root.style.setProperty("--card", "#ffffff");
-        root.style.setProperty("--border", "#d0d7de");
-        root.style.setProperty("--white", "#1f2328");
-        root.style.setProperty("--gray", "#656d76");
-        root.style.setProperty("--hover", "#f3f4f6");
-    } else {
-        root.style.removeProperty("--background");
-        root.style.removeProperty("--card");
-        root.style.removeProperty("--border");
-        root.style.removeProperty("--white");
-        root.style.removeProperty("--gray");
-        root.style.removeProperty("--hover");
-    }
-}
-
-const temaAtivo = localStorage.getItem(`temaClaro${chaveConta}`) === "true";
-aplicarTema(temaAtivo);
-
-// 2. Dados das Páginas
 const dados = {
     projects: { title: "Projetos", description: "Acompanhe os repositórios analisados pela sua conta.", action: "Nova análise" },
     reports: { title: "Relatórios", description: "Consulte o histórico de análises e seus resultados.", action: "Nova análise" },
@@ -46,7 +20,6 @@ const historicoSalvo = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
 const analiseLegada = JSON.parse(localStorage.getItem("ultimaAnalise") || "null");
 const registrosDisponiveis = [...historicoSalvo, ...(ultimaAnalise ? [ultimaAnalise] : []), ...(analiseLegada ? [analiseLegada] : [])];
 const historico = registrosDisponiveis.filter((item, index, registros) => item && registros.findIndex((outro) => outro.repo === item.repo && outro.analise_ia === item.analise_ia) === index);
-
 if (historico.length !== historicoSalvo.length) localStorage.setItem(chaveHistorico, JSON.stringify(historico));
 
 function obterVulnerabilidades(resultado) {
@@ -79,30 +52,23 @@ action.href = page.actionHref || "analysis.html";
 const areaSummary = document.getElementById("areaSummary");
 const areaList = document.getElementById("areaList");
 
-// Renderização Padrão das Páginas (Estruturação HTML corrigida)
 if (view === "projects") {
     const projetos = [...new Map(historico.map((item) => [item.repo, item])).values()];
     areaSummary.innerHTML = [["Projetos analisados", projetos.length], ["Em monitoramento", projetos.length], ["Último status", ultimaAnalise ? "Concluída" : "Sem dados"]].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${escaparHtml(value)}</strong></article>`).join("");
-    
-    areaList.innerHTML = projetos.length 
-        ? projetos.map((item) => `<a class="area-row" href="area.html?view=reports&repo=${encodeURIComponent(item.repo)}"><i class="fa-brands fa-github"></i><div><strong>${escaparHtml(item.repo)}</strong><span>Última análise: ${dataFormatada(item.criada_em)}</span></div><b class="area-badge">Ver relatórios</b></a>`).join("") 
-        : `<article class="area-row"><i class="fa-solid fa-folder-open"></i><div><strong>Nenhum projeto analisado</strong><span>Conecte um repositório para começar.</span></div></article>`;
+    areaList.innerHTML = projetos.length ? projetos.map((item) => `<a class="area-row" href="area.html?view=reports&repo=${encodeURIComponent(item.repo)}"><i class="fa-brands fa-github"></i><div><strong>${escaparHtml(item.repo)}</strong><span>Última análise: ${dataFormatada(item.criada_em)}</span></div><b class="area-badge">Ver relatórios</b></a>`).join("") : `<article class="area-row"><i class="fa-solid fa-folder-open"></i><div><strong>Nenhum projeto analisado</strong><span>Conecte um repositório para começar.</span></div></article>`;
 } else if (view === "reports") {
     const relatorios = repositorioSelecionado ? historico.filter((item) => item.repo === repositorioSelecionado) : historico;
     areaSummary.innerHTML = [["Relatórios gerados", relatorios.length], ["Com riscos", relatorios.filter((item) => obterVulnerabilidades(item).length > 0).length], ["Projeto", repositorioSelecionado || "Todos"]].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${escaparHtml(value)}</strong></article>`).join("");
-    
-    areaList.innerHTML = relatorios.length 
-        ? [...relatorios].reverse().map((item) => `<article class="area-row"><i class="fa-solid fa-file-lines"></i><div><strong>Relatório de ${escaparHtml(item.repo)}</strong><span>${dataFormatada(item.criada_em)} · ${obterVulnerabilidades(item).length} risco(s) encontrado(s)</span></div><b class="area-badge">Concluído</b></article>`).join("") 
-        : `<article class="area-row"><i class="fa-solid fa-file-circle-plus"></i><div><strong>Nenhum relatório gerado</strong><span>Os relatórios aparecerão após a primeira análise.</span></div></article>`;
-} else if (view === "settings") {
-    areaSummary.innerHTML = [["Integrações", localStorage.getItem(`integracaoGithub_${usuarioLogado}`) === "false" ? 0 : 1], ["Análises realizadas", historico.length], ["Notificações", localStorage.getItem(`alertasSeguranca_${usuarioLogado}`) === "false" ? "Inativas" : "Ativas"]].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${escaparHtml(value)}</strong></article>`).join("");
+    areaList.innerHTML = relatorios.length ? [...relatorios].reverse().map((item) => `<article class="area-row"><i class="fa-solid fa-file-lines"></i><div><strong>Relatório de ${escaparHtml(item.repo)}</strong><span>${dataFormatada(item.criada_em)} · ${obterVulnerabilidades(item).length} risco(s) encontrado(s)</span></div><b class="area-badge">Concluído</b></article>`).join("") : `<article class="area-row"><i class="fa-solid fa-file-circle-plus"></i><div><strong>Nenhum relatório gerado</strong><span>Os relatórios aparecerão após a primeira análise.</span></div></article>`;
+} else {
+    areaSummary.innerHTML = view === "settings" ? [["Integrações", localStorage.getItem(`integracaoGithub_${usuarioLogado}`) === "false" ? 0 : 1], ["Análises realizadas", historico.length], ["Notificações", localStorage.getItem(`alertasSeguranca_${usuarioLogado}`) === "false" ? "Inativas" : "Ativas"]].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${escaparHtml(value)}</strong></article>`).join("") : "";
 }
 
-// Renderização das Configurações
 if (view === "settings") {
     const emailSalvo = localStorage.getItem("emailConta") || usuarioLogado;
     const nomeSalvo = localStorage.getItem("nomeConta") || usuarioLogado.split("@")[0];
     const funcaoSalva = localStorage.getItem("funcaoConta") || "Analista";
+    const chaveConta = `_${usuarioLogado}`;
     const githubAtivo = localStorage.getItem(`integracaoGithub${chaveConta}`) !== "false";
     const webhooksAtivos = localStorage.getItem(`webhooksAtivos${chaveConta}`) === "true";
     const alertasAtivos = localStorage.getItem(`alertasSeguranca${chaveConta}`) !== "false";
@@ -149,7 +115,7 @@ if (view === "settings") {
             </div>
             <label class="settings-toggle"><span><strong>Alertas de segurança</strong><small>Avise quando um risco crítico for encontrado.</small></span><input id="alertsToggle" type="checkbox" ${alertasAtivos ? "checked" : ""}><span class="toggle-control"></span></label>
             <label class="settings-toggle"><span><strong>Resumo semanal</strong><small>Receba a evolução dos seus projetos por e-mail.</small></span><input id="summaryToggle" type="checkbox" ${resumoAtivo ? "checked" : ""}><span class="toggle-control"></span></label>
-            <label class="settings-toggle"><span><strong>Tema claro</strong><small>Alternar para interface clara de alto contraste.</small></span><input id="themeToggle" type="checkbox" ${temaAtivo ? "checked" : ""}><span class="toggle-control"></span></label>
+            <label class="settings-toggle"><span><strong>Tema claro</strong><small>Use uma aparência clara para o aplicativo.</small></span><input id="themeToggle" type="checkbox"><span class="toggle-control"></span></label>
         </section>`;
 
     document.getElementById("profileForm").addEventListener("submit", (event) => {
@@ -161,29 +127,32 @@ if (view === "settings") {
         document.getElementById("usuario").textContent = dadosPerfil.get("nome");
         mostrarMensagem("Perfil atualizado com sucesso.", "#3FB950");
     });
-
     document.getElementById("githubToggle").addEventListener("change", (event) => localStorage.setItem(`integracaoGithub${chaveConta}`, event.target.checked));
     document.getElementById("webhookToggle").addEventListener("change", (event) => localStorage.setItem(`webhooksAtivos${chaveConta}`, event.target.checked));
     document.getElementById("alertsToggle").addEventListener("change", (event) => localStorage.setItem(`alertasSeguranca${chaveConta}`, event.target.checked));
     document.getElementById("summaryToggle").addEventListener("change", (event) => localStorage.setItem(`resumoSemanal${chaveConta}`, event.target.checked));
-    
-    document.getElementById("themeToggle").addEventListener("change", (event) => {
-        const eClaro = event.target.checked;
-        localStorage.setItem(`temaClaro${chaveConta}`, eClaro);
-        aplicarTema(eClaro);
-    });
-} else if (view === "vulnerabilities" && ultimaAnalise) {
-    const repositorio = escaparHtml(ultimaAnalise.repo || "GitHub");
-    const riscos = String(vulnerabilidades.length);
-    areaSummary.innerHTML = [
-        ["Repositório analisado", repositorio],
-        ["Riscos encontrados", riscos],
-        ["Status", "Concluída"]
-    ].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${value}</strong></article>`).join("");
+} else {
+    if (view === "vulnerabilities" && ultimaAnalise) {
+        const repositorio = escaparHtml(ultimaAnalise.repo || "GitHub");
+        const riscos = String(vulnerabilidades.length);
+        areaSummary.innerHTML = [
+            [view === "reports" ? "Relatório mais recente" : "Repositório analisado", repositorio],
+            ["Riscos encontrados", riscos],
+            ["Status", "Concluída"]
+        ].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${value}</strong></article>`).join("");
 
-    areaList.innerHTML = vulnerabilidades.length
-        ? vulnerabilidades.map((item) => `<article class="area-row"><i class="fa-solid fa-triangle-exclamation"></i><div><strong>${escaparHtml(item.risco || "Ponto de atenção")}</strong><span>${escaparHtml(item.arquivo || "Arquivo não informado")} · ${escaparHtml(item.descricao || "Sem descrição disponível.")}</span></div><b class="area-badge">${escaparHtml(item.severidade || "Análise")}</b></article>`).join("")
-        : `<article class="area-row"><i class="fa-solid fa-shield-check"></i><div><strong>Nenhum risco estruturado encontrado</strong><span>A resposta da IA não identificou vulnerabilidades no formato esperado.</span></div><b class="area-badge">Seguro</b></article>`;
+        if (view === "vulnerabilities") {
+            areaList.innerHTML = vulnerabilidades.length
+                ? vulnerabilidades.map((item) => `<article class="area-row"><i class="fa-solid fa-triangle-exclamation"></i><div><strong>${escaparHtml(item.risco || "Ponto de atenção")}</strong><span>${escaparHtml(item.arquivo || "Arquivo não informado")} · ${escaparHtml(item.descricao || "Sem descrição disponível.")}</span></div><b class="area-badge">${escaparHtml(item.severidade || "Análise")}</b></article>`).join("")
+                : `<article class="area-row"><i class="fa-solid fa-shield-check"></i><div><strong>Nenhum risco estruturado encontrado</strong><span>A resposta da IA não identificou vulnerabilidades no formato esperado.</span></div><b class="area-badge">Seguro</b></article>`;
+        }
+    } else if (view === "vulnerabilities") {
+        areaList.innerHTML = `<article class="area-row"><i class="fa-solid fa-shield"></i><div><strong>Nenhuma análise disponível</strong><span>Faça uma análise para visualizar vulnerabilidades.</span></div></article>`;
+    } else if (view !== "projects" && view !== "reports") {
+        areaList.innerHTML = page.rows.map(([title, detail, badge, icon]) =>
+            `<article class="area-row"><i class="fa-solid ${icon}"></i><div><strong>${title}</strong><span>${detail}</span></div><b class="area-badge">${badge}</b></article>`
+        ).join("");
+    }
 }
 
 function mostrarMensagem(texto, cor) {
@@ -200,5 +169,6 @@ document.querySelector(`[data-view="${view || "projects"}"]`)?.classList.add("ac
 const usuario = document.getElementById("usuario");
 if (usuarioLogado && usuario) {
     const nome = localStorage.getItem("nomeConta") || usuarioLogado.split("@")[0];
-    usuario.textContent = nome.charAt(0).toUpperCase() + nome.slice(1);
+    const nomeFormatado = nome.charAt(0).toUpperCase() + nome.slice(1);
+    usuario.textContent = nomeFormatado;
 }
