@@ -4,20 +4,27 @@
 ========================================= */
 
 /* VERIFICAÇÃO DE SESSÃO */
-const usuario = localStorage.getItem("usuario");
-
-if (!usuario) {
-    window.location.href = "index.html";
-}
-
-/* MOSTRAR USUÁRIO NO PERFIL */
+let usuario = null;
 const usuarioElemento = document.getElementById("usuario");
 
-if (usuarioElemento && usuario) {
-    let nome = usuario.split("@")[0];
-    nome = nome.charAt(0).toUpperCase() + nome.slice(1);
-    usuarioElemento.textContent = nome;
+async function verificarSessao() {
+  const { data } = await supabase.auth.getSession();
+
+  if (!data.session) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  usuario = data.session.user.email;
+  const nomeMeta = data.session.user.user_metadata?.nome;
+
+  if (usuarioElemento) {
+    let nome = nomeMeta || usuario.split("@")[0];
+    usuarioElemento.textContent = nome.charAt(0).toUpperCase() + nome.slice(1);
+  }
 }
+
+verificarSessao();
 
 
 /* =========================================
