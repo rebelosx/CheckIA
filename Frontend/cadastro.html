@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Criar conta | Check IA</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="dark">
+  <div class="container" style="align-items:center; justify-content:center;">
+    <div class="card fade" style="padding:40px; width:420px; max-width:90vw;">
+
+      <h1 style="font-size:26px; margin-bottom:8px;">Criar conta</h1>
+      <p style="margin-bottom:24px;">Cadastre-se para começar a proteger seus projetos.</p>
+
+      <form id="cadastroForm" novalidate>
+
+        <label for="nome" style="display:block; margin-bottom:6px; font-weight:600;">Nome</label>
+        <input
+          type="text"
+          id="nome"
+          placeholder="Digite seu nome"
+          style="width:100%; padding:14px; margin-bottom:18px; background:var(--sidebar); border:1px solid var(--border); border-radius:8px; color:var(--white);"
+        />
+
+        <label for="email" style="display:block; margin-bottom:6px; font-weight:600;">Email</label>
+        <input
+          type="email"
+          id="email"
+          placeholder="Digite seu email"
+          style="width:100%; padding:14px; margin-bottom:18px; background:var(--sidebar); border:1px solid var(--border); border-radius:8px; color:var(--white);"
+        />
+
+        <label for="senha" style="display:block; margin-bottom:6px; font-weight:600;">Senha</label>
+        <input
+          type="password"
+          id="senha"
+          placeholder="Mínimo de 6 caracteres"
+          style="width:100%; padding:14px; margin-bottom:18px; background:var(--sidebar); border:1px solid var(--border); border-radius:8px; color:var(--white);"
+        />
+
+        <label for="confirmarSenha" style="display:block; margin-bottom:6px; font-weight:600;">Confirmar senha</label>
+        <input
+          type="password"
+          id="confirmarSenha"
+          placeholder="Repita sua senha"
+          style="width:100%; padding:14px; margin-bottom:24px; background:var(--sidebar); border:1px solid var(--border); border-radius:8px; color:var(--white);"
+        />
+
+        <button type="submit" class="btn-primary" style="width:100%;">Criar conta</button>
+
+      </form>
+
+      <p style="margin-top:20px; text-align:center;">
+        Já tem uma conta? <a href="index.html" style="color:var(--blue); font-weight:600;">Entrar</a>
+      </p>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabaseClient.js"></script>
+  <script src="cadastro.js"></script>
+</body>
+</html>
