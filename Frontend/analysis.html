@@ -45,10 +45,23 @@
             </nav>
         </div>
 
-        <div class="profile">
-            <i class="fa-solid fa-user"></i>
-            <div><strong id="usuario">Usuário</strong><p>Analista</p></div>
+        <div class="profile-wrapper">
+    <button class="profile" id="profileButton" type="button">
+        <i class="fa-solid fa-user"></i>
+        <div>
+            <strong id="usuario">Usuário</strong>
+            <p>Analista</p>
         </div>
+        <i class="fa-solid fa-chevron-up profile-chevron"></i>
+    </button>
+
+    <div class="profile-menu" id="profileMenu">
+        <button type="button" onclick="logout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Sair
+        </button>
+    </div>
+</div>
     </aside>
 
     <!-- =====================================
