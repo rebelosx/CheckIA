@@ -6,7 +6,11 @@ from urllib.parse import urlencode
 import httpx
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, UploadFile, File, Form
+from services.gemini_service import analisar_codigo
+from services.github_service import buscar_arquivos_repo
+import zipfile
+import io
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
