@@ -7,7 +7,7 @@ load_dotenv()
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-MODELO = "gemini-2.0-flash"
+MODELO = "gemini-3.8-flash"
 
 PROMPT_BASE = """
 Você é um especialista em segurança de aplicações (AppSec), atuando como um scanner
@@ -43,7 +43,11 @@ exatamente este formato:
 }
 
 Se não encontrar nenhuma vulnerabilidade, devolva "vulnerabilidades": [] e um score alto.
-Nunca invente vulnerabilidades que não existem no código enviado.
+Nunca invente vulnerabilidades que não existem no código enviado. 
+Seja direto e conciso nas descrições e recomendações, para caber dentro do limite de
+tokens de resposta. Não repita o código enviado na resposta.
+
+CÓDIGO A ANALISAR:
 
 CÓDIGO A ANALISAR:
 """
@@ -52,9 +56,12 @@ def analisar_codigo(codigo: str) -> dict:
     modelo = genai.GenerativeModel(MODELO)
 
     resposta = modelo.generate_content(
-        PROMPT_BASE + "\n\n```\n" + codigo + "\n```",
-        generation_config={"temperature": 0.2},
-    )
+    PROMPT_BASE + "\n\n```\n" + codigo + "\n```",
+    generation_config={
+        "temperature": 0.2,
+        "max_output_tokens": 4096,
+    },
+)
 
     texto = resposta.text.strip()
 
