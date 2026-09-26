@@ -201,14 +201,6 @@ function mostrarMensagem(mensagem) {
  }, 2500);
 }
 
-/* =====================================================
- 10. LOGOUT
-===================================================== */
-async function logout() {
- await supabase.auth.signOut();
- window.location.href = "index.html";
-}
-window.logout = logout;
 
 /* =====================================================
  11. ATUALIZAR DATA
