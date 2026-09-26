@@ -605,3 +605,80 @@ async def github_logout(
         "message":
             "GitHub desconectado."
     }
+
+# =========================================================
+# ANÁLISE DE CÓDIGO COM IA
+# =========================================================
+
+@app.post("/analyze/code")
+async def analisar_codigo_manual(
+    codigo: str = Form(...)
+):
+    """Recebe um trecho de código colado manualmente."""
+    return analisar_codigo(codigo)
+
+
+@app.post("/analyze/zip")
+async def analisar_zip(
+    arquivo: UploadFile = File(...)
+):
+    """Recebe um .zip, extrai os arquivos de código e analisa juntos."""
+
+    conteudo = await arquivo.read()
+
+    extensoes_validas = (".py", ".js", ".jsx", ".ts", ".java", ".php", ".html", ".css", ".sql")
+    codigos_extraidos = []
+
+    with zipfile.ZipFile(io.BytesIO(conteudo)) as zip_ref:
+        for nome_arquivo in zip_ref.namelist():
+            if nome_arquivo.endswith(extensoes_validas) and not nome_arquivo.startswith("__MACOSX"):
+                with zip_ref.open(nome_arquivo) as f:
+                    try:
+                        texto = f.read().decode("utf-8", errors="ignore")
+                        codigos_extraidos.append(f"# Arquivo: {nome_arquivo}\n{texto[:5000]}")
+                    except Exception:
+                        continue
+
+    if not codigos_extraidos:
+        return {
+            "score": 0,
+            "linguagem_detectada": "desconhecida",
+            "resumo": "Nenhum arquivo de código reconhecido dentro do ZIP.",
+            "vulnerabilidades": [],
+        }
+
+    codigo_completo = "\n\n".join(codigos_extraidos[:15])
+    return analisar_codigo(codigo_completo)
+
+
+@app.post("/analyze/github")
+async def analisar_repo_github(
+    request: Request,
+    repo_full_name: str = Form(...),
+    branch: str = Form("main")
+):
+    """repo_full_name vem como 'usuario/repositorio', igual ao que já é
+    guardado em localStorage['repositorioSelecionado'] no frontend."""
+
+    access_token = request.session.get("github_access_token")
+
+    if not access_token:
+        raise HTTPException(
+            status_code=401,
+            detail="Usuário não conectado ao GitHub."
+        )
+
+    owner, repo = repo_full_name.split("/", 1)
+
+    arquivos = await buscar_arquivos_repo(access_token, owner, repo, branch)
+
+    if not arquivos:
+        return {
+            "score": 0,
+            "linguagem_detectada": "desconhecida",
+            "resumo": "Nenhum arquivo de código encontrado no repositório.",
+            "vulnerabilidades": [],
+        }
+
+    codigo_completo = "\n\n".join(arquivos)
+    return analisar_codigo(codigo_completo)
