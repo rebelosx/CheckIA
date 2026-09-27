@@ -54,8 +54,7 @@ if (uploadButton && fileInput) {
         uploadButton.style.color = "#3FB950";
         uploadButton.style.borderColor = "#3FB950";
 
-        // Inicia análise simulada do arquivo enviado
-        iniciarAnalise("ZIP", arquivo.name);
+        iniciarAnalise("ZIP", arquivo.name, arquivo);
     });
 }
 
@@ -132,11 +131,6 @@ if (githubButton) {
         "click",
         function () {
 
-            /*
-                Se ainda não conectou ao GitHub,
-                inicia OAuth.
-            */
-
             if (!githubConnected) {
 
                 conectarGitHub();
@@ -144,12 +138,6 @@ if (githubButton) {
                 return;
 
             }
-
-
-            /*
-                Se já está conectado,
-                abre novamente a lista de repos.
-            */
 
             mostrarRepositorios(
                 repositoriosGitHub
@@ -193,13 +181,6 @@ window.addEventListener(
     "message",
     async function (event) {
 
-        /*
-            Segurança:
-
-            só aceitamos mensagens
-            vindas do nosso backend.
-        */
-
         if (
             event.origin !==
             "http://127.0.0.1:8000"
@@ -208,11 +189,6 @@ window.addEventListener(
             return;
 
         }
-
-
-        /*
-            Backend terminou o OAuth.
-        */
 
         if (
             event.data &&
@@ -250,11 +226,6 @@ async function carregarRepositorios() {
                 "http://127.0.0.1:8000/github/repos",
                 {
                     method: "GET",
-
-                    /*
-                        Necessário para enviar
-                        o cookie da sessão FastAPI.
-                    */
                     credentials: "include"
                 }
             );
@@ -295,11 +266,6 @@ async function carregarRepositorios() {
             Selecionar repositório
         `;
 
-
-        /*
-            Depois do login,
-            abre automaticamente a seleção.
-        */
 
         mostrarRepositorios(
             repositoriosGitHub
@@ -342,11 +308,6 @@ async function carregarRepositorios() {
 function mostrarRepositorios(
     repositorios
 ) {
-
-    /*
-        Evita criar dois modais
-        ao mesmo tempo.
-    */
 
     const modalExistente =
         document.querySelector(
@@ -444,10 +405,6 @@ function mostrarRepositorios(
         );
 
 
-    /* =====================================
-       RENDERIZAR REPOSITÓRIOS
-    ===================================== */
-
     function renderizarRepositorios(
         listaRepos
     ) {
@@ -490,11 +447,6 @@ function mostrarRepositorios(
                 item.className =
                     "repository-item";
 
-
-                /*
-                    Marcamos visualmente
-                    o repo já selecionado.
-                */
 
                 if (
                     repositorioAtual &&
@@ -640,18 +592,10 @@ function mostrarRepositorios(
     }
 
 
-    /*
-        Primeira renderização.
-    */
-
     renderizarRepositorios(
         repositorios
     );
 
-
-    /* =====================================
-       BUSCA
-    ===================================== */
 
     busca.addEventListener(
         "input",
@@ -697,10 +641,6 @@ function mostrarRepositorios(
     );
 
 
-    /* =====================================
-       FECHAR
-    ===================================== */
-
     fechar.addEventListener(
         "click",
         function () {
@@ -710,10 +650,6 @@ function mostrarRepositorios(
         }
     );
 
-
-    /*
-        Clique fora do modal.
-    */
 
     modal.addEventListener(
         "click",
@@ -730,10 +666,6 @@ function mostrarRepositorios(
         }
     );
 
-
-    /*
-        ESC fecha o modal.
-    */
 
     function fecharComEsc(event) {
 
@@ -771,11 +703,6 @@ function selecionarRepositorio(
 
     repositorioAtual = repo;
 
-
-    /*
-        Guarda informações úteis
-        para as próximas telas.
-    */
 
     localStorage.setItem(
         "repositorioSelecionado",
@@ -968,11 +895,6 @@ function selecionarRepositorio(
     }
 
 
-    /*
-        O botão permanece disponível
-        para trocar de repo.
-    */
-
     githubButton.innerHTML = `
         <i class="fa-solid fa-repeat"></i>
         Selecionar repositório
@@ -1011,7 +933,6 @@ async function removerContaGitHub() {
             );
         }
 
-        // Limpa o estado do frontend
         githubConnected = false;
         repositoriosGitHub = [];
         repositorioAtual = null;
@@ -1028,11 +949,9 @@ async function removerContaGitHub() {
             "repositorioBranch"
         );
 
-        // Limpa o card
         selectedRepository.innerHTML = "";
         selectedRepository.classList.add("hidden");
 
-        // Volta o botão principal
         githubButton.innerHTML = `
             <i class="fa-brands fa-github"></i>
             Conectar GitHub
@@ -1061,11 +980,6 @@ async function removerContaGitHub() {
 /* =========================================
    ESCAPAR HTML
 ========================================= */
-
-/*
-    Evita inserir diretamente no HTML
-    textos vindos da API do GitHub.
-*/
 
 function escaparHTML(texto) {
 
@@ -1118,7 +1032,6 @@ function mostrarModalGitHub() {
 
     document.body.appendChild(modal);
 
-    // Fechar modal ao clicar fora
     modal.addEventListener("click", function (e) {
         if (e.target === modal) modal.remove();
     });
@@ -1201,28 +1114,41 @@ function mostrarModalCodigo() {
         }
 
         modal.remove();
-        iniciarAnalise("Código", "Trecho colado manual");
+        iniciarAnalise("Código", "Trecho colado manual", codigo);
     });
 }
 
 
 /* =========================================
-   INICIALIZAÇÃO DA ANÁLISE
+   INICIALIZAÇÃO DA ANÁLISE (versão real, com IA)
 ========================================= */
 
-function iniciarAnalise(tipo, origem) {
-    localStorage.setItem("tipoAnalise", tipo);
+async function iniciarAnalise(tipo, origem, payload) {
+  localStorage.setItem("tipoAnalise", tipo);
+  if (origem) {
+    localStorage.setItem("origemAnalise", origem);
+  }
 
-    if (origem) {
-        localStorage.setItem("origemAnalise", origem);
-    }
+  mostrarMensagem(`Preparando análise de ${tipo}...`, "sucesso");
 
-    mostrarMensagem(`Preparando análise de ${tipo}...`, "sucesso");
+  if (payload instanceof File) {
+    const leitor = new FileReader();
+    leitor.onload = function () {
+      sessionStorage.setItem("arquivoAnaliseBase64", leitor.result);
+      sessionStorage.setItem("arquivoAnaliseNome", payload.name);
+      window.location.href = "scan.html";
+    };
+    leitor.readAsDataURL(payload);
+    return;
+  }
 
-    setTimeout(function () {
-        // Redireciona para visualização do progresso ou resultado
-        window.location.href = "area.html?view=vulnerabilities";
-    }, 1200);
+  if (typeof payload === "string") {
+    sessionStorage.setItem("codigoAnalise", payload);
+  }
+
+  setTimeout(function () {
+    window.location.href = "scan.html";
+  }, 800);
 }
 
 
@@ -1231,7 +1157,6 @@ function iniciarAnalise(tipo, origem) {
 ========================================= */
 
 function mostrarMensagem(texto, tipo = "sucesso") {
-    // Remove mensagens existentes para não empilhar
     const antiga = document.querySelector(".toast-message");
     if (antiga) antiga.remove();
 
@@ -1239,7 +1164,6 @@ function mostrarMensagem(texto, tipo = "sucesso") {
     mensagem.className = "toast-message";
     mensagem.textContent = texto;
 
-    // Estilos inline garantindo harmonia visual com o projeto
     mensagem.style.position = "fixed";
     mensagem.style.bottom = "25px";
     mensagem.style.right = "25px";
@@ -1261,7 +1185,7 @@ function mostrarMensagem(texto, tipo = "sucesso") {
 }
 
 /* =========================================
-   Valicação de sessão antes de iniciar a análise
+   Validação de sessão antes de iniciar a análise (GitHub)
 ========================================= */
 
 const startVerificationButton =
@@ -1270,39 +1194,14 @@ const startVerificationButton =
     );
 
 if (startVerificationButton) {
-    startVerificationButton.addEventListener(
-        "click",
-        function () {
+  startVerificationButton.addEventListener("click", function () {
+    const repositorio = localStorage.getItem("repositorioSelecionado");
 
-            const repositorio =
-                localStorage.getItem(
-                    "repositorioSelecionado"
-                );
+    if (!repositorio) {
+      mostrarMensagem("Selecione um repositório antes de começar a verificação.", "erro");
+      return;
+    }
 
-            if (!repositorio) {
-                mostrarMensagem(
-                    "Selecione um repositório antes de começar a verificação.",
-                    "erro"
-                );
-
-                return;
-            }
-
-            console.log(
-                "Iniciando verificação:",
-                repositorio
-            );
-
-            mostrarMensagem(
-                "Repositório pronto para análise.",
-                "sucesso"
-            );
-
-            // Futuramente:
-            // chamar API do Gemini
-            // enviar código do repositório
-            // receber análise
-            // mostrar relatório
-        }
-    );
+    iniciarAnalise("GitHub", repositorio);
+  });
 }
