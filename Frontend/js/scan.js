@@ -1,9 +1,4 @@
-/* =====================================================
- CHECK IA - SCAN.JS (versão real, com IA)
-===================================================== */
-
 const BACKEND_URL = "http://127.0.0.1:8000";
-
 /* Sessão: só entra quem está logado */
 supabase.auth.getSession().then(({ data }) => {
   if (!data.session) {
@@ -173,7 +168,11 @@ async function executarAnalise() {
     }
 
     if (!resposta.ok) {
-      throw new Error(`O servidor respondeu com status ${resposta.status}`);
+      let detalhe = "";
+      try {
+        detalhe = (await resposta.json()).detail;
+      } catch {}
+      throw new Error(detalhe || `O servidor respondeu com status ${resposta.status}`);
     }
 
     const resultado = await resposta.json();
