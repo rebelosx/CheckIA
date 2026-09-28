@@ -6,11 +6,11 @@ from google.genai import types
 
 load_dotenv()
 
-# Inicializa o novo cliente oficial da SDK
+# Cliente oficial da nova SDK
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-# Modelo estável do Gemini
-MODELO = "gemini-1.5-flash"
+# Modelo atualizado suportado pela biblioteca google-genai
+MODELO = "gemini-2.5-flash"
 
 PROMPT_BASE = """
 Você é um especialista em segurança de aplicações (AppSec), atuando como um scanner
@@ -44,7 +44,7 @@ Responda APENAS em JSON válido, sem markdown, sem texto fora do JSON, seguindo 
 
 Se não encontrar nenhuma vulnerabilidade, devolva "vulnerabilidades": [] e um score alto.
 Nunca invente vulnerabilidades que não existem no código enviado.
-Seja direto e conciso nas descrições e recomendações. Não repita o código enviado na resposta.
+Seja direto e conciso nas descrições e recomendações, para caber dentro do limite de tokens de resposta. Não repita o código enviado na resposta.
 
 CÓDIGO A ANALISAR:
 """
@@ -52,7 +52,6 @@ CÓDIGO A ANALISAR:
 def analisar_codigo(codigo: str) -> dict:
     prompt_completo = PROMPT_BASE + "\n\n" + codigo + "\n"
 
-    # Nova forma de estruturar chamadas com JSON nativo
     configuracao = types.GenerateContentConfig(
         temperature=0.2,
         max_output_tokens=4096,
@@ -67,7 +66,6 @@ def analisar_codigo(codigo: str) -> dict:
 
     texto = resposta.text.strip()
 
-    # Trata caso o modelo insira blocos de código markdown
     if texto.startswith("```"):
         linhas = texto.splitlines()
         if linhas[0].startswith("```"):
