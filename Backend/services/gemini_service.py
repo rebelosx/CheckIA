@@ -1,13 +1,15 @@
 import os
 import json
-import google.generativeai as genai
 from dotenv import load_dotenv
+from google import genai
+from google.genai import types
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# Inicializa o novo cliente oficial da SDK
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-# Alterado para o modelo estável da API para evitar erros de cota/429
+# Modelo estável do Gemini
 MODELO = "gemini-1.5-flash"
 
 PROMPT_BASE = """
@@ -48,23 +50,24 @@ CÓDIGO A ANALISAR:
 """
 
 def analisar_codigo(codigo: str) -> dict:
-    modelo = genai.GenerativeModel(MODELO)
-    
-    # Força a API do Gemini a retornar estritamente um JSON limpo
-    configuracao = genai.GenerationConfig(
+    prompt_completo = PROMPT_BASE + "\n\n" + codigo + "\n"
+
+    # Nova forma de estruturar chamadas com JSON nativo
+    configuracao = types.GenerateContentConfig(
         temperature=0.2,
         max_output_tokens=4096,
-        response_mime_type="application/json"
+        response_mime_type="application/json",
     )
 
-    resposta = modelo.generate_content(
-        PROMPT_BASE + "\n\n" + codigo + "\n",
-        generation_config=configuracao
+    resposta = client.models.generate_content(
+        model=MODELO,
+        contents=prompt_completo,
+        config=configuracao
     )
 
     texto = resposta.text.strip()
 
-    # Limpeza defensiva caso o modelo devolva blocos de código markdown
+    # Trata caso o modelo insira blocos de código markdown
     if texto.startswith("```"):
         linhas = texto.splitlines()
         if linhas[0].startswith("```"):
