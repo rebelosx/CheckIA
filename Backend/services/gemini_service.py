@@ -6,11 +6,11 @@ from google.genai import types
 
 load_dotenv()
 
-# Cliente oficial da nova SDK
+# Cliente oficial da SDK atualizada
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-# Modelo atualizado suportado pela biblioteca google-genai
-MODELO = "gemini-2.5-flash"
+# Modelo oficial ativo no Google AI Studio
+MODELO = "gemini-3.8-flash"
 
 PROMPT_BASE = """
 Você é um especialista em segurança de aplicações (AppSec), atuando como um scanner
@@ -52,9 +52,8 @@ CÓDIGO A ANALISAR:
 def analisar_codigo(codigo: str) -> dict:
     prompt_completo = PROMPT_BASE + "\n\n" + codigo + "\n"
 
+    # Configuração enxuta mantendo a resposta estrita em JSON
     configuracao = types.GenerateContentConfig(
-        temperature=0.2,
-        max_output_tokens=4096,
         response_mime_type="application/json",
     )
 
