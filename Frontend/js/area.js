@@ -10,7 +10,7 @@ const severidadeIcones = {
 async function iniciarPagina() {
   const { data: sessionData } = await supabase.auth.getSession();
 
-  if (!sessionData.session) {
+  if (!sessionData || !sessionData.session) {
     window.location.href = "index.html";
     return;
   }
@@ -34,6 +34,10 @@ async function iniciarPagina() {
       title: "Projetos",
       description: "Acompanhe a lista de escaneamentos realizados.",
     },
+    settings: {
+      title: "Configurações",
+      description: "Gerencie as preferências da sua conta, informações de perfil e altere sua senha.",
+    },
   };
 
   const pageInfo = titulos[view] || titulos.vulnerabilities;
@@ -56,10 +60,134 @@ async function iniciarPagina() {
     await carregarVulnerabilidadesReais();
   } else if (view === "reports" || view === "projects") {
     await carregarRelatoriosReais();
+  } else if (view === "settings") {
+    carregarTelaConfiguracoes(nomeMeta || usuarioLogado.split("@")[0]);
   }
 }
 
-// Carregar Vulnerabilidades com Origem, Data e Trecho/Linha
+// ---------------------------------------------------------
+// TELA DE CONFIGURAÇÕES (PERFIL + TROCA DE SENHA)
+// ---------------------------------------------------------
+function carregarTelaConfiguracoes(nomeAtual) {
+  // Oculta botões de ação extras no topo
+  const actionContainer = document.getElementById("areaAction")?.parentElement;
+  if (actionContainer) {
+    actionContainer.innerHTML = "";
+  }
+
+  // Oculta/Limpa o resumo de métricas do topo
+  const areaSummary = document.getElementById("areaSummary");
+  if (areaSummary) {
+    areaSummary.innerHTML = "";
+  }
+
+  const containerLista = document.getElementById("areaList");
+
+  containerLista.innerHTML = `
+    <div class="settings-container">
+      
+      <!-- PERFIL DO USUÁRIO -->
+      <div class="settings-card">
+        <h3><i class="fa-solid fa-user-gear"></i> Perfil do Usuário</h3>
+        <p class="settings-desc">Atualize as informações exibidas na sua conta.</p>
+        
+        <form id="formPerfil" onsubmit="atualizarPerfil(event)" class="settings-form">
+          <div class="form-group">
+            <label for="nomeUsuario">Nome de Exibição</label>
+            <input type="text" id="nomeUsuario" value="${nomeAtual}" placeholder="Seu nome" required />
+          </div>
+          
+          <div class="form-group">
+            <label for="emailUsuario">E-mail (somente leitura)</label>
+            <input type="email" id="emailUsuario" value="${usuarioLogado}" disabled />
+          </div>
+
+          <button type="submit" class="btn-save">
+            <i class="fa-solid fa-floppy-disk"></i> Salvar Perfil
+          </button>
+        </form>
+      </div>
+
+      <!-- ALTERAÇÃO DE SENHA -->
+      <div class="settings-card">
+        <h3><i class="fa-solid fa-lock"></i> Alterar Senha</h3>
+        <p class="settings-desc">Digite uma nova senha com pelo menos 6 caracteres para atualizar seu acesso.</p>
+        
+        <form id="formSenha" onsubmit="alterarSenha(event)" class="settings-form">
+          <div class="form-group">
+            <label for="novaSenha">Nova Senha</label>
+            <input type="password" id="novaSenha" placeholder="••••••••" required minlength="6" />
+          </div>
+
+          <div class="form-group">
+            <label for="confirmarSenha">Confirmar Nova Senha</label>
+            <input type="password" id="confirmarSenha" placeholder="••••••••" required minlength="6" />
+          </div>
+
+          <div id="msgSenha" class="form-message"></div>
+
+          <button type="submit" class="btn-save">
+            <i class="fa-solid fa-key"></i> Atualizar Senha
+          </button>
+        </form>
+      </div>
+
+    </div>
+  `;
+}
+
+// Atualizar nome de exibição no Supabase
+window.atualizarPerfil = async function (e) {
+  e.preventDefault();
+  const novoNome = document.getElementById("nomeUsuario").value.trim();
+
+  if (!novoNome) return;
+
+  const { error } = await supabase.auth.updateUser({
+    data: { nome: novoNome },
+  });
+
+  if (error) {
+    alert("Erro ao atualizar perfil: " + error.message);
+  } else {
+    alert("Perfil atualizado com sucesso!");
+    location.reload();
+  }
+};
+
+// Alterar senha diretamente no Supabase Auth
+window.alterarSenha = async function (e) {
+  e.preventDefault();
+  const novaSenha = document.getElementById("novaSenha").value;
+  const confirmarSenha = document.getElementById("confirmarSenha").value;
+  const msgEl = document.getElementById("msgSenha");
+
+  if (novaSenha !== confirmarSenha) {
+    msgEl.style.color = "#ef4444";
+    msgEl.textContent = "As senhas não coincidem. Tente novamente.";
+    return;
+  }
+
+  msgEl.style.color = "#3b82f6";
+  msgEl.textContent = "Processando atualização...";
+
+  const { error } = await supabase.auth.updateUser({
+    password: novaSenha,
+  });
+
+  if (error) {
+    msgEl.style.color = "#ef4444";
+    msgEl.textContent = "Erro ao alterar senha: " + error.message;
+  } else {
+    msgEl.style.color = "#10b981";
+    msgEl.textContent = "✓ Senha alterada com sucesso!";
+    document.getElementById("formSenha").reset();
+  }
+};
+
+// ---------------------------------------------------------
+// VULNERABILIDADES
+// ---------------------------------------------------------
 async function carregarVulnerabilidadesReais() {
   const { data: vulns, error } = await supabase
     .from("vulnerabilidades")
@@ -173,7 +301,7 @@ async function carregarVulnerabilidadesReais() {
     .join("");
 }
 
-async function marcarComoResolvida(vulnId) {
+window.marcarComoResolvida = async function (vulnId) {
   const { error } = await supabase
     .from("vulnerabilidades")
     .update({ status: "Resolvida" })
@@ -184,9 +312,9 @@ async function marcarComoResolvida(vulnId) {
   } else {
     carregarVulnerabilidadesReais();
   }
-}
+};
 
-async function excluirVulnerabilidade(vulnId) {
+window.excluirVulnerabilidade = async function (vulnId) {
   if (!confirm("Excluir este registro?")) return;
 
   const { error } = await supabase
@@ -200,10 +328,10 @@ async function excluirVulnerabilidade(vulnId) {
   } else {
     carregarVulnerabilidadesReais();
   }
-}
+};
 
-async function zerarHistoricoCompleto() {
-  if (!confirm("Atenção: Isso apagar todas as análises e vulnerabilidades gravadas permanentemente. Deseja continuar?")) return;
+window.zerarHistoricoCompleto = async function () {
+  if (!confirm("Atenção: Isso apagará todas as análises e vulnerabilidades gravadas permanentemente. Deseja continuar?")) return;
 
   const { error } = await supabase
     .from("analises")
@@ -215,8 +343,11 @@ async function zerarHistoricoCompleto() {
   } else {
     carregarVulnerabilidadesReais();
   }
-}
+};
 
+// ---------------------------------------------------------
+// RELATÓRIOS E PROJETOS
+// ---------------------------------------------------------
 async function carregarRelatoriosReais() {
   const { data: analises, error } = await supabase
     .from("analises")
