@@ -72,7 +72,6 @@ async function carregarVulnerabilidadesReais() {
     return;
   }
 
-  // Atualizar botões de ação do topo
   const actionContainer = document.getElementById("areaAction")?.parentElement;
   if (actionContainer) {
     actionContainer.innerHTML = `
@@ -115,7 +114,7 @@ async function carregarVulnerabilidadesReais() {
       const conf = severidadeIcones[v.severidade] || severidadeIcones["Média"];
       const isResolvida = v.status === "Resolvida";
       const origemNome = v.analises?.origem || "Código colado";
-      
+
       const dataFormatada = new Date(v.criado_em).toLocaleDateString("pt-BR", {
         day: "2-digit",
         month: "2-digit",
@@ -174,7 +173,6 @@ async function carregarVulnerabilidadesReais() {
     .join("");
 }
 
-// Funções de Ação (Resolver, Excluir Individual, Zerar Histórico Completo)
 async function marcarComoResolvida(vulnId) {
   const { error } = await supabase
     .from("vulnerabilidades")
@@ -219,7 +217,6 @@ async function zerarHistoricoCompleto() {
   }
 }
 
-// Carregar Histórico de Análises na view de 'reports' / 'projects'
 async function carregarRelatoriosReais() {
   const { data: analises, error } = await supabase
     .from("analises")

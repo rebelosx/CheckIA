@@ -88,7 +88,7 @@ def salvar_analise_no_supabase(user_id: str, tipo: str, resultado_ia: dict, orig
         analise_data = {
             "user_id": user_id,
             "tipo": tipo,
-            "origem": origem,  # Registra a origem do escaneamento
+            "origem": origem,
             "score": resultado_ia.get("score", 0),
             "linguagem_detectada": resultado_ia.get("linguagem_detectada", "desconhecida"),
             "resumo": resultado_ia.get("resumo", "Sem resumo disponível."),
