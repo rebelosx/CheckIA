@@ -1,8 +1,13 @@
 const BACKEND_URL = "http://127.0.0.1:8000";
-/* Sessão: só entra quem está logado */
+
+let currentUserId = null;
+
+/* Validação de Sessão Supabase */
 supabase.auth.getSession().then(({ data }) => {
   if (!data.session) {
     window.location.href = "index.html";
+  } else {
+    currentUserId = data.session.user.id;
   }
 });
 
@@ -16,12 +21,10 @@ const risksCount = document.getElementById("risksCount");
 const timer = document.getElementById("timer");
 const aiMessage = document.getElementById("aiMessage");
 
-/* Valores iniciais (nada de números inventados) */
 if (filesCount) filesCount.textContent = "0";
 if (checksCount) checksCount.textContent = "0";
 if (risksCount) risksCount.textContent = "0";
 
-/* Cronômetro */
 let segundos = 0;
 const intervaloTimer = setInterval(() => {
   segundos += 1;
@@ -51,17 +54,17 @@ function updateStep(index, completed) {
   }
 }
 
-/* Barra "visual": sobe até 90% e espera a IA responder de verdade */
 let progresso = 0;
 const intervaloVisual = setInterval(() => {
   if (progresso < 90) progresso += 1;
 
   const stepIndex = Math.min(
-    Math.floor(progresso / (100 / steps.length)),
-    steps.length - 1
+    Math.floor(progresso / (100 / Math.max(steps.length, 1))),
+    Math.max(steps.length - 1, 0)
   );
+  
   steps.forEach((_, index) => updateStep(index, index < stepIndex));
-  updateStep(stepIndex, false);
+  if (steps.length > 0) updateStep(stepIndex, false);
 
   if (percentage) percentage.textContent = `${progresso}%`;
   if (progressText) progressText.textContent = `${progresso}%`;
@@ -81,9 +84,8 @@ function finalizarComSucesso(resultado) {
   if (progressText) progressText.textContent = "100%";
   if (progressFill) progressFill.style.width = "100%";
 
-  /* Números reais vindos do backend */
   if (filesCount) filesCount.textContent = resultado.arquivos_analisados ?? 1;
-  if (checksCount) checksCount.textContent = 8; /* categorias OWASP analisadas no prompt */
+  if (checksCount) checksCount.textContent = "8";
   if (risksCount) risksCount.textContent = resultado.vulnerabilidades?.length ?? 0;
 
   if (aiMessage) {
@@ -94,14 +96,15 @@ function finalizarComSucesso(resultado) {
   const statusEl = document.querySelector(".scanner-status");
   if (statusEl) statusEl.innerHTML = '<span class="status-dot"></span> ANÁLISE CONCLUÍDA';
 
-  /* Guarda o resultado real para a tela de resultados */
   sessionStorage.setItem("ultimoResultadoAnalise", JSON.stringify(resultado));
 
-  const resultLink = document.createElement("a");
-  resultLink.className = "scan-result-link";
-  resultLink.href = "area.html?view=vulnerabilities";
-  resultLink.innerHTML = '<i class="fa-solid fa-chart-line"></i> Ver resultados';
-  document.querySelector(".scanner-main")?.appendChild(resultLink);
+  if (!document.querySelector(".scan-result-link")) {
+    const resultLink = document.createElement("a");
+    resultLink.className = "scan-result-link";
+    resultLink.href = "area.html?view=vulnerabilities";
+    resultLink.innerHTML = '<i class="fa-solid fa-chart-line"></i> Ver resultados';
+    document.querySelector(".scanner-main")?.appendChild(resultLink);
+  }
 }
 
 function finalizarComErro(mensagemErro) {
@@ -113,12 +116,17 @@ function finalizarComErro(mensagemErro) {
   const statusEl = document.querySelector(".scanner-status");
   if (statusEl) {
     statusEl.innerHTML =
-      '<span class="status-dot" style="background:#F85149"></span> ERRO NA ANÁLISE';
+      '<span class="status-dot" style="background:#F85149; box-shadow:0 0 12px #F85149;"></span> ERRO NA ANÁLISE';
   }
 }
 
 async function executarAnalise() {
   const tipo = localStorage.getItem("tipoAnalise");
+
+  if (!currentUserId) {
+    const { data } = await supabase.auth.getSession();
+    currentUserId = data.session?.user?.id || null;
+  }
 
   try {
     let resposta;
@@ -129,6 +137,7 @@ async function executarAnalise() {
 
       const form = new FormData();
       form.append("codigo", codigo);
+      if (currentUserId) form.append("user_id", currentUserId);
 
       resposta = await fetch(`${BACKEND_URL}/analyze/code`, {
         method: "POST",
@@ -143,6 +152,7 @@ async function executarAnalise() {
       const blob = await (await fetch(base64)).blob();
       const form = new FormData();
       form.append("arquivo", blob, nome);
+      if (currentUserId) form.append("user_id", currentUserId);
 
       resposta = await fetch(`${BACKEND_URL}/analyze/zip`, {
         method: "POST",
@@ -156,6 +166,7 @@ async function executarAnalise() {
       const form = new FormData();
       form.append("repo_full_name", repoFullName);
       form.append("branch", branch);
+      if (currentUserId) form.append("user_id", currentUserId);
 
       resposta = await fetch(`${BACKEND_URL}/analyze/github`, {
         method: "POST",
