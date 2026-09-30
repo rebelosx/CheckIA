@@ -10,6 +10,9 @@ supabase.auth.getSession().then(({ data }) => {
     currentUserId = data.session.user.id;
   }
 });
+if (!usuario) {
+    window.location.href = "index.html";
+}
 
 const percentage = document.getElementById("percentage");
 const progressText = document.getElementById("progressText");

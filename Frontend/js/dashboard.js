@@ -34,39 +34,6 @@ iniciarSessao();
 
 /* =====================================================
  2. DADOS DOS PROJETOS
-===================================================== */
-const projetos = [
- {
-   nome: "API Financeira",
-   linguagem: "Java",
-   score: 96,
-   status: "Seguro"
- },
- {
-   nome: "E-commerce AI",
-   linguagem: "JavaScript",
-   score: 78,
-   status: "Atenção"
- },
- {
-   nome: "Sistema Login",
-   linguagem: "Python",
-   score: 52,
-   status: "Risco"
- },
- {
-   nome: "Aplicação Web",
-   linguagem: "PHP",
-   score: 89,
-   status: "Seguro"
- },
- {
-   nome: "API Check IA",
-   linguagem: "Node.js",
-   score: 94,
-   status: "Seguro"
- }
-];
 
 /* =====================================================
  3. PESQUISA DE PROJETOS
