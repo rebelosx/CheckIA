@@ -1710,6 +1710,197 @@ function escaparHTML(texto) {
 
 /* =========================================
    MODAL GITHUB
+========================================= */
+
+function mostrarModalGitHub() {
+
+    const modal =
+        document.createElement(
+            "div"
+        );
+
+
+    modal.className =
+        "modal-overlay";
+
+
+    modal.innerHTML = `
+
+        <div class="modal">
+
+            <div class="modal-icon">
+
+                <i
+                    class="fa-brands fa-github"
+                ></i>
+
+            </div>
+
+
+            <h2>
+                Conectar repositório
+            </h2>
+
+
+            <p>
+                Informe a URL pública do repositório
+                que deseja analisar.
+            </p>
+
+
+            <input
+                id="githubUrl"
+                type="url"
+                placeholder="https://github.com/usuario/projeto"
+            >
+
+
+            <div class="modal-actions">
+
+                <button
+                    class="cancel-modal"
+                    type="button"
+                >
+                    Cancelar
+                </button>
+
+
+                <button
+                    class="confirm-github"
+                    type="button"
+                >
+                    Analisar
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        modal
+    );
+
+
+    modal.addEventListener(
+        "click",
+        function (e) {
+
+            if (
+                e.target === modal
+            ) {
+
+                modal.remove();
+
+            }
+
+        }
+    );
+
+
+    const cancelar =
+        modal.querySelector(
+            ".cancel-modal"
+        );
+
+
+    cancelar.addEventListener(
+        "click",
+        function () {
+
+            modal.remove();
+
+        }
+    );
+
+
+    const confirmar =
+        modal.querySelector(
+            ".confirm-github"
+        );
+
+
+    confirmar.addEventListener(
+        "click",
+        function () {
+
+            const urlInput =
+                modal.querySelector(
+                    "#githubUrl"
+                );
+
+
+            const url =
+                urlInput
+                    ? urlInput.value.trim()
+                    : "";
+
+
+            if (!url) {
+
+                mostrarMensagem(
+                    "Informe a URL do repositório.",
+                    "erro"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !url.includes(
+                    "github.com"
+                )
+            ) {
+
+                mostrarMensagem(
+                    "Informe uma URL válida do GitHub.",
+                    "erro"
+                );
+
+                return;
+
+            }
+
+
+            modal.remove();
+
+
+            iniciarAnalise(
+                "GitHub",
+                url
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   CÓDIGO MANUAL
+========================================= */
+
+const codeButton =
+    document.getElementById(
+        "codeButton"
+    );
+
+
+if (codeButton) {
+
+    codeButton.addEventListener(
+        "click",
+        function () {
+
+            mostrarModalCodigo();
+
+        }
+    );
+
 }
 
 

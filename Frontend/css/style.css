@@ -2183,7 +2183,6 @@ tbody tr:hover {
 
     border-color: rgba(99, 102, 241, 0.18);
 }
-     background:var(--background);
 
 .scan-step.completed {
     opacity: 0.9;
