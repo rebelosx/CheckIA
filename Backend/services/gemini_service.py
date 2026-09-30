@@ -10,7 +10,7 @@ load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Modelo oficial ativo no Google AI Studio
-MODELO = "gemini-3.8-flash"
+MODELO = "gemini-3.5-flash-lite"
 
 PROMPT_BASE = """
 Você é um especialista em segurança de aplicações (AppSec), atuando como um scanner

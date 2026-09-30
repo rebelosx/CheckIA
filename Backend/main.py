@@ -592,15 +592,20 @@ async def analisar_com_seguranca(
 
     except Exception as e:
 
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=502,
+            detail=f"Erro ao consultar a IA: {type(e).__name__}: {(e)}"
+        )
+    
+        
         print(
             "ERRO IA:",
             repr(e)
         )
 
-        raise HTTPException(
-            status_code=502,
-            detail=f"Erro ao consultar a IA: {e}"
-        )
+        
 
 
 # =========================================================
