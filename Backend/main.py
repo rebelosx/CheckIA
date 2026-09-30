@@ -1,4 +1,9 @@
 import os
+import secrets
+import zipfile
+import io
+from pathlib import Path
+from urllib.parse import urlencode
 import re
 import httpx # [biblioteca para requisições assíncronas]
 import base64
@@ -60,112 +65,977 @@ async def analyze_repo(request: RepoRequest):
     if not match:
         raise HTTPException(status_code=400, detail="Não foi possível identificar o dono e o repositório.")
 
-    owner = match.group(1)
-    repo = match.group(2).rstrip("/").replace(".git", "")
+import httpx
+from dotenv import load_dotenv
+from fastapi import FastAPI, Request, HTTPException, UploadFile, File, Form
+from fastapi.concurrency import run_in_threadpool
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse, HTMLResponse
+from google.api_core.exceptions import ResourceExhausted
+from starlette.middleware.sessions import SessionMiddleware
 
-    print(f"[1/5] Iniciando análise para: {owner}/{repo}", flush=True)
+from services.gemini_service import analisar_codigo
+from services.github_service import buscar_arquivos_repo
+from supabase import create_client, Client
 
-    # --- PARTE 2: BUSCAR A ÁRVORE (TREE) NO GITHUB ---
-    codigo_para_ia = "" #variável que vai armazenar o código para enviar à IA
 
-    # Configuração de Timeout
-    # 10 segundos para resposta total e 5 segundos para conectar
-    timeout_config = httpx.Timeout(30.0, connect=10.0)
-    
-    async with httpx.AsyncClient(timeout=timeout_config) as client:
-        try:
-            repo_response = await client.get(f"https://api.github.com/repos/{owner}/{repo}", headers=headers)
-            if repo_response.status_code != 200:
-                raise HTTPException(status_code=404, detail="Não consegui acessar o repositório. Verifique se o link é público.")
+# =========================================================
+# CONFIGURAÇÃO DO .ENV & SUPABASE
+# =========================================================
 
-            repo_data = repo_response.json()
-            default_branch = repo_data.get("default_branch", "main")
-            linguagem = repo_data.get("language") or "Não identificada"
-            print(f"[2/5] Branch principal encontrada: {default_branch}", flush=True)
-            github_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/{quote(default_branch, safe='')}?recursive=1"
-            response = await client.get(github_url, headers=headers)
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env")
 
-            if response.status_code != 200:
-                raise HTTPException(status_code=502, detail="Não consegui listar os arquivos do repositório.")
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
+GITHUB_REDIRECT_URI = os.getenv("GITHUB_REDIRECT_URI")
 
-            tree = response.json().get("tree", [])
-            print(f"[3/5] Estrutura recebida: {len(tree)} itens", flush=True)
+SESSION_SECRET = os.getenv(
+    "SESSION_SECRET",
+    "chave-temporaria-apenas-para-desenvolvimento"
+)
 
-        except httpx.TimeoutException:
-            raise HTTPException(status_code=504, detail="O GitHub demorou demais para responder. Tente novamente.")
-        
-        # 2. Aplicamos a "Blacklist" para ignorar lixo e arquivos pesados [3]
-        blacklist = ['node_modules', '.git', 'package-lock.json', '.png', '.jpg', '.env', '.pem', '.key']
-        filtered_files = [f["path"] for f in tree if f["type"] == "blob" and not any(i in f["path"] for i in blacklist)]
-        print(f"[4/5] Arquivos elegíveis para leitura: {len(filtered_files)}", flush=True)
+SUPABASE_URL = os.getenv(
+    "SUPABASE_URL",
+    "https://tbrasnqvnghpyqpaktul.supabase.co"
+)
 
-        # --- PARTE 3: COLETA DO CONTEÚDO  ---
-        # Analisa todos os arquivos de texto encontrados na árvore do repositório.
-        for path in filtered_files:
-            content_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
-            res = await client.get(content_url, headers=headers)
-        
-            if res.status_code == 200:
-                try:
-                    # Tentamos decodificar. Se for um arquivo binário que passou pelo filtro, não travamos o código!
-                    raw_content = res.json().get('content', '')
-                    # Decodificação segura para evitar erros de arquivos binários
-                    decoded_bytes = base64.b64decode(raw_content)
-                    content = decoded_bytes.decode('utf-8')
-                    codigo_para_ia += f"--- ARQUIVO: {path} ---\n{content}\n\n"
-                except (UnicodeDecodeError, ValueError):
-                    # Se der erro de leitura (UTF-8), apenas pulamos o arquivo
-                    print(f"Pulando arquivo não-texto: {path}")
-                    continue
+SUPABASE_KEY = os.getenv(
+    "SUPABASE_SERVICE_ROLE_KEY",
+    os.getenv(
+        "SUPABASE_ANON_KEY",
+        ""
+    )
+)
 
-    # --- PARTE 4: ENGENHARIA DE PROMPT (Instruindo a IA [1]) ---
-    # Aqui definimos o modelo e como a IA deve se comportar
-    model = genai.GenerativeModel('gemini-flash-latest') # type: ignore
+supabase_admin: Client = create_client(
+    SUPABASE_URL,
+    SUPABASE_KEY
+)
+try:
+    teste = supabase_admin.table("analises").select("*").limit(1).execute()
+    print("✅ SUPABASE CONECTADO!")
+    print("Resposta:", teste.data)
 
-     # 1. Primeiro, verifique no terminal se o código está chegando o print fica fora do prompt para não confundir a IA
-    print(f"[5/5] Enviando {len(codigo_para_ia)} caracteres para análise da IA...", flush=True)
+except Exception as e:
+    print("❌ ERRO SUPABASE:")
+    print(repr(e))
 
-    # Criamos o "Prompt de Segurança": definimos a persona da IA e o formato da resposta
-    # Pedimos especificamente o formato JSON para que o João e o Jonathan consigam exibir no front [4]
-    prompt = f"""
-    Você é um assistente de ensino especializado em boas práticas de programação e qualidade de software.
-    Sua tarefa é analisar o código abaixo para fins didáticos e sugerir melhorias de robustez, seguindo padrões profissionais de desenvolvimento.
-    
-    FOCO DA REVISÃO PEDAGÓGICA:
-    - Verificação de configurações (boas práticas de armazenamento).
-    - Higienização de dados e proteção contra entradas inesperadas.
-    - Melhoria na clareza e tratamento de erros do sistema.
 
-    REGRAS DE SAÍDA:
-    - Retorne APENAS o objeto JSON abaixo.
-    - Se o código for seguro, retorne o array vazio.
+# =========================================================
+# APLICAÇÃO FASTAPI & CORS
+# =========================================================
 
-    FORMATO JSON:
-    {{
-      "vulnerabilidades": [
-        {{
-          "arquivo": "nome_do_arquivo",
-          "risco": "Título da melhoria (ex: Proteção de Dados)",
-          "severidade": "Alta/Média/Baixa",
-          "descricao": "Explicação pedagógica do ponto de atenção",
-          "correcao": "Sugestão de código para melhoria"
-        }}
-      ]
-    }}
+app = FastAPI(title="CheckIA Backend")
 
-    CÓDIGO PARA REVISÃO DE ESTUDO:
-    {codigo_para_ia}
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=SESSION_SECRET,
+    same_site="lax",
+    https_only=False
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:5500",
+        "http://127.0.0.1:5501",
+        "http://127.0.0.1:5502",
+        "http://localhost:5500",
+        "http://localhost:5501",
+        "http://localhost:5502",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# =========================================================
+# PERSISTÊNCIA NO SUPABASE
+# =========================================================
+
+def criar_analise_no_supabase(
+    user_id: str,
+    tipo: str,
+    origem: str
+):
+    """
+    Cria a análise imediatamente no banco.
+
+    Isso acontece ANTES da IA/scanner ser executado.
+    Dessa forma, mesmo que a análise dê erro,
+    teremos um registro no histórico.
     """
 
-    # Enviamos tudo para o Google e recebemos a análise
-    ai_response = model.generate_content(prompt)
-    print(f"Análise concluída para {owner}/{repo}", flush=True)
-    
-    # --- PARTE 5: RETORNO DA API ---
-    # Devolvemos o resultado final que será usado para alimentar o Dashboard [5]
+    if not supabase_admin or not user_id:
+        return None
+
+    try:
+        analise_data = {
+            "user_id": user_id,
+            "tipo": tipo,
+            "origem": origem,
+            "score": 0,
+            "linguagem_detectada": "aguardando",
+            "resumo": "Análise em andamento.",
+            "status": "em_andamento",
+            "erro": None,
+        }
+
+        response = (
+            supabase_admin
+            .table("analises")
+            .insert(analise_data)
+            .execute()
+        )
+
+        if response.data:
+            return response.data[0]["id"]
+
+    except Exception as e:
+        print("Erro ao criar análise no Supabase:", repr(e))
+
+    return None
+
+
+def finalizar_analise_no_supabase(
+    analise_id,
+    resultado_ia: dict
+):
+    """
+    Atualiza uma análise que terminou com sucesso.
+    """
+
+    if not analise_id:
+        return
+
+    try:
+        dados = {
+            "score": resultado_ia.get("score", 0),
+            "linguagem_detectada": resultado_ia.get(
+                "linguagem_detectada",
+                "desconhecida"
+            ),
+            "resumo": resultado_ia.get(
+                "resumo",
+                "Sem resumo disponível."
+            ),
+            "status": "concluida",
+            "erro": None,
+        }
+
+        supabase_admin \
+            .table("analises") \
+            .update(dados) \
+            .eq("id", analise_id) \
+            .execute()
+
+        salvar_vulnerabilidades(
+            analise_id,
+            resultado_ia
+        )
+
+    except Exception as e:
+        print(
+            "Erro ao finalizar análise no Supabase:",
+            repr(e)
+        )
+
+
+def salvar_erro_analise_no_supabase(
+    analise_id,
+    erro: str
+):
+    """
+    Marca a análise como erro, mantendo o registro no histórico.
+    """
+
+    if not analise_id:
+        return
+
+    try:
+        dados = {
+            "status": "erro",
+            "score": 0,
+            "linguagem_detectada": "não identificada",
+            "resumo": "A análise não pôde ser concluída.",
+            "erro": erro,
+        }
+
+        supabase_admin \
+            .table("analises") \
+            .update(dados) \
+            .eq("id", analise_id) \
+            .execute()
+
+    except Exception as e:
+        print(
+            "Erro ao registrar falha da análise:",
+            repr(e)
+        )
+
+
+def salvar_vulnerabilidades(
+    analise_id,
+    resultado_ia: dict
+):
+    """
+    Salva as vulnerabilidades encontradas
+    somente quando a análise foi concluída.
+    """
+
+    if not analise_id:
+        return
+
+    try:
+        vulnerabilidades = resultado_ia.get(
+            "vulnerabilidades",
+            []
+        )
+
+        if not vulnerabilidades:
+            return
+
+        registros_vuln = []
+
+        for v in vulnerabilidades:
+
+            registros_vuln.append({
+                "analise_id": analise_id,
+                "user_id": resultado_ia.get("user_id"),
+                "titulo": v.get(
+                    "titulo",
+                    "Vulnerabilidade sem título"
+                ),
+                "severidade": v.get(
+                    "severidade",
+                    "Média"
+                ),
+                "categoria": v.get(
+                    "categoria",
+                    "Geral"
+                ),
+                "descricao": v.get(
+                    "descricao",
+                    ""
+                ),
+                "linha": str(
+                    v.get(
+                        "linha",
+                        "N/A"
+                    )
+                ),
+                "recomendacao": v.get(
+                    "recomendacao",
+                    ""
+                ),
+                "status": "Aberta"
+            })
+
+        supabase_admin \
+            .table("vulnerabilidades") \
+            .insert(registros_vuln) \
+            .execute()
+
+    except Exception as e:
+        print(
+            "Erro ao salvar vulnerabilidades:",
+            repr(e)
+        )
+
+
+def salvar_analise_concluida(
+    user_id: str,
+    analise_id,
+    resultado_ia: dict
+):
+    """
+    Compatibilidade/conveniência:
+    adiciona o user_id ao resultado e finaliza a análise.
+    """
+
+    resultado_ia["user_id"] = user_id
+
+    finalizar_analise_no_supabase(
+        analise_id,
+        resultado_ia
+    )
+
+
+# =========================================================
+# ROTAS DE AUTENTICAÇÃO E REPOSITÓRIOS GITHUB
+# =========================================================
+
+@app.get("/")
+async def home():
     return {
-        "repo": f"{owner}/{repo}",
-        "linguagem": linguagem,
-        "status": "sucesso",
-        "analise_ia": ai_response.text
+        "message": "CheckIA Backend funcionando."
     }
+
+
+@app.get("/auth/github")
+async def github_login(request: Request):
+
+    if not GITHUB_CLIENT_ID or not GITHUB_REDIRECT_URI:
+        raise HTTPException(
+            status_code=500,
+            detail="GitHub OAuth não configurado no .env"
+        )
+
+    state = secrets.token_urlsafe(32)
+
+    request.session["github_oauth_state"] = state
+
+    params = {
+        "client_id": GITHUB_CLIENT_ID,
+        "redirect_uri": GITHUB_REDIRECT_URI,
+        "state": state,
+        "scope": "read:user repo",
+    }
+
+    return RedirectResponse(
+        "https://github.com/login/oauth/authorize?"
+        + urlencode(params)
+    )
+
+
+@app.get("/auth/github/callback")
+async def github_callback(
+    request: Request,
+    code: str | None = None,
+    state: str | None = None
+):
+
+    if not code:
+        raise HTTPException(
+            status_code=400,
+            detail="Código de autorização ausente."
+        )
+
+    saved_state = request.session.get(
+        "github_oauth_state"
+    )
+
+    if (
+        not saved_state
+        or not state
+        or state != saved_state
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Estado OAuth inválido."
+        )
+
+    request.session.pop(
+        "github_oauth_state",
+        None
+    )
+
+    async with httpx.AsyncClient() as client:
+
+        token_response = await client.post(
+            "https://github.com/login/oauth/access_token",
+            headers={
+                "Accept": "application/json"
+            },
+            data={
+                "client_id": GITHUB_CLIENT_ID,
+                "client_secret": GITHUB_CLIENT_SECRET,
+                "code": code,
+                "redirect_uri": GITHUB_REDIRECT_URI,
+            },
+        )
+
+        if token_response.status_code != 200:
+            raise HTTPException(
+                status_code=502,
+                detail="Erro ao obter token do GitHub."
+            )
+
+        token_data = token_response.json()
+
+        access_token = token_data.get(
+            "access_token"
+        )
+
+        if not access_token:
+            raise HTTPException(
+                status_code=400,
+                detail=token_data.get(
+                    "error_description",
+                    "Falha na autenticação."
+                )
+            )
+
+        user_response = await client.get(
+            "https://api.github.com/user",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Accept": "application/vnd.github+json",
+            },
+        )
+
+        user_data = user_response.json()
+
+    request.session["github_access_token"] = (
+        access_token
+    )
+
+    request.session["github_user"] = {
+        "login": user_data.get("login"),
+        "name": user_data.get("name"),
+        "avatar_url": user_data.get("avatar_url"),
+    }
+
+    return HTMLResponse(
+        """
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+            <meta charset="UTF-8">
+            <title>GitHub Conectado</title>
+        </head>
+
+        <body style="
+            font-family: Arial;
+            background: #0d1117;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        ">
+
+            <div style="text-align: center;">
+                <h2>GitHub conectado com sucesso.</h2>
+                <p>Você já pode fechar esta janela.</p>
+            </div>
+
+            <script>
+                if (window.opener) {
+                    window.opener.postMessage(
+                        { type: "github-connected" },
+                        "*"
+                    );
+                }
+
+                setTimeout(
+                    function () {
+                        window.close();
+                    },
+                    1200
+                );
+            </script>
+
+        </body>
+        </html>
+        """
+    )
+
+
+@app.get("/github/me")
+async def github_me(request: Request):
+
+    github_user = request.session.get(
+        "github_user"
+    )
+
+    if not github_user:
+        raise HTTPException(
+            status_code=401,
+            detail="Usuário não conectado ao GitHub."
+        )
+
+    return github_user
+
+
+@app.get("/github/repos")
+async def github_repositories(
+    request: Request
+):
+
+    access_token = request.session.get(
+        "github_access_token"
+    )
+
+    if not access_token:
+        raise HTTPException(
+            status_code=401,
+            detail="Usuário não conectado ao GitHub."
+        )
+
+    async with httpx.AsyncClient() as client:
+
+        response = await client.get(
+            "https://api.github.com/user/repos",
+            headers={
+                "Authorization":
+                    f"Bearer {access_token}",
+                "Accept":
+                    "application/vnd.github+json"
+            },
+            params={
+                "per_page": 100,
+                "sort": "updated",
+                "direction": "desc",
+            },
+        )
+
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=response.status_code,
+            detail="Erro ao buscar repositórios."
+        )
+
+    return [
+        {
+            "id": repo.get("id"),
+            "name": repo.get("name"),
+            "full_name": repo.get("full_name"),
+            "private": repo.get("private"),
+            "html_url": repo.get("html_url"),
+            "default_branch":
+                repo.get("default_branch"),
+            "description":
+                repo.get("description"),
+            "language":
+                repo.get("language"),
+            "updated_at":
+                repo.get("updated_at"),
+        }
+        for repo in response.json()
+    ]
+
+
+@app.post("/auth/github/logout")
+async def github_logout(
+    request: Request
+):
+
+    request.session.pop(
+        "github_access_token",
+        None
+    )
+
+    request.session.pop(
+        "github_user",
+        None
+    )
+
+    return {
+        "message": "GitHub desconectado."
+    }
+
+
+# =========================================================
+# IA
+# =========================================================
+
+async def analisar_com_seguranca(
+    codigo: str
+) -> dict:
+
+    try:
+
+        return await run_in_threadpool(
+            analisar_codigo,
+            codigo
+        )
+
+    except ResourceExhausted:
+
+        raise HTTPException(
+            status_code=429,
+            detail="Limite diário gratuito da IA atingido."
+        )
+
+    except Exception as e:
+
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=502,
+            detail=f"Erro ao consultar a IA: {type(e).__name__}: {(e)}"
+        )
+    
+        
+        print(
+            "ERRO IA:",
+            repr(e)
+        )
+
+        
+
+
+# =========================================================
+# ANÁLISE DE CÓDIGO MANUAL
+# =========================================================
+
+@app.post("/analyze/code")
+async def analisar_codigo_manual(
+    codigo: str = Form(...),
+    user_id: str = Form(None)
+):
+
+    analise_id = None
+
+    if user_id:
+
+        analise_id = criar_analise_no_supabase(
+            user_id=user_id,
+            tipo="codigo",
+            origem="Código colado"
+        )
+
+    try:
+
+        resultado = await analisar_com_seguranca(
+            codigo
+        )
+
+        resultado["arquivos_analisados"] = 1
+
+        if user_id:
+
+            salvar_analise_concluida(
+                user_id,
+                analise_id,
+                resultado
+            )
+
+        return resultado
+
+    except HTTPException as e:
+
+        if analise_id:
+
+            salvar_erro_analise_no_supabase(
+                analise_id,
+                e.detail
+            )
+
+        raise e
+
+    except Exception as e:
+
+        if analise_id:
+
+            salvar_erro_analise_no_supabase(
+                analise_id,
+                str(e)
+            )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Erro inesperado durante a análise."
+        )
+
+
+# =========================================================
+# ANÁLISE DE ZIP
+# =========================================================
+
+@app.post("/analyze/zip")
+async def analisar_zip(
+    arquivo: UploadFile = File(...),
+    user_id: str = Form(None)
+):
+
+    analise_id = None
+
+    if user_id:
+
+        analise_id = criar_analise_no_supabase(
+            user_id=user_id,
+            tipo="zip",
+            origem=f"ZIP: {arquivo.filename}"
+        )
+
+    try:
+
+        conteudo = await arquivo.read()
+
+        extensoes_validas = (
+            ".py",
+            ".js",
+            ".jsx",
+            ".ts",
+            ".java",
+            ".php",
+            ".html",
+            ".css",
+            ".sql"
+        )
+
+        codigos_extraidos = []
+
+        try:
+
+            with zipfile.ZipFile(
+                io.BytesIO(conteudo)
+            ) as zip_ref:
+
+                for nome_arquivo in zip_ref.namelist():
+
+                    if (
+                        nome_arquivo.endswith(
+                            extensoes_validas
+                        )
+                        and not nome_arquivo.startswith(
+                            "__MACOSX"
+                        )
+                    ):
+
+                        with zip_ref.open(
+                            nome_arquivo
+                        ) as f:
+
+                            texto = f.read().decode(
+                                "utf-8",
+                                errors="ignore"
+                            )
+
+                            codigos_extraidos.append(
+                                f"# Arquivo: "
+                                f"{nome_arquivo}\n"
+                                f"{texto[:5000]}"
+                            )
+
+        except zipfile.BadZipFile:
+
+            mensagem = (
+                "O arquivo enviado não é "
+                "um ZIP válido."
+            )
+
+            if analise_id:
+
+                salvar_erro_analise_no_supabase(
+                    analise_id,
+                    mensagem
+                )
+
+            raise HTTPException(
+                status_code=400,
+                detail=mensagem
+            )
+
+        if not codigos_extraidos:
+
+            resultado = {
+                "score": 0,
+                "linguagem_detectada":
+                    "desconhecida",
+                "resumo":
+                    "Nenhum arquivo de código "
+                    "reconhecido dentro do ZIP.",
+                "vulnerabilidades": [],
+                "arquivos_analisados": 0,
+            }
+
+            if user_id:
+
+                salvar_analise_concluida(
+                    user_id,
+                    analise_id,
+                    resultado
+                )
+
+            return resultado
+
+        selecionados = codigos_extraidos[:15]
+
+        resultado = await analisar_com_seguranca(
+            "\n\n".join(selecionados)
+        )
+
+        resultado["arquivos_analisados"] = (
+            len(selecionados)
+        )
+
+        if user_id:
+
+            salvar_analise_concluida(
+                user_id,
+                analise_id,
+                resultado
+            )
+
+        return resultado
+
+    except HTTPException as e:
+
+        if analise_id:
+
+            salvar_erro_analise_no_supabase(
+                analise_id,
+                e.detail
+            )
+
+        raise e
+
+    except Exception as e:
+
+        print(
+            "ERRO ZIP:",
+            repr(e)
+        )
+
+        if analise_id:
+
+            salvar_erro_analise_no_supabase(
+                analise_id,
+                str(e)
+            )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Erro inesperado ao analisar o ZIP."
+        )
+
+
+# =========================================================
+# ANÁLISE DO GITHUB
+# =========================================================
+
+@app.post("/analyze/github")
+async def analisar_repo_github(
+    request: Request,
+    repo_full_name: str = Form(...),
+    branch: str = Form("main"),
+    user_id: str = Form(None)
+):
+
+    analise_id = None
+
+    if user_id:
+
+        analise_id = criar_analise_no_supabase(
+            user_id=user_id,
+            tipo="github",
+            origem=f"GitHub: {repo_full_name}"
+        )
+
+    try:
+
+        access_token = request.session.get(
+            "github_access_token"
+        )
+
+        if not access_token:
+
+            mensagem = (
+                "Usuário não conectado ao GitHub."
+            )
+
+            if analise_id:
+
+                salvar_erro_analise_no_supabase(
+                    analise_id,
+                    mensagem
+                )
+
+            raise HTTPException(
+                status_code=401,
+                detail=mensagem
+            )
+
+        if "/" not in repo_full_name:
+
+            mensagem = "Repositório inválido."
+
+            if analise_id:
+
+                salvar_erro_analise_no_supabase(
+                    analise_id,
+                    mensagem
+                )
+
+            raise HTTPException(
+                status_code=400,
+                detail=mensagem
+            )
+
+        owner, repo = repo_full_name.split(
+            "/",
+            1
+        )
+
+        arquivos = await buscar_arquivos_repo(
+            access_token,
+            owner,
+            repo,
+            branch
+        )
+
+        if not arquivos:
+
+            resultado = {
+                "score": 0,
+                "linguagem_detectada":
+                    "desconhecida",
+                "resumo":
+                    "Nenhum arquivo de código "
+                    "encontrado no repositório.",
+                "vulnerabilidades": [],
+                "arquivos_analisados": 0,
+            }
+
+            if user_id:
+
+                salvar_analise_concluida(
+                    user_id,
+                    analise_id,
+                    resultado
+                )
+
+            return resultado
+
+        resultado = await analisar_com_seguranca(
+            "\n\n".join(arquivos)
+        )
+
+        resultado["arquivos_analisados"] = (
+            len(arquivos)
+        )
+
+        if user_id:
+
+            salvar_analise_concluida(
+                user_id,
+                analise_id,
+                resultado
+            )
+
+        return resultado
+
+    except HTTPException as e:
+
+        if analise_id:
+
+            salvar_erro_analise_no_supabase(
+                analise_id,
+                e.detail
+            )
+
+        raise e
+
+    except Exception as e:
+
+        print(
+            "ERRO GITHUB:",
+            repr(e)
+        )
+
+        if analise_id:
+
+            salvar_erro_analise_no_supabase(
+                analise_id,
+                str(e)
+            )
+
+        raise HTTPException(
+            status_code=500,
+            detail="Erro inesperado durante a análise do GitHub."
+        )

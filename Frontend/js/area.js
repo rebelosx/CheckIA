@@ -1,174 +1,405 @@
-const usuarioLogado = localStorage.getItem("usuario");
+let usuarioLogado = null;
+let userId = null;
 
-if (!usuarioLogado) {
-    window.location.href = "index.html";
-}
-
-const dados = {
-    projects: { title: "Projetos", description: "Acompanhe os repositórios analisados pela sua conta.", action: "Nova análise" },
-    reports: { title: "Relatórios", description: "Consulte o histórico de análises e seus resultados.", action: "Nova análise" },
-    vulnerabilities: { title: "Vulnerabilidades", description: "Priorize os riscos identificados nas suas análises.", action: "Nova análise" },
-    settings: { title: "Configurações", description: "Gerencie as preferências da sua conta e as integrações da Check IA.", action: "Ir ao dashboard", actionHref: "dashboard.html" }
+const severidadeIcones = {
+  Alta: { icon: "fa-triangle-exclamation", color: "#ef4444" },
+  Média: { icon: "fa-cubes", color: "#f59e0b" },
+  Baixa: { icon: "fa-key", color: "#3b82f6" },
 };
 
-const view = new URLSearchParams(window.location.search).get("view");
-const repositorioSelecionado = new URLSearchParams(window.location.search).get("repo");
-const page = dados[view] || dados.projects;
-const ultimaAnalise = JSON.parse(localStorage.getItem(`ultimaAnalise_${usuarioLogado}`) || "null");
-const chaveHistorico = `historicoAnalises_${usuarioLogado}`;
-const historicoSalvo = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
-const analiseLegada = JSON.parse(localStorage.getItem("ultimaAnalise") || "null");
-const registrosDisponiveis = [...historicoSalvo, ...(ultimaAnalise ? [ultimaAnalise] : []), ...(analiseLegada ? [analiseLegada] : [])];
-const historico = registrosDisponiveis.filter((item, index, registros) => item && registros.findIndex((outro) => outro.repo === item.repo && outro.analise_ia === item.analise_ia) === index);
-if (historico.length !== historicoSalvo.length) localStorage.setItem(chaveHistorico, JSON.stringify(historico));
+async function iniciarPagina() {
+  const { data: sessionData } = await supabase.auth.getSession();
 
-function obterVulnerabilidades(resultado) {
-    if (!resultado?.analise_ia) return [];
-    const texto = resultado.analise_ia.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
-    try { return JSON.parse(texto).vulnerabilidades || []; } catch (_) { return []; }
+  if (!sessionData || !sessionData.session) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  userId = sessionData.session.user.id;
+  usuarioLogado = sessionData.session.user.email;
+  const nomeMeta = sessionData.session.user.user_metadata?.nome;
+
+  const view = new URLSearchParams(window.location.search).get("view") || "vulnerabilities";
+
+  const titulos = {
+    vulnerabilities: {
+      title: "Vulnerabilidades",
+      description: "Priorize os riscos identificados no seu código e acompanhe a correção de cada item.",
+    },
+    reports: {
+      title: "Relatórios",
+      description: "Consulte o histórico de análises de segurança efetuadas na sua conta.",
+    },
+    projects: {
+      title: "Projetos",
+      description: "Acompanhe a lista de escaneamentos realizados.",
+    },
+    settings: {
+      title: "Configurações",
+      description: "Gerencie as preferências da sua conta, informações de perfil e altere sua senha.",
+    },
+  };
+
+  const pageInfo = titulos[view] || titulos.vulnerabilities;
+
+  document.title = `${pageInfo.title} | Check IA`;
+  document.getElementById("areaTitle").textContent = pageInfo.title;
+  document.getElementById("areaDescription").textContent = pageInfo.description;
+  document.getElementById("panelTitle").textContent = pageInfo.title;
+
+  document.querySelectorAll("[data-view]").forEach((el) => el.classList.remove("active"));
+  document.querySelector(`[data-view="${view}"]`)?.classList.add("active");
+
+  const usuario = document.getElementById("usuario");
+  if (usuario) {
+    let nome = nomeMeta || usuarioLogado.split("@")[0];
+    usuario.textContent = nome.charAt(0).toUpperCase() + nome.slice(1);
+  }
+
+  if (view === "vulnerabilities") {
+    await carregarVulnerabilidadesReais();
+  } else if (view === "reports" || view === "projects") {
+    await carregarRelatoriosReais();
+  } else if (view === "settings") {
+    carregarTelaConfiguracoes(nomeMeta || usuarioLogado.split("@")[0]);
+  }
 }
 
-function escaparHtml(valor) {
-    return String(valor ?? "").replace(/[&<>'"]/g, (caractere) => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
-    }[caractere]));
+// ---------------------------------------------------------
+// TELA DE CONFIGURAÇÕES (PERFIL + TROCA DE SENHA)
+// ---------------------------------------------------------
+function carregarTelaConfiguracoes(nomeAtual) {
+  // Oculta botões de ação extras no topo
+  const actionContainer = document.getElementById("areaAction")?.parentElement;
+  if (actionContainer) {
+    actionContainer.innerHTML = "";
+  }
+
+  // Oculta/Limpa o resumo de métricas do topo
+  const areaSummary = document.getElementById("areaSummary");
+  if (areaSummary) {
+    areaSummary.innerHTML = "";
+  }
+
+  const containerLista = document.getElementById("areaList");
+
+  containerLista.innerHTML = `
+    <div class="settings-container">
+      
+      <!-- PERFIL DO USUÁRIO -->
+      <div class="settings-card">
+        <h3><i class="fa-solid fa-user-gear"></i> Perfil do Usuário</h3>
+        <p class="settings-desc">Atualize as informações exibidas na sua conta.</p>
+        
+        <form id="formPerfil" onsubmit="atualizarPerfil(event)" class="settings-form">
+          <div class="form-group">
+            <label for="nomeUsuario">Nome de Exibição</label>
+            <input type="text" id="nomeUsuario" value="${nomeAtual}" placeholder="Seu nome" required />
+          </div>
+          
+          <div class="form-group">
+            <label for="emailUsuario">E-mail (somente leitura)</label>
+            <input type="email" id="emailUsuario" value="${usuarioLogado}" disabled />
+          </div>
+
+          <button type="submit" class="btn-save">
+            <i class="fa-solid fa-floppy-disk"></i> Salvar Perfil
+          </button>
+        </form>
+      </div>
+
+      <!-- ALTERAÇÃO DE SENHA -->
+      <div class="settings-card">
+        <h3><i class="fa-solid fa-lock"></i> Alterar Senha</h3>
+        <p class="settings-desc">Digite uma nova senha com pelo menos 6 caracteres para atualizar seu acesso.</p>
+        
+        <form id="formSenha" onsubmit="alterarSenha(event)" class="settings-form">
+          <div class="form-group">
+            <label for="novaSenha">Nova Senha</label>
+            <input type="password" id="novaSenha" placeholder="••••••••" required minlength="6" />
+          </div>
+
+          <div class="form-group">
+            <label for="confirmarSenha">Confirmar Nova Senha</label>
+            <input type="password" id="confirmarSenha" placeholder="••••••••" required minlength="6" />
+          </div>
+
+          <div id="msgSenha" class="form-message"></div>
+
+          <button type="submit" class="btn-save">
+            <i class="fa-solid fa-key"></i> Atualizar Senha
+          </button>
+        </form>
+      </div>
+
+    </div>
+  `;
 }
 
-const vulnerabilidades = obterVulnerabilidades(ultimaAnalise);
+// Atualizar nome de exibição no Supabase
+window.atualizarPerfil = async function (e) {
+  e.preventDefault();
+  const novoNome = document.getElementById("nomeUsuario").value.trim();
 
-function dataFormatada(data) {
-    return data ? new Date(data).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "Data não informada";
+  if (!novoNome) return;
+
+  const { error } = await supabase.auth.updateUser({
+    data: { nome: novoNome },
+  });
+
+  if (error) {
+    alert("Erro ao atualizar perfil: " + error.message);
+  } else {
+    alert("Perfil atualizado com sucesso!");
+    location.reload();
+  }
+};
+
+// Alterar senha diretamente no Supabase Auth
+window.alterarSenha = async function (e) {
+  e.preventDefault();
+  const novaSenha = document.getElementById("novaSenha").value;
+  const confirmarSenha = document.getElementById("confirmarSenha").value;
+  const msgEl = document.getElementById("msgSenha");
+
+  if (novaSenha !== confirmarSenha) {
+    msgEl.style.color = "#ef4444";
+    msgEl.textContent = "As senhas não coincidem. Tente novamente.";
+    return;
+  }
+
+  msgEl.style.color = "#3b82f6";
+  msgEl.textContent = "Processando atualização...";
+
+  const { error } = await supabase.auth.updateUser({
+    password: novaSenha,
+  });
+
+  if (error) {
+    msgEl.style.color = "#ef4444";
+    msgEl.textContent = "Erro ao alterar senha: " + error.message;
+  } else {
+    msgEl.style.color = "#10b981";
+    msgEl.textContent = "✓ Senha alterada com sucesso!";
+    document.getElementById("formSenha").reset();
+  }
+};
+
+// ---------------------------------------------------------
+// VULNERABILIDADES
+// ---------------------------------------------------------
+async function carregarVulnerabilidadesReais() {
+  const { data: vulns, error } = await supabase
+    .from("vulnerabilidades")
+    .select("*, analises(origem)")
+    .eq("user_id", userId)
+    .order("criado_em", { ascending: false });
+
+  if (error) {
+    console.error("Erro ao carregar vulnerabilidades:", error);
+    return;
+  }
+
+  const actionContainer = document.getElementById("areaAction")?.parentElement;
+  if (actionContainer) {
+    actionContainer.innerHTML = `
+      <div style="display: flex; gap: 10px;">
+        ${vulns && vulns.length > 0 ? `
+          <button onclick="zerarHistoricoCompleto()" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+            <i class="fa-solid fa-trash-can"></i> Zerar histórico
+          </button>
+        ` : ""}
+        <a href="analysis.html" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #3b82f6; color: white; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">
+          <i class="fa-solid fa-plus"></i> Nova análise
+        </a>
+      </div>
+    `;
+  }
+
+  const abertas = vulns ? vulns.filter((v) => v.status === "Aberta").length : 0;
+  const criticas = vulns ? vulns.filter((v) => v.severidade === "Alta" && v.status === "Aberta").length : 0;
+  const resolvidas = vulns ? vulns.filter((v) => v.status === "Resolvida").length : 0;
+
+  document.getElementById("areaSummary").innerHTML = `
+    <article class="area-stat"><span>Riscos abertos</span><strong>${abertas}</strong></article>
+    <article class="area-stat"><span>Críticos</span><strong>${criticas}</strong></article>
+    <article class="area-stat"><span>Resolvidos</span><strong>${resolvidas}</strong></article>
+  `;
+
+  const containerLista = document.getElementById("areaList");
+
+  if (!vulns || vulns.length === 0) {
+    containerLista.innerHTML = `
+      <div style="padding: 3rem 1rem; text-align: center; color: #9ca3af;">
+        <p>Nenhum registro encontrado. Seu histórico está limpo!</p>
+        <a href="analysis.html" style="color: #3b82f6; text-decoration: none; font-weight: bold; margin-top: 8px; display: inline-block;">Fazer nova análise →</a>
+      </div>`;
+    return;
+  }
+
+  containerLista.innerHTML = vulns
+    .map((v) => {
+      const conf = severidadeIcones[v.severidade] || severidadeIcones["Média"];
+      const isResolvida = v.status === "Resolvida";
+      const origemNome = v.analises?.origem || "Código colado";
+
+      const dataFormatada = new Date(v.criado_em).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      return `
+      <article class="area-row" style="opacity: ${isResolvida ? "0.6" : "1"}; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <i class="fa-solid ${conf.icon}" style="color: ${conf.color}; font-size: 1.2rem;"></i>
+        <div style="flex: 1; padding: 0 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <strong>${v.titulo} ${isResolvida ? "(Resolvida)" : ""}</strong>
+            <span style="font-size: 0.75rem; color: #60a5fa; background: rgba(59, 130, 246, 0.1); padding: 2px 6px; border-radius: 4px;">
+              📂 ${origemNome}
+            </span>
+          </div>
+          <span style="display: block; margin-top: 4px; font-size: 0.85rem; color: #9ca3af;">
+            <strong>Linha/Trecho:</strong> <code>${v.linha || "N/A"}</code> | <strong>Categoria:</strong> ${v.categoria || "N/A"}
+          </span>
+          <span style="display: block; margin-top: 4px; color: #d1d5db; font-size: 0.85rem;">
+            ${v.descricao || ""}
+          </span>
+          ${
+            v.recomendacao
+              ? `<div style="margin-top: 6px; padding: 6px 10px; background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; font-size: 0.8rem; color: #93c5fd;">
+                  <strong>Recomendação:</strong> ${v.recomendacao}
+                </div>`
+              : ""
+          }
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+          <b class="area-badge" style="background: ${conf.color}22; color: ${conf.color}; border: 1px solid ${conf.color}55; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">
+            ${v.severidade}
+          </b>
+          <span style="font-size: 0.75rem; color: #6b7280;">
+            🕒 ${dataFormatada}
+          </span>
+          <div style="display: flex; gap: 6px; margin-top: 4px;">
+            ${
+              !isResolvida
+                ? `<button onclick="marcarComoResolvida('${v.id}')" style="background: #10b981; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">
+                     Resolver
+                   </button>`
+                : `<span style="font-size: 0.75rem; color: #10b981;">✓ Concluída</span>`
+            }
+            <button onclick="excluirVulnerabilidade('${v.id}')" title="Excluir este registro" style="background: transparent; color: #6b7280; border: none; cursor: pointer; padding: 2px 4px; font-size: 0.85rem;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#6b7280'">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+      </article>
+    `;
+    })
+    .join("");
 }
 
-document.title = page.title;
-document.getElementById("areaTitle").textContent = page.title;
-document.getElementById("areaDescription").textContent = page.description;
-document.getElementById("panelTitle").textContent = page.title;
+window.marcarComoResolvida = async function (vulnId) {
+  const { error } = await supabase
+    .from("vulnerabilidades")
+    .update({ status: "Resolvida" })
+    .eq("id", vulnId);
 
-const action = document.getElementById("areaAction");
-action.innerHTML = `<i class="fa-solid fa-${page.actionHref ? "house" : "plus"}"></i> ${page.action}`;
-action.href = page.actionHref || "analysis.html";
+  if (error) {
+    alert("Erro ao atualizar status.");
+  } else {
+    carregarVulnerabilidadesReais();
+  }
+};
 
-const areaSummary = document.getElementById("areaSummary");
-const areaList = document.getElementById("areaList");
+window.excluirVulnerabilidade = async function (vulnId) {
+  if (!confirm("Excluir este registro?")) return;
 
-if (view === "projects") {
-    const projetos = [...new Map(historico.map((item) => [item.repo, item])).values()];
-    areaSummary.innerHTML = [["Projetos analisados", projetos.length], ["Em monitoramento", projetos.length], ["Último status", ultimaAnalise ? "Concluída" : "Sem dados"]].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${escaparHtml(value)}</strong></article>`).join("");
-    areaList.innerHTML = projetos.length ? projetos.map((item) => `<a class="area-row" href="area.html?view=reports&repo=${encodeURIComponent(item.repo)}"><i class="fa-brands fa-github"></i><div><strong>${escaparHtml(item.repo)}</strong><span>Última análise: ${dataFormatada(item.criada_em)}</span></div><b class="area-badge">Ver relatórios</b></a>`).join("") : `<article class="area-row"><i class="fa-solid fa-folder-open"></i><div><strong>Nenhum projeto analisado</strong><span>Conecte um repositório para começar.</span></div></article>`;
-} else if (view === "reports") {
-    const relatorios = repositorioSelecionado ? historico.filter((item) => item.repo === repositorioSelecionado) : historico;
-    areaSummary.innerHTML = [["Relatórios gerados", relatorios.length], ["Com riscos", relatorios.filter((item) => obterVulnerabilidades(item).length > 0).length], ["Projeto", repositorioSelecionado || "Todos"]].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${escaparHtml(value)}</strong></article>`).join("");
-    areaList.innerHTML = relatorios.length ? [...relatorios].reverse().map((item) => `<article class="area-row"><i class="fa-solid fa-file-lines"></i><div><strong>Relatório de ${escaparHtml(item.repo)}</strong><span>${dataFormatada(item.criada_em)} · ${obterVulnerabilidades(item).length} risco(s) encontrado(s)</span></div><b class="area-badge">Concluído</b></article>`).join("") : `<article class="area-row"><i class="fa-solid fa-file-circle-plus"></i><div><strong>Nenhum relatório gerado</strong><span>Os relatórios aparecerão após a primeira análise.</span></div></article>`;
-} else {
-    areaSummary.innerHTML = view === "settings" ? [["Integrações", localStorage.getItem(`integracaoGithub_${usuarioLogado}`) === "false" ? 0 : 1], ["Análises realizadas", historico.length], ["Notificações", localStorage.getItem(`alertasSeguranca_${usuarioLogado}`) === "false" ? "Inativas" : "Ativas"]].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${escaparHtml(value)}</strong></article>`).join("") : "";
+  const { error } = await supabase
+    .from("vulnerabilidades")
+    .delete()
+    .eq("id", vulnId)
+    .eq("user_id", userId);
+
+  if (error) {
+    alert("Erro ao excluir.");
+  } else {
+    carregarVulnerabilidadesReais();
+  }
+};
+
+window.zerarHistoricoCompleto = async function () {
+  if (!confirm("Atenção: Isso apagará todas as análises e vulnerabilidades gravadas permanentemente. Deseja continuar?")) return;
+
+  const { error } = await supabase
+    .from("analises")
+    .delete()
+    .eq("user_id", userId);
+
+  if (error) {
+    alert("Erro ao zerar histórico.");
+  } else {
+    carregarVulnerabilidadesReais();
+  }
+};
+
+// ---------------------------------------------------------
+// RELATÓRIOS E PROJETOS
+// ---------------------------------------------------------
+async function carregarRelatoriosReais() {
+  const { data: analises, error } = await supabase
+    .from("analises")
+    .select("*")
+    .eq("user_id", userId)
+    .order("criado_em", { ascending: false });
+
+  if (error) {
+    console.error("Erro ao carregar relatórios:", error);
+    return;
+  }
+
+  const total = analises.length;
+  const scoreMedio = total > 0 ? Math.round(analises.reduce((acc, a) => acc + a.score, 0) / total) : 0;
+
+  document.getElementById("areaSummary").innerHTML = `
+    <article class="area-stat"><span>Análises efetuadas</span><strong>${total}</strong></article>
+    <article class="area-stat"><span>Score médio</span><strong>${scoreMedio}%</strong></article>
+  `;
+
+  const containerLista = document.getElementById("areaList");
+
+  if (!analises || analises.length === 0) {
+    containerLista.innerHTML = `<div style="padding: 2rem; text-align: center; color: #9ca3af;">Nenhum relatório encontrado.</div>`;
+    return;
+  }
+
+  containerLista.innerHTML = analises
+    .map((a) => {
+      const dataFormatada = new Date(a.criado_em).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      return `
+      <article class="area-row">
+        <i class="fa-solid fa-file-code" style="color: #3b82f6;"></i>
+        <div style="flex: 1;">
+          <strong>${a.origem || "Código manual"} (${a.linguagem_detectada})</strong>
+          <span>${a.resumo}</span>
+          <span style="font-size: 0.75rem; color: #6b7280; display: block; margin-top: 2px;">Realizada em ${dataFormatada}</span>
+        </div>
+        <b class="area-badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">
+          Score: ${a.score}%
+        </b>
+      </article>
+    `;
+    })
+    .join("");
 }
 
-if (view === "settings") {
-    const emailSalvo = localStorage.getItem("emailConta") || usuarioLogado;
-    const nomeSalvo = localStorage.getItem("nomeConta") || usuarioLogado.split("@")[0];
-    const funcaoSalva = localStorage.getItem("funcaoConta") || "Analista";
-    const chaveConta = `_${usuarioLogado}`;
-    const githubAtivo = localStorage.getItem(`integracaoGithub${chaveConta}`) !== "false";
-    const webhooksAtivos = localStorage.getItem(`webhooksAtivos${chaveConta}`) === "true";
-    const alertasAtivos = localStorage.getItem(`alertasSeguranca${chaveConta}`) !== "false";
-    const resumoAtivo = localStorage.getItem(`resumoSemanal${chaveConta}`) !== "false";
-
-    areaList.innerHTML = `
-        <section class="settings-section">
-            <div class="settings-section-heading">
-                <div class="settings-icon"><i class="fa-solid fa-user"></i></div>
-                <div><h3>Perfil da conta</h3><p>Atualize as informações usadas no seu acesso.</p></div>
-            </div>
-            <div class="avatar-settings">
-                <span class="profile-avatar" id="settingsAvatar">👤</span>
-                <div class="avatar-controls">
-                    <label for="avatarEmoji">Emoji do avatar</label>
-                    <input id="avatarEmoji" type="text" maxlength="4" placeholder="Ex.: 🙂">
-                    <label for="avatarColor">Cor do avatar</label>
-                    <input id="avatarColor" class="avatar-color" type="color" value="#ffffff">
-                    <label for="avatarUpload">Ou escolha uma imagem</label>
-                    <input id="avatarUpload" type="file" accept="image/*">
-                    <button id="resetAvatar" class="avatar-reset" type="button"><i class="fa-solid fa-rotate-left"></i> Voltar ao padrão</button>
-                </div>
-            </div>
-            <form class="settings-form" id="profileForm">
-                <label>Nome<input name="nome" value="${nomeSalvo}" required></label>
-                <label>E-mail<input name="email" type="email" value="${emailSalvo}" required></label>
-                <label>Função<input name="funcao" value="${funcaoSalva}" required></label>
-                <label>Nova senha<input name="senha" type="password" placeholder="Deixe em branco para manter"></label>
-                <button class="area-action settings-save" type="submit"><i class="fa-solid fa-check"></i> Salvar perfil</button>
-            </form>
-        </section>
-        <section class="settings-section">
-            <div class="settings-section-heading">
-                <div class="settings-icon"><i class="fa-solid fa-plug"></i></div>
-                <div><h3>Integrações</h3><p>Controle os serviços conectados à sua conta.</p></div>
-            </div>
-            <label class="settings-toggle"><span><strong><i class="fa-brands fa-github"></i> GitHub</strong><small>Conectar repositórios para novas análises.</small></span><input id="githubToggle" type="checkbox" ${githubAtivo ? "checked" : ""}><span class="toggle-control"></span></label>
-            <label class="settings-toggle"><span><strong><i class="fa-solid fa-code-branch"></i> Webhooks</strong><small>Receber eventos automáticos dos projetos.</small></span><input id="webhookToggle" type="checkbox" ${webhooksAtivos ? "checked" : ""}><span class="toggle-control"></span></label>
-        </section>
-        <section class="settings-section">
-            <div class="settings-section-heading">
-                <div class="settings-icon"><i class="fa-solid fa-bell"></i></div>
-                <div><h3>Notificações</h3><p>Escolha quais atualizações deseja receber.</p></div>
-            </div>
-            <label class="settings-toggle"><span><strong>Alertas de segurança</strong><small>Avise quando um risco crítico for encontrado.</small></span><input id="alertsToggle" type="checkbox" ${alertasAtivos ? "checked" : ""}><span class="toggle-control"></span></label>
-            <label class="settings-toggle"><span><strong>Resumo semanal</strong><small>Receba a evolução dos seus projetos por e-mail.</small></span><input id="summaryToggle" type="checkbox" ${resumoAtivo ? "checked" : ""}><span class="toggle-control"></span></label>
-            <label class="settings-toggle"><span><strong>Tema claro</strong><small>Use uma aparência clara para o aplicativo.</small></span><input id="themeToggle" type="checkbox"><span class="toggle-control"></span></label>
-        </section>`;
-
-    document.getElementById("profileForm").addEventListener("submit", (event) => {
-        event.preventDefault();
-        const dadosPerfil = new FormData(event.currentTarget);
-        localStorage.setItem("nomeConta", dadosPerfil.get("nome"));
-        localStorage.setItem("emailConta", dadosPerfil.get("email"));
-        localStorage.setItem("funcaoConta", dadosPerfil.get("funcao"));
-        document.getElementById("usuario").textContent = dadosPerfil.get("nome");
-        mostrarMensagem("Perfil atualizado com sucesso.", "#3FB950");
-    });
-    document.getElementById("githubToggle").addEventListener("change", (event) => localStorage.setItem(`integracaoGithub${chaveConta}`, event.target.checked));
-    document.getElementById("webhookToggle").addEventListener("change", (event) => localStorage.setItem(`webhooksAtivos${chaveConta}`, event.target.checked));
-    document.getElementById("alertsToggle").addEventListener("change", (event) => localStorage.setItem(`alertasSeguranca${chaveConta}`, event.target.checked));
-    document.getElementById("summaryToggle").addEventListener("change", (event) => localStorage.setItem(`resumoSemanal${chaveConta}`, event.target.checked));
-} else {
-    if (view === "vulnerabilities" && ultimaAnalise) {
-        const repositorio = escaparHtml(ultimaAnalise.repo || "GitHub");
-        const riscos = String(vulnerabilidades.length);
-        areaSummary.innerHTML = [
-            [view === "reports" ? "Relatório mais recente" : "Repositório analisado", repositorio],
-            ["Riscos encontrados", riscos],
-            ["Status", "Concluída"]
-        ].map(([label, value]) => `<article class="area-stat"><span>${label}</span><strong>${value}</strong></article>`).join("");
-
-        if (view === "vulnerabilities") {
-            areaList.innerHTML = vulnerabilidades.length
-                ? vulnerabilidades.map((item) => `<article class="area-row"><i class="fa-solid fa-triangle-exclamation"></i><div><strong>${escaparHtml(item.risco || "Ponto de atenção")}</strong><span>${escaparHtml(item.arquivo || "Arquivo não informado")} · ${escaparHtml(item.descricao || "Sem descrição disponível.")}</span></div><b class="area-badge">${escaparHtml(item.severidade || "Análise")}</b></article>`).join("")
-                : `<article class="area-row"><i class="fa-solid fa-shield-check"></i><div><strong>Nenhum risco estruturado encontrado</strong><span>A resposta da IA não identificou vulnerabilidades no formato esperado.</span></div><b class="area-badge">Seguro</b></article>`;
-        }
-    } else if (view === "vulnerabilities") {
-        areaList.innerHTML = `<article class="area-row"><i class="fa-solid fa-shield"></i><div><strong>Nenhuma análise disponível</strong><span>Faça uma análise para visualizar vulnerabilidades.</span></div></article>`;
-    } else if (view !== "projects" && view !== "reports") {
-        areaList.innerHTML = page.rows.map(([title, detail, badge, icon]) =>
-            `<article class="area-row"><i class="fa-solid ${icon}"></i><div><strong>${title}</strong><span>${detail}</span></div><b class="area-badge">${badge}</b></article>`
-        ).join("");
-    }
-}
-
-function mostrarMensagem(texto, cor) {
-    const mensagem = document.createElement("div");
-    mensagem.className = "area-message";
-    mensagem.style.background = cor;
-    mensagem.textContent = texto;
-    document.body.appendChild(mensagem);
-    setTimeout(() => mensagem.remove(), 2800);
-}
-
-document.querySelector(`[data-view="${view || "projects"}"]`)?.classList.add("active");
-
-const usuario = document.getElementById("usuario");
-if (usuarioLogado && usuario) {
-    const nome = localStorage.getItem("nomeConta") || usuarioLogado.split("@")[0];
-    const nomeFormatado = nome.charAt(0).toUpperCase() + nome.slice(1);
-    usuario.textContent = nomeFormatado;
-}
+iniciarPagina();

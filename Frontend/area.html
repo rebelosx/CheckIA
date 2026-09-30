@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,30 +10,41 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/area.css">
 </head>
 <body>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabaseClient.js"></script>
     <div class="dashboard">
         <aside class="sidebar">
             <div>
                 <a class="brand" href="dashboard.html" aria-label="Ir ao dashboard">
-                    <img class="brand-logo brand-logo--sidebar" src="assets/logo branca transparente.png" data-logo-dark="assets/logo branca transparente.png" data-logo-light="assets/logo preta transparente.png" alt="Check IA">
+                    <img class="brand-logo brand-logo--sidebar" src="assets/logo.png" alt="Check IA">
                 </a>
                 <nav>
-                    <a href="dashboard.html"><i class="fa-solid fa-house"></i>Dashboard</a>
+                    <a href="dashboard.html"><i class="fa-solid fa-house"></i>Home</a>
                     <a href="analysis.html"><i class="fa-solid fa-magnifying-glass"></i>Nova análise</a>
                     <a data-view="projects" href="area.html?view=projects"><i class="fa-solid fa-folder"></i>Projetos</a>
-                    <a data-view="reports" href="area.html?view=reports"><i class="fa-solid fa-chart-line"></i>Relatórios</a>
                     <a data-view="vulnerabilities" href="area.html?view=vulnerabilities"><i class="fa-solid fa-triangle-exclamation"></i>Vulnerabilidades</a>
                     <a data-view="settings" href="area.html?view=settings"><i class="fa-solid fa-gear"></i>Configurações</a>
                 </nav>
             </div>
-            <a class="profile" href="area.html?view=settings" aria-label="Abrir configurações do perfil">
-                <span class="profile-avatar" id="profileAvatar">👤</span>
-                <div><strong id="usuario">Usuário</strong><p>Analista</p></div>
-            </a>
-            <button class="logout-button" id="logoutButton" type="button"><i class="fa-solid fa-right-from-bracket"></i>Sair</button>
+            <div class="profile-wrapper">
+    <button class="profile" id="profileButton" type="button">
+        <i class="fa-solid fa-user"></i>
+        <div>
+            <strong id="usuario">Usuário</strong>
+            <p>Analista</p>
+        </div>
+        <i class="fa-solid fa-chevron-up profile-chevron"></i>
+    </button>
+
+    <div class="profile-menu" id="profileMenu">
+        <button type="button" onclick="logout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Sair
+        </button>
+    </div>
+</div>
         </aside>
         <main class="content area-content">
             <header>
@@ -51,7 +63,9 @@
             </section>
         </main>
     </div>
-    <script src="js/theme.js?v=20260824"></script>
-    <script src="js/area.js?v=20260824"></script>
-</body>
+    <script src="js/area.js"></script>
+    <script src="js/profile-menu.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/auth-helpers.js"></script>
+   
 </html>

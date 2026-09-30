@@ -1,0 +1,115 @@
+/* ===========================
+   MENU DE PERFIL (dropdown)
+=========================== */
+
+.profile-wrapper{
+
+    position:relative;
+
+}
+
+.profile{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    background:transparent;
+
+    border:none;
+
+    cursor:pointer;
+
+    text-align:left;
+
+    color:inherit;
+
+    font-family:inherit;
+
+}
+
+.profile-chevron{
+
+    margin-left:auto;
+
+    font-size:12px;
+
+    color:#8B949E;
+
+    transition:.3s;
+
+}
+
+.profile-wrapper.open .profile-chevron{
+
+    transform:rotate(180deg);
+
+}
+
+.profile-menu{
+
+    display:none;
+
+    position:absolute;
+
+    bottom:calc(100% + 10px);
+
+    left:0;
+
+    width:100%;
+
+    background:#21262D;
+
+    border:1px solid #30363D;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.4);
+
+}
+
+.profile-wrapper.open .profile-menu{
+
+    display:block;
+
+}
+
+.profile-menu button{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:14px 18px;
+
+    background:transparent;
+
+    border:none;
+
+    color:#F85149;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.profile-menu button:hover{
+
+    background:#30363D;
+
+}

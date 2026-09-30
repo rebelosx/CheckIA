@@ -70,7 +70,7 @@ function validarEmail(email){
 LOGIN
 ==========================================*/
 
-form.addEventListener("submit",(e)=>{
+form.addEventListener("submit", async (e)=>{
 
     e.preventDefault();
 
@@ -104,10 +104,27 @@ form.addEventListener("submit",(e)=>{
 
     }
 
-    mostrarMensagem("Login realizado com sucesso!","#3FB950");
+    const botao = form.querySelector("button[type='submit']");
+    if (botao) botao.disabled = true;
 
-    localStorage.setItem("usuario",email.value);
-    localStorage.setItem(`tema_${email.value}`, localStorage.getItem("tema_global") || "dark");
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.value.trim(),
+        password: senha.value,
+    });
+
+    if (botao) botao.disabled = false;
+
+    if (error) {
+
+        mostrarMensagem("Email ou senha incorretos.","#F85149");
+
+        senha.focus();
+
+        return;
+
+    }
+
+    mostrarMensagem("Login realizado com sucesso!","#3FB950");
 
     setTimeout(()=>{
 

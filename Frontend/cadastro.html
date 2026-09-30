@@ -3,26 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar</title>
-    
-    <!-- Fonte -->
+    <title>Criar conta | Check IA</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    
-    <!-- CSS -->
+
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
-    <label class="theme-switch" for="themeToggle">
-        <span>Tema claro</span>
-        <input id="themeToggle" type="checkbox">
-        <span class="toggle-control"></span>
-    </label>
 
     <div class="container">
         <!-- LADO ESQUERDO -->
@@ -56,35 +47,41 @@
             </div>
         </div>
 
-        <!-- LOGIN -->
+        <!-- CADASTRO -->
         <div class="right">
-            <form id="loginForm">
-                <h2>Entrar</h2>
+            <form id="cadastroForm">
+                <h2>Criar conta</h2>
                 <p>
-                    Faça login para acessar o painel.
+                    Cadastre-se para começar a proteger seus projetos.
                 </p>
+                <div class="input">
+                    <label for="nome">Nome</label>
+                    <input type="text" id="nome" placeholder="Digite seu nome" required>
+                </div>
                 <div class="input">
                     <label for="email">Email</label>
                     <input type="email" id="email" placeholder="Digite seu email" required>
                 </div>
                 <div class="input">
                     <label for="senha">Senha</label>
-                    <input type="password" id="senha" placeholder="Digite sua senha" required>
+                    <input type="password" id="senha" placeholder="Mínimo de 6 caracteres" required>
+                </div>
+                <div class="input">
+                    <label for="confirmarSenha">Confirmar senha</label>
+                    <input type="password" id="confirmarSenha" placeholder="Repita sua senha" required>
                 </div>
                 <button type="submit">
-                    Entrar
+                    Criar conta
                 </button>
                 <p style="margin-top:16px; text-align:center;">
-                    Não tem conta? <a href="cadastro.html">Criar conta</a>
+                    Já tem uma conta? <a href="index.html">Entrar</a>
                 </p>
             </form>
         </div>
     </div>
 
-    <!-- JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabaseClient.js"></script>
-    <script src="js/login.js"></script>
-   
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/cadastro.js"></script>
 </body>
 </html>
