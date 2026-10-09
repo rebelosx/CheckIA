@@ -1,24 +1,27 @@
 /* =========================================================
-   CHECK IA - SCANNER DE SEGURANÇA (ESTILOS)
+   CHECK IA - SCANNER DE SEGURANÇA & ANALISADOR (DESIGN SYSTEM)
    ========================================================= */
 
 :root {
-  --bg-primary: #080B12;
-  --bg-secondary: #0F1420;
-  --bg-card: rgba(15, 20, 32, 0.88);
+  --bg-primary: #0a0d14;
+  --bg-secondary: #111726;
+  --bg-card: rgba(17, 23, 38, 0.75);
   
-  --accent-cyan: #20D9D2;
-  --accent-blue: #4F7CFF;
+  --accent-cyan: #00f2ff;
+  --accent-blue: #3b82f6;
   --accent-purple: #8b5cf6;
-  --accent-green: #39D98A;
-  --accent-red: #F85149;
+  --accent-green: #10b981;
   
-  --text-main: #F4F7FB;
-  --text-muted: #8B95A7;
-  --text-dim: #596579;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --text-dim: #6b7280;
   
-  --border-light: #202838;
-  --shadow-glow: 0 0 35px rgba(79, 124, 255, 0.15);
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-glow: rgba(0, 242, 255, 0.3);
+  
+  --glass-bg: rgba(17, 23, 38, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --shadow-glow: 0 0 30px rgba(0, 242, 255, 0.15);
 }
 
 * {
@@ -29,38 +32,35 @@
 
 body {
   background-color: var(--bg-primary);
-  background-image: radial-gradient(circle at 50% 20%, rgba(79, 124, 255, 0.08), transparent 35%);
   color: var(--text-main);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-/* ESTRUTURA DA PÁGINA */
+/* =========================================================
+   ESTRUTURA GERAL DA PÁGINA
+   ========================================================= */
+
 .scanner-page {
-  min-height: 100vh;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 4rem 2rem;
   display: flex;
   flex-direction: column;
+  gap: 2rem;
 }
 
-/* HEADER */
+/* =========================================================
+   HEADER
+   ========================================================= */
+
 .scanner-header {
-  height: 76px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 45px;
-  border-bottom: 1px solid var(--border-light);
-  background: rgba(15, 20, 32, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.scanner-brand {
-  display: flex;
   align-items: center;
-  gap: 12px;
-  text-decoration: none;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .scanner-brand .brand-logo {
@@ -72,413 +72,299 @@ body {
 .scanner-status {
   display: flex;
   align-items: center;
-  gap: 9px;
-  color: var(--text-muted);
-  font-size: 10px;
+  gap: 0.6rem;
+  background: rgba(0, 242, 255, 0.08);
+  border: 1px solid rgba(0, 242, 255, 0.2);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 0.08em;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
 }
 
 .status-dot {
   width: 8px;
   height: 8px;
+  background-color: var(--accent-cyan);
   border-radius: 50%;
-  background: var(--accent-cyan);
-  box-shadow: 0 0 12px var(--accent-cyan);
-  animation: pulse 1.5s infinite;
+  box-shadow: 0 0 10px var(--accent-cyan);
+  animation: pulse-dot 1.5s infinite ease-in-out;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.45; transform: scale(0.75); }
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); }
 }
 
-/* CONTEÚDO PRINCIPAL */
-.scanner-main {
-  width: min(1000px, 92%);
-  margin: auto;
-  padding: 55px 0 60px;
-}
+/* =========================================================
+   TÍTULO PRINCIPAL
+   ========================================================= */
 
 .scanner-title {
   text-align: center;
-  margin-bottom: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .scanner-title .eyebrow {
-  color: var(--accent-cyan);
-  font-size: 10px;
+  font-size: 0.8rem;
   font-weight: 800;
-  letter-spacing: 2px;
-  display: block;
+  letter-spacing: 0.15em;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
 }
 
 .scanner-title h1 {
-  font-size: 32px;
-  margin: 9px 0;
-  letter-spacing: -0.5px;
-  color: #FFFFFF;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
 }
 
 .scanner-title p {
-  color: #7F8A9D;
-  font-size: 13px;
-  max-width: 570px;
-  margin: auto;
-  line-height: 1.7;
+  color: var(--text-muted);
+  font-size: 1rem;
+  max-width: 580px;
 }
 
-/* SCANNER CARD */
+/* =========================================================
+   SCANNER PRINCIPAL (CARD DE RADAR E PROGRESSO)
+   ========================================================= */
+
 .scanner-card {
-  background: radial-gradient(circle at 50% 10%, rgba(79, 124, 255, 0.06), transparent 30%), var(--bg-secondary);
-  border: 1px solid var(--border-light);
-  border-radius: 18px;
-  padding: 35px;
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 3rem 2.5rem;
+  box-shadow: var(--shadow-glow);
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  align-items: center;
+  gap: 3rem;
+  position: relative;
+  overflow: hidden;
 }
 
+/* Radar Central */
 .scanner-visual {
-  height: 265px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
   position: relative;
 }
 
 .scanner-circle {
-  width: 185px;
-  height: 185px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: radial-gradient(circle, rgba(0, 242, 255, 0.05) 0%, rgba(10, 13, 20, 0) 70%);
 }
 
 .scanner-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid transparent;
-  animation: rotate 7s linear infinite;
+  border: 1px dashed rgba(0, 242, 255, 0.25);
 }
 
 .ring-one {
-  width: 185px;
-  height: 185px;
-  border-color: rgba(79, 124, 255, 0.35);
+  width: 100%;
+  height: 100%;
+  animation: rotate-cw 20s linear infinite;
 }
 
 .ring-two {
-  width: 155px;
-  height: 155px;
-  border-color: rgba(32, 217, 210, 0.25);
-  animation-direction: reverse;
-  animation-duration: 5s;
+  width: 78%;
+  height: 78%;
+  border-style: solid;
+  border-color: rgba(59, 130, 246, 0.2) transparent rgba(59, 130, 246, 0.2) transparent;
+  animation: rotate-ccw 12s linear infinite;
 }
 
 .ring-three {
-  width: 125px;
-  height: 125px;
-  border-color: rgba(79, 124, 255, 0.18);
-  animation-duration: 3s;
+  width: 56%;
+  height: 56%;
+  border-style: dotted;
+  border-color: rgba(0, 242, 255, 0.4);
+  animation: rotate-cw 8s linear infinite;
 }
 
-@keyframes rotate {
+.scanner-core {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  z-index: 2;
+}
+
+.scanner-core i {
+  font-size: 2.5rem;
+  color: var(--accent-cyan);
+  filter: drop-shadow(0 0 12px rgba(0, 242, 255, 0.8));
+}
+
+.scanner-core #percentage {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.scanning-text {
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+}
+
+@keyframes rotate-cw {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-.scanner-core {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(79, 124, 255, 0.18), var(--bg-secondary) 65%);
-  border: 1px solid rgba(79, 124, 255, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  position: relative;
-  z-index: 2;
-  box-shadow: 0 0 45px rgba(79, 124, 255, 0.15);
+@keyframes rotate-ccw {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
 }
 
-.scanner-core i {
-  color: var(--accent-blue);
-  font-size: 21px;
-  margin-bottom: 7px;
-}
+/* =========================================================
+   BARRA DE PROGRESSO & ETAPAS
+   ========================================================= */
 
-.scanner-core span {
-  font-size: 17px;
-  font-weight: 800;
-  color: #FFFFFF;
-}
-
-.scanning-text {
-  margin-top: 22px;
-  font-size: 9px;
-  color: var(--text-dim);
-  letter-spacing: 2px;
-  animation: blink 1.4s infinite;
-}
-
-@keyframes blink {
-  50% { opacity: 0.4; }
-}
-
-/* PROGRESSO */
 .progress-container {
-  margin: 5px 0 10px;
+  width: 100%;
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
 .progress-info {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 9px;
-  font-size: 11px;
-  color: #7F8A9D;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
 
 .progress-info strong {
   color: var(--accent-cyan);
+  font-size: 1rem;
 }
 
 .progress-bar {
-  height: 6px;
-  background: var(--border-light);
-  border-radius: 20px;
+  width: 100%;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
   overflow: hidden;
+  border: 1px solid var(--border-light);
 }
 
 .progress-fill {
-  width: 0%;
   height: 100%;
-  border-radius: inherit;
+  width: 0%;
   background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
-  box-shadow: 0 0 15px rgba(32, 217, 210, 0.35);
-  transition: width 0.4s ease;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 242, 255, 0.6);
+  transition: width 0.4s ease-out;
 }
 
-/* ETAPAS DA ANÁLISE */
 .scan-steps {
+  width: 100%;
+  max-width: 700px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.8rem;
 }
 
 .scan-step {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 13px;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  opacity: 0.45;
-  transition: 0.4s;
+  gap: 1.2rem;
+  padding: 1rem 1.2rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  opacity: 0.5;
 }
 
 .scan-step.active {
   opacity: 1;
-  background: #151C2B;
-  border-color: #273146;
+  background: rgba(0, 242, 255, 0.05);
+  border-color: rgba(0, 242, 255, 0.4);
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.08);
 }
 
 .scan-step.completed {
   opacity: 0.9;
-  background: rgba(57, 217, 138, 0.035);
-  border-color: rgba(57, 217, 138, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
 .step-icon {
-  width: 37px;
-  height: 37px;
-  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 9px;
-  background: var(--border-light);
-  color: #68758A;
-  font-size: 13px;
+  font-size: 1.1rem;
+  color: var(--text-muted);
 }
 
 .scan-step.active .step-icon {
-  background: rgba(79, 124, 255, 0.12);
-  color: var(--accent-blue);
+  background: rgba(0, 242, 255, 0.15);
+  color: var(--accent-cyan);
 }
 
 .scan-step.completed .step-icon {
-  background: rgba(57, 217, 138, 0.1);
+  background: rgba(16, 185, 129, 0.15);
   color: var(--accent-green);
 }
 
-.step-content {
-  flex: 1;
-}
+/* =========================================================
+   MODAL DO ANALISADOR DE CÓDIGO (OVERLAY & GLASSMARPHISM)
+   ========================================================= */
 
-.step-content strong {
-  display: block;
-  font-size: 11px;
-  margin-bottom: 3px;
-  color: #FFFFFF;
-}
-
-.step-content span {
-  color: #68758A;
-  font-size: 9px;
-}
-
-.step-status {
-  color: #3B4557;
-  font-size: 12px;
-}
-
-.scan-step.active .step-status {
-  color: var(--accent-blue);
-}
-
-.scan-step.completed .step-status {
-  color: var(--accent-green);
-}
-
-/* MÉTRICAS */
-.live-metrics {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-top: 15px;
-}
-
-.metric-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 17px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-}
-
-.metric-icon {
-  width: 37px;
-  height: 37px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9px;
-  background: rgba(79, 124, 255, 0.08);
-  color: var(--accent-blue);
-  font-size: 13px;
-}
-
-.metric-card span {
-  display: block;
-  color: #68758A;
-  font-size: 9px;
-  margin-bottom: 4px;
-}
-
-.metric-card strong {
-  font-size: 17px;
-  color: #FFFFFF;
-}
-
-/* IA MESSAGE */
-.ai-message {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  margin-top: 18px;
-  padding: 16px 18px;
-  background: linear-gradient(90deg, rgba(32, 217, 210, 0.05), rgba(79, 124, 255, 0.04));
-  border: 1px solid rgba(32, 217, 210, 0.12);
-  border-radius: 12px;
-}
-
-.ai-avatar {
-  width: 35px;
-  height: 35px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(32, 217, 210, 0.1);
-  color: var(--accent-cyan);
-}
-
-.ai-message span {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  color: var(--accent-cyan);
-}
-
-.ai-message p {
-  margin-top: 4px;
-  color: var(--text-muted);
-  font-size: 11px;
-}
-
-.scan-result-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  background: var(--accent-blue);
-  border-radius: 9px;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  margin: 24px auto 0;
-  padding: 13px 18px;
-  width: fit-content;
-  text-decoration: none;
-  transition: background 0.2s ease;
-}
-
-.scan-result-link:hover {
-  background: #3e67e6;
-}
-
-/* OVERLAY E MODAL DO ANALISADOR DE CÓDIGO (FIXADO) */
-.modal-overlay {
+.modal-overlay,
+.code-analyzer-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(5, 8, 15, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  inset: 0;
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 99999;
   padding: 1.5rem;
+  background: rgba(6, 9, 15, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   animation: fadeInModal 0.25s ease-out;
 }
 
 .code-analyzer-panel {
-  background: rgba(15, 20, 32, 0.95);
-  border: 1px solid rgba(32, 217, 210, 0.25);
-  border-radius: 16px;
-  padding: 2rem;
-  max-width: 680px;
   width: 100%;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(32, 217, 210, 0.15);
+  max-width: 720px;
+  background: rgba(15, 21, 34, 0.95);
+  border: 1px solid rgba(0, 242, 255, 0.25);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6), 0 0 35px rgba(0, 242, 255, 0.1);
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
-}
-
-@keyframes fadeInModal {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
+  animation: scaleUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .code-analyzer-panel h2 {
@@ -490,56 +376,53 @@ body {
   gap: 0.6rem;
 }
 
-.code-analyzer-panel h2::before {
-  content: '</>';
-  font-family: monospace;
-  font-size: 0.9rem;
-  color: var(--accent-cyan);
-  background: rgba(32, 217, 210, 0.1);
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  border: 1px solid rgba(32, 217, 210, 0.3);
-}
-
 .code-analyzer-panel p {
-  color: var(--text-muted);
   font-size: 0.9rem;
-  margin-top: -0.5rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: -0.4rem;
 }
 
-.code-analyzer-panel textarea {
+/* Área do Editor de Código (Textarea) */
+.code-analyzer-panel textarea,
+#codeTextarea {
   width: 100%;
-  min-height: 200px;
-  background-color: #080B12;
-  color: #e6edf3;
-  font-family: 'Consolas', monospace;
-  font-size: 0.88rem;
-  line-height: 1.5;
+  min-height: 220px;
+  background: #070a10;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
   padding: 1rem;
-  border: 1px solid var(--border-light);
-  border-radius: 10px;
+  color: #a7f3d0;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
   resize: vertical;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.code-analyzer-panel textarea:focus {
+.code-analyzer-panel textarea:focus,
+#codeTextarea:focus {
   border-color: var(--accent-cyan);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 0 15px rgba(32, 217, 210, 0.2);
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
 }
 
+/* Ações / Botões do Modal */
 .modal-actions {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 0.8rem;
+  margin-top: 0.5rem;
 }
 
 .btn-cancel {
   background: rgba(255, 255, 255, 0.05);
-  color: var(--text-muted);
   border: 1px solid var(--border-light);
-  padding: 0.65rem 1.3rem;
-  border-radius: 8px;
+  color: var(--text-muted);
+  padding: 0.75rem 1.4rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -551,35 +434,50 @@ body {
 }
 
 .btn-analyze {
-  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-cyan) 100%);
-  color: #080B12;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
   border: none;
-  padding: 0.65rem 1.4rem;
-  border-radius: 8px;
+  color: #ffffff;
+  padding: 0.75rem 1.6rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 0 15px rgba(32, 217, 210, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0, 242, 255, 0.25);
   transition: all 0.2s ease;
 }
 
 .btn-analyze:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 25px rgba(32, 217, 210, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 242, 255, 0.4);
 }
 
-/* RESPONSIVIDADE */
-@media (max-width: 800px) {
-  .scanner-header { padding: 0 20px; }
-  .scanner-status { display: none; }
-  .scanner-main { width: 94%; padding-top: 35px; }
-  .scanner-card { padding: 20px; }
-  .live-metrics { grid-template-columns: repeat(2, 1fr); }
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@media (max-width: 500px) {
-  .scanner-title h1 { font-size: 25px; }
-  .scanner-title p { font-size: 11px; }
-  .scanner-visual { height: 230px; }
-  .scanner-circle { transform: scale(0.85); }
-  .live-metrics { grid-template-columns: 1fr; }
+@keyframes scaleUpModal {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .scanner-page {
+    padding: 1rem;
+  }
+  
+  .scanner-title h1 {
+    font-size: 1.7rem;
+  }
+  
+  .code-analyzer-panel {
+    padding: 1.5rem;
+  }
 }
