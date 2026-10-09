@@ -129,13 +129,9 @@
         <section class="panel">
             <h2>Evolução da segurança</h2>
 
-            <div class="chart">
-                <div style="height:40%"></div>
-                <div style="height:60%"></div>
-                <div style="height:80%"></div>
-                <div style="height:95%"></div>
-                <div style="height:70%"></div>
-            </div>
+            <div style="position: relative; height: 240px; width: 100%;">
+  <canvas id="chartEvolucao"></canvas>
+</div>
         </section>
 
         <!-- TABELA -->
@@ -187,6 +183,7 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabaseClient.js"></script>
 <script src="js/auth-helpers.js"></script>
