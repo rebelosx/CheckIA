@@ -1,3 +1,5 @@
+import { supabase } from './supabaseClient.js';
+
 let usuarioLogado = null;
 let userId = null;
 
@@ -360,6 +362,23 @@ async function carregarRelatoriosReais() {
     return;
   }
 
+  // Atualizar botões de ação do topo para Relatórios / Projetos
+  const actionContainer = document.getElementById("areaAction")?.parentElement;
+  if (actionContainer) {
+    actionContainer.innerHTML = `
+      <div style="display: flex; gap: 10px;">
+        ${analises && analises.length > 0 ? `
+          <button onclick="zerarHistoricoCompleto()" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+            <i class="fa-solid fa-trash-can"></i> Limpar histórico
+          </button>
+        ` : ""}
+        <a href="analysis.html" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #3b82f6; color: white; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">
+          <i class="fa-solid fa-plus"></i> Nova análise
+        </a>
+      </div>
+    `;
+  }
+
   const total = analises.length;
   const scoreMedio = total > 0 ? Math.round(analises.reduce((acc, a) => acc + a.score, 0) / total) : 0;
 
@@ -386,20 +405,43 @@ async function carregarRelatoriosReais() {
       });
 
       return `
-      <article class="area-row">
-        <i class="fa-solid fa-file-code" style="color: #3b82f6;"></i>
-        <div style="flex: 1;">
-          <strong>${a.origem || "Código manual"} (${a.linguagem_detectada})</strong>
-          <span>${a.resumo}</span>
-          <span style="font-size: 0.75rem; color: #6b7280; display: block; margin-top: 2px;">Realizada em ${dataFormatada}</span>
+      <article class="area-row" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+          <i class="fa-solid fa-file-code" style="color: #3b82f6; font-size: 1.2rem;"></i>
+          <div>
+            <strong>${a.origem || "Código manual"} (${a.linguagem_detectada})</strong>
+            <span style="display: block; color: #9ca3af; font-size: 0.85rem;">${a.resumo}</span>
+            <span style="font-size: 0.75rem; color: #6b7280; display: block; margin-top: 2px;">Realizada em ${dataFormatada}</span>
+          </div>
         </div>
-        <b class="area-badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">
-          Score: ${a.score}%
-        </b>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <b class="area-badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem;">
+            Score: ${a.score}%
+          </b>
+          <button onclick="excluirAnalise('${a.id}')" title="Excluir este relatório" style="background: transparent; color: #6b7280; border: none; cursor: pointer; padding: 4px 6px; font-size: 0.9rem;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#6b7280'">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
       </article>
     `;
     })
     .join("");
 }
+
+window.excluirAnalise = async function (analiseId) {
+  if (!confirm("Deseja excluir este relatório?")) return;
+
+  const { error } = await supabase
+    .from("analises")
+    .delete()
+    .eq("id", analiseId)
+    .eq("user_id", userId);
+
+  if (error) {
+    alert("Erro ao excluir relatório.");
+  } else {
+    carregarRelatoriosReais();
+  }
+};
 
 iniciarPagina();
