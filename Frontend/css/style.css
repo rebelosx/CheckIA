@@ -3208,3 +3208,96 @@ form > button:hover {
         transition-duration: 0.01ms !important;
     }
 }
+/* =========================================================
+   CHECK IA - REFINAMENTO DE DESIGN SYSTEM & ENGINE
+   ========================================================= */
+
+/* 1. Iluminação Ambiente e Status */
+.scanner-page {
+  background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.10), transparent 45%);
+}
+
+.scanner-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(34, 211, 238, 0.08) !important;
+  border: 1px solid rgba(34, 211, 238, 0.25) !important;
+  border-radius: 999px !important;
+  color: var(--cyan) !important;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+  animation: pulse 1.7s infinite;
+}
+
+/* 2. Micro-Interações nos Cards das Opções */
+.analysis-card {
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.analysis-card:hover {
+  transform: translateY(-5px) !important;
+  border-color: var(--border-hover) !important;
+  box-shadow: var(--shadow-hover) !important;
+}
+
+/* 3. Estilização do Modal do Analisador de Código */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(4, 7, 13, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: fadeIn 0.2s ease;
+}
+
+.code-analyzer-panel {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 2rem;
+  background: rgba(15, 21, 32, 0.96);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 35px rgba(99, 102, 241, 0.08);
+  animation: modalin 0.25s ease;
+}
+
+.code-analyzer-panel textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 15px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: "Consolas", monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.code-analyzer-panel textarea:focus {
+  border-color: rgba(99, 102, 241, 0.55);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+}
