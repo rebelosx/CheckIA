@@ -3257,23 +3257,243 @@ form > button:hover {
 }
 
 /* Estado vazio ("Nenhum registro encontrado") centralizado no painel */
-.area-panel .area-list > :only-child {
+.area-panel .area-list > :only-child:not(.settings-container) {
   margin: auto;
   text-align: center;
 }
 
-/* Configurações: usa a largura toda em vez de ficar travado em 720px */
+/* ---------- CONFIGURAÇÕES: 2 colunas (formulários + painel lateral) ---------- */
 .settings-container {
+  width: 100%;
   max-width: none;
+  margin: 0;
+  padding: 24px;
+  text-align: left;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
   align-items: start;
-  gap: 1.5rem;
-  padding: 0;
+  gap: 20px;
 }
 
-.settings-card {
-  height: 100%;
+/* Cards de formulário empilham na coluna da esquerda */
+.settings-container > .settings-card {
+  grid-column: 1;
+}
+
+/* Painel lateral na coluna da direita, acompanha a rolagem */
+.settings-aside {
+  grid-column: 2;
+  grid-row: 1 / span 10;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 24px;
+}
+
+.settings-card h3,
+.settings-desc,
+.settings-form .form-group label {
+  text-align: left;
+}
+
+/* Remove o visual "card dentro de card" herdado do form do login */
+.settings-form {
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.settings-form .form-group {
+  margin: 0;
+}
+
+.settings-form .form-message,
+.settings-form .btn-save {
+  grid-column: 1 / -1;
+}
+
+.settings-form > .btn-save {
+  width: auto;
+  height: auto;
+  padding: 12px 22px;
+  background: var(--gradient-primary);
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  border-radius: 10px;
+}
+
+.settings-form > .btn-save:hover {
+  background: var(--gradient-primary);
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.25);
+}
+
+/* ---------- Painel lateral animado ---------- */
+.profile-showcase {
+  position: relative;
+  overflow: hidden;
+  padding: 32px 24px 24px;
+  text-align: center;
+  background: var(--gradient-soft), var(--card-solid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+/* brilho que flutua ao fundo */
+.profile-showcase::before {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  top: -90px;
+  left: 50%;
+  margin-left: -110px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.35), transparent 65%);
+  filter: blur(18px);
+  animation: showcaseDrift 7s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.showcase-orbit {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 20px;
+  display: grid;
+  place-items: center;
+}
+
+.orbit-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  border-top-color: var(--cyan);
+  animation: spin 6s linear infinite;
+}
+
+.orbit-ring--2 {
+  inset: 16px;
+  border-color: rgba(139, 92, 246, 0.3);
+  border-bottom-color: var(--purple);
+  animation-direction: reverse;
+  animation-duration: 4s;
+}
+
+.orbit-dot {
+  position: absolute;
+  inset: 0;
+  animation: spin 9s linear infinite;
+}
+
+.orbit-dot::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 14px var(--cyan);
+}
+
+.showcase-avatar {
+  position: relative;
+  z-index: 1;
+  width: 84px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  color: white;
+  font-size: 32px;
+  box-shadow: 0 0 40px rgba(99, 102, 241, 0.35);
+  animation: showcaseFloat 4s ease-in-out infinite;
+}
+
+.profile-showcase h3 {
+  position: relative;
+  font-size: 20px;
+}
+
+.profile-showcase > p {
+  position: relative;
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.showcase-stats {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.showcase-stats > div {
+  padding: 12px 6px;
+  background: rgba(8, 11, 18, 0.45);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.showcase-stats strong {
+  display: block;
+  color: var(--white);
+  font-size: 18px;
+}
+
+.showcase-stats span {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.tip-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.tip-card > i {
+  margin-top: 3px;
+  color: var(--yellow);
+  font-size: 18px;
+}
+
+.tip-card strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--white);
+  font-size: 13px;
+}
+
+.tip-card p {
+  font-size: 12px;
+}
+
+@keyframes showcaseFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@keyframes showcaseDrift {
+  from { transform: translateX(-40px); opacity: 0.6; }
+  to   { transform: translateX(40px);  opacity: 1; }
 }
 
 /* Resumos (Projetos / Vulnerabilidades) com 3 colunas iguais */
@@ -3377,7 +3597,17 @@ form > button:hover {
   width: fit-content;
   min-width: 220px;
   height: 52px;
-  margin: 28px auto 0;
+  margin: 28px auto 14px;
+}
+
+/* Texto de apoio logo abaixo do botão acompanha a centralização */
+.verification-button + p,
+.verification-button + span,
+.verification-button + small,
+.verification-button + div:not([class*="repo"]):not([class*="card"]) {
+  display: block;
+  text-align: center;
+  margin-bottom: 22px;
 }
 
 /* Caso o botão esteja dentro de um wrapper */
@@ -3438,8 +3668,25 @@ form > button:hover {
   }
 }
 
+@media (max-width: 1100px) {
+  .settings-container {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-container > .settings-card,
+  .settings-aside {
+    grid-column: 1;
+    grid-row: auto;
+    position: static;
+  }
+}
+
 @media (max-width: 768px) {
   .settings-container {
+    padding: 16px;
+  }
+
+  .settings-form {
     grid-template-columns: 1fr;
   }
 
