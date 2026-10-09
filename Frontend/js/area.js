@@ -10,7 +10,7 @@ const severidadeIcones = {
 };
 
 async function iniciarPagina() {
-  // 1. Verifica sessão no Supabase Auth
+  // 1. Autenticação e Sessão
   const { data: sessionData } = await supabase.auth.getSession();
 
   if (!sessionData || !sessionData.session) {
@@ -63,7 +63,7 @@ async function iniciarPagina() {
     usuario.textContent = nome.charAt(0).toUpperCase() + nome.slice(1);
   }
 
-  // 2. Roteamento de telas
+  // 2. Roteamento de Telas
   if (view === "vulnerabilities") {
     await carregarVulnerabilidadesReais();
   } else if (view === "reports" || view === "projects") {
@@ -74,115 +74,100 @@ async function iniciarPagina() {
 }
 
 // ---------------------------------------------------------
-// TELA DE CONFIGURAÇÕES (PERFIL + TROCA DE SENHA)
+// RELATÓRIOS E PROJETOS (BUSCA NO SUPABASE)
 // ---------------------------------------------------------
-function carregarTelaConfiguracoes(nomeAtual) {
-  const actionContainer = document.getElementById("areaAction")?.parentElement;
-  if (actionContainer) actionContainer.innerHTML = "";
-
-  const areaSummary = document.getElementById("areaSummary");
-  if (areaSummary) areaSummary.innerHTML = "";
-
+async function carregarRelatoriosReais() {
   const containerLista = document.getElementById("areaList");
-  if (!containerLista) return;
-
-  containerLista.innerHTML = `
-    <div class="settings-container" style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 680px; margin-top: 1rem;">
-      
-      <!-- PERFIL DO USUÁRIO -->
-      <div class="settings-card" style="background: rgba(18, 24, 36, 0.85); border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 12px; padding: 1.5rem;">
-        <h3 style="color: #fff; font-size: 1.1rem; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 8px;">
-          <i class="fa-solid fa-user-gear" style="color: #3b82f6;"></i> Perfil do Usuário
-        </h3>
-        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 1.2rem;">Atualize as informações exibidas na sua conta.</p>
-        
-        <form id="formPerfil" onsubmit="atualizarPerfil(event)" style="display: flex; flex-direction: column; gap: 1rem;">
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Nome de Exibição</label>
-            <input type="text" id="nomeUsuario" value="${nomeAtual}" placeholder="Seu nome" required style="background: #080b12; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 0.9rem;" />
-          </div>
-          
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">E-mail (somente leitura)</label>
-            <input type="email" id="emailUsuario" value="${usuarioLogado}" disabled style="background: #080b12; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 8px; padding: 10px 12px; color: #64748b; font-size: 0.9rem; cursor: not-allowed;" />
-          </div>
-
-          <button type="submit" style="align-self: flex-start; background: #3b82f6; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; margin-top: 0.5rem;">
-            <i class="fa-solid fa-floppy-disk"></i> Salvar Perfil
-          </button>
-        </form>
-      </div>
-
-      <!-- ALTERAÇÃO DE SENHA -->
-      <div class="settings-card" style="background: rgba(18, 24, 36, 0.85); border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 12px; padding: 1.5rem;">
-        <h3 style="color: #fff; font-size: 1.1rem; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 8px;">
-          <i class="fa-solid fa-lock" style="color: #f59e0b;"></i> Alterar Senha
-        </h3>
-        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 1.2rem;">Digite uma nova senha com pelo menos 6 caracteres.</p>
-        
-        <form id="formSenha" onsubmit="alterarSenha(event)" style="display: flex; flex-direction: column; gap: 1rem;">
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Nova Senha</label>
-            <input type="password" id="novaSenha" placeholder="••••••••" required minlength="6" style="background: #080b12; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 0.9rem;" />
-          </div>
-
-          <div style="display: flex; flex-direction: column; gap: 6px;">
-            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Confirmar Nova Senha</label>
-            <input type="password" id="confirmarSenha" placeholder="••••••••" required minlength="6" style="background: #080b12; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 0.9rem;" />
-          </div>
-
-          <div id="msgSenha" style="font-size: 0.85rem; font-weight: 600; min-height: 20px;"></div>
-
-          <button type="submit" style="align-self: flex-start; background: #6366f1; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem;">
-            <i class="fa-solid fa-key"></i> Atualizar Senha
-          </button>
-        </form>
-      </div>
-
-    </div>
-  `;
-}
-
-window.atualizarPerfil = async function (e) {
-  e.preventDefault();
-  const novoNome = document.getElementById("nomeUsuario").value.trim();
-  if (!novoNome) return;
-
-  const { error } = await supabase.auth.updateUser({ data: { nome: novoNome } });
-  if (error) {
-    alert("Erro ao atualizar perfil: " + error.message);
-  } else {
-    alert("Perfil atualizado com sucesso!");
-    location.reload();
+  if (containerLista) {
+    containerLista.innerHTML = `
+      <div style="padding: 2rem; text-align: center; color: #94a3b8;">
+        <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 1.5rem; color: #3b82f6; margin-bottom: 0.5rem;"></i>
+        <p style="margin: 0;">Sincronizando com Supabase...</p>
+      </div>`;
   }
-};
 
-window.alterarSenha = async function (e) {
-  e.preventDefault();
-  const novaSenha = document.getElementById("novaSenha").value;
-  const confirmarSenha = document.getElementById("confirmarSenha").value;
-  const msgEl = document.getElementById("msgSenha");
+  const { data: analises, error } = await supabase
+    .from("analises")
+    .select("*")
+    .eq("user_id", userId)
+    .order("criado_em", { ascending: false });
 
-  if (novaSenha !== confirmarSenha) {
-    msgEl.style.color = "#ef4444";
-    msgEl.textContent = "As senhas não coincidem. Tente novamente.";
+  if (error) {
+    console.error("Erro ao carregar análises:", error);
     return;
   }
 
-  msgEl.style.color = "#3b82f6";
-  msgEl.textContent = "Processando atualização...";
-
-  const { error } = await supabase.auth.updateUser({ password: novaSenha });
-
-  if (error) {
-    msgEl.style.color = "#ef4444";
-    msgEl.textContent = "Erro ao alterar senha: " + error.message;
-  } else {
-    msgEl.style.color = "#10b981";
-    msgEl.textContent = "✓ Senha alterada com sucesso!";
-    document.getElementById("formSenha").reset();
+  const actionContainer = document.getElementById("areaAction")?.parentElement;
+  if (actionContainer) {
+    actionContainer.innerHTML = `
+      <div style="display: flex; gap: 10px;">
+        ${analises && analises.length > 0 ? `
+          <button onclick="zerarHistoricoCompleto()" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
+            <i class="fa-solid fa-trash-can"></i> Limpar histórico
+          </button>
+        ` : ""}
+        <a href="analysis.html" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #3b82f6; color: white; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">
+          <i class="fa-solid fa-plus"></i> Nova análise
+        </a>
+      </div>
+    `;
   }
-};
+
+  const total = analises ? analises.length : 0;
+  const scoreMedio = total > 0 ? Math.round(analises.reduce((acc, a) => acc + (a.score || 0), 0) / total) : 0;
+
+  const areaSummary = document.getElementById("areaSummary");
+  if (areaSummary) {
+    areaSummary.innerHTML = `
+      <article class="area-stat"><span>Análises efetuadas</span><strong>${total}</strong></article>
+      <article class="area-stat"><span>Score médio</span><strong>${scoreMedio}%</strong></article>
+    `;
+  }
+
+  if (!containerLista) return;
+
+  if (!analises || analises.length === 0) {
+    containerLista.innerHTML = `
+      <div style="padding: 3rem 1rem; text-align: center; color: #9ca3af;">
+        <p>Nenhum projeto ou análise encontrado. O seu histórico está limpo!</p>
+        <a href="analysis.html" style="color: #3b82f6; text-decoration: none; font-weight: bold; margin-top: 8px; display: inline-block;">Fazer nova análise →</a>
+      </div>`;
+    return;
+  }
+
+  containerLista.innerHTML = analises
+    .map((a) => {
+      const dataFormatada = new Date(a.criado_em).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      return `
+      <article class="area-row" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+          <i class="fa-solid fa-file-code" style="color: #3b82f6; font-size: 1.2rem;"></i>
+          <div>
+            <strong style="color: #f8fafc; font-size: 0.95rem;">${a.origem || "Código manual"} <small style="color: #64748b; font-weight: normal;">(${a.linguagem_detectada || "geral"})</small></strong>
+            <span style="display: block; color: #94a3b8; font-size: 0.85rem; margin-top: 2px;">${a.resumo || "Análise concluída."}</span>
+            <span style="font-size: 0.75rem; color: #64748b; display: block; margin-top: 4px;">Realizada em ${dataFormatada}</span>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <b class="area-badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem;">
+            Score: ${a.score}%
+          </b>
+          <button onclick="excluirAnalise('${a.id}')" title="Excluir este relatório" style="background: transparent; color: #64748b; border: none; cursor: pointer; padding: 4px 6px; font-size: 0.9rem;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#64748b'">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </article>
+    `;
+    })
+    .join("");
+}
 
 // ---------------------------------------------------------
 // VULNERABILIDADES
@@ -234,7 +219,7 @@ async function carregarVulnerabilidadesReais() {
   if (!vulns || vulns.length === 0) {
     containerLista.innerHTML = `
       <div style="padding: 3rem 1rem; text-align: center; color: #9ca3af;">
-        <p>Nenhuma vulnerabilidade encontrada. Seu histórico está limpo!</p>
+        <p>Nenhuma vulnerabilidade encontrada. O seu histórico está limpo!</p>
         <a href="analysis.html" style="color: #3b82f6; text-decoration: none; font-weight: bold; margin-top: 8px; display: inline-block;">Fazer nova análise →</a>
       </div>`;
     return;
@@ -286,6 +271,75 @@ async function carregarVulnerabilidadesReais() {
     .join("");
 }
 
+// ---------------------------------------------------------
+// TELA DE CONFIGURAÇÕES
+// ---------------------------------------------------------
+function carregarTelaConfiguracoes(nomeAtual) {
+  const actionContainer = document.getElementById("areaAction")?.parentElement;
+  if (actionContainer) actionContainer.innerHTML = "";
+
+  const areaSummary = document.getElementById("areaSummary");
+  if (areaSummary) areaSummary.innerHTML = "";
+
+  const containerLista = document.getElementById("areaList");
+  if (!containerLista) return;
+
+  containerLista.innerHTML = `
+    <div class="settings-container" style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 680px; margin-top: 1rem;">
+      <div class="settings-card" style="background: rgba(18, 24, 36, 0.85); border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 12px; padding: 1.5rem;">
+        <h3 style="color: #fff; font-size: 1.1rem; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-user-gear" style="color: #3b82f6;"></i> Perfil do Usuário
+        </h3>
+        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 1.2rem;">Atualize as informações exibidas na sua conta.</p>
+        
+        <form id="formPerfil" onsubmit="atualizarPerfil(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Nome de Exibição</label>
+            <input type="text" id="nomeUsuario" value="${nomeAtual}" placeholder="Seu nome" required style="background: #080b12; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 0.9rem;" />
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">E-mail (somente leitura)</label>
+            <input type="email" id="emailUsuario" value="${usuarioLogado}" disabled style="background: #080b12; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 8px; padding: 10px 12px; color: #64748b; font-size: 0.9rem; cursor: not-allowed;" />
+          </div>
+
+          <button type="submit" style="align-self: flex-start; background: #3b82f6; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; margin-top: 0.5rem;">
+            <i class="fa-solid fa-floppy-disk"></i> Salvar Perfil
+          </button>
+        </form>
+      </div>
+
+      <div class="settings-card" style="background: rgba(18, 24, 36, 0.85); border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 12px; padding: 1.5rem;">
+        <h3 style="color: #fff; font-size: 1.1rem; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-lock" style="color: #f59e0b;"></i> Alterar Senha
+        </h3>
+        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 1.2rem;">Digite uma nova senha com pelo menos 6 caracteres.</p>
+        
+        <form id="formSenha" onsubmit="alterarSenha(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Nova Senha</label>
+            <input type="password" id="novaSenha" placeholder="••••••••" required minlength="6" style="background: #080b12; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 0.9rem;" />
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="color: #cbd5e1; font-size: 0.85rem; font-weight: 600;">Confirmar Nova Senha</label>
+            <input type="password" id="confirmarSenha" placeholder="••••••••" required minlength="6" style="background: #080b12; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 0.9rem;" />
+          </div>
+
+          <div id="msgSenha" style="font-size: 0.85rem; font-weight: 600; min-height: 20px;"></div>
+
+          <button type="submit" style="align-self: flex-start; background: #6366f1; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem;">
+            <i class="fa-solid fa-key"></i> Atualizar Senha
+          </button>
+        </form>
+      </div>
+    </div>
+  `;
+}
+
+// ---------------------------------------------------------
+// FUNÇÕES GLOBAIS DE AÇÃO
+// ---------------------------------------------------------
 window.marcarComoResolvida = async function (vulnId) {
   const { error } = await supabase.from("vulnerabilidades").update({ status: "Resolvida" }).eq("id", vulnId);
   if (!error) carregarVulnerabilidadesReais();
@@ -297,104 +351,57 @@ window.excluirVulnerabilidade = async function (vulnId) {
   if (!error) carregarVulnerabilidadesReais();
 };
 
+window.excluirAnalise = async function (analiseId) {
+  if (!confirm("Deseja excluir esta análise?")) return;
+  const { error } = await supabase.from("analises").delete().eq("id", analiseId).eq("user_id", userId);
+  if (!error) carregarRelatoriosReais();
+};
+
 window.zerarHistoricoCompleto = async function () {
   if (!confirm("Atenção: Isso apagará todas as análises e vulnerabilidades gravadas permanentemente. Deseja continuar?")) return;
   const { error } = await supabase.from("analises").delete().eq("user_id", userId);
   if (!error) iniciarPagina();
 };
 
-// ---------------------------------------------------------
-// RELATÓRIOS E PROJETOS
-// ---------------------------------------------------------
-async function carregarRelatoriosReais() {
-  const { data: analises, error } = await supabase
-    .from("analises")
-    .select("*")
-    .eq("user_id", userId)
-    .order("criado_em", { ascending: false });
+window.atualizarPerfil = async function (e) {
+  e.preventDefault();
+  const novoNome = document.getElementById("nomeUsuario").value.trim();
+  if (!novoNome) return;
+
+  const { error } = await supabase.auth.updateUser({ data: { nome: novoNome } });
+  if (error) {
+    alert("Erro ao atualizar perfil: " + error.message);
+  } else {
+    alert("Perfil atualizado com sucesso!");
+    location.reload();
+  }
+};
+
+window.alterarSenha = async function (e) {
+  e.preventDefault();
+  const novaSenha = document.getElementById("novaSenha").value;
+  const confirmarSenha = document.getElementById("confirmarSenha").value;
+  const msgEl = document.getElementById("msgSenha");
+
+  if (novaSenha !== confirmarSenha) {
+    msgEl.style.color = "#ef4444";
+    msgEl.textContent = "As senhas não coincidem. Tente novamente.";
+    return;
+  }
+
+  msgEl.style.color = "#3b82f6";
+  msgEl.textContent = "Processando atualização...";
+
+  const { error } = await supabase.auth.updateUser({ password: novaSenha });
 
   if (error) {
-    console.error("Erro ao carregar relatórios/projetos:", error);
-    return;
+    msgEl.style.color = "#ef4444";
+    msgEl.textContent = "Erro ao alterar senha: " + error.message;
+  } else {
+    msgEl.style.color = "#10b981";
+    msgEl.textContent = "✓ Senha alterada com sucesso!";
+    document.getElementById("formSenha").reset();
   }
-
-  const actionContainer = document.getElementById("areaAction")?.parentElement;
-  if (actionContainer) {
-    actionContainer.innerHTML = `
-      <div style="display: flex; gap: 10px;">
-        ${analises && analises.length > 0 ? `
-          <button onclick="zerarHistoricoCompleto()" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">
-            <i class="fa-solid fa-trash-can"></i> Limpar histórico
-          </button>
-        ` : ""}
-        <a href="analysis.html" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #3b82f6; color: white; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">
-          <i class="fa-solid fa-plus"></i> Nova análise
-        </a>
-      </div>
-    `;
-  }
-
-  const total = analises ? analises.length : 0;
-  const scoreMedio = total > 0 ? Math.round(analises.reduce((acc, a) => acc + (a.score || 0), 0) / total) : 0;
-
-  const areaSummary = document.getElementById("areaSummary");
-  if (areaSummary) {
-    areaSummary.innerHTML = `
-      <article class="area-stat"><span>Análises efetuadas</span><strong>${total}</strong></article>
-      <article class="area-stat"><span>Score médio</span><strong>${scoreMedio}%</strong></article>
-    `;
-  }
-
-  const containerLista = document.getElementById("areaList");
-  if (!containerLista) return;
-
-  if (!analises || analises.length === 0) {
-    containerLista.innerHTML = `
-      <div style="padding: 3rem 1rem; text-align: center; color: #9ca3af;">
-        <p>Nenhum projeto ou análise encontrado. Seu histórico está limpo!</p>
-        <a href="analysis.html" style="color: #3b82f6; text-decoration: none; font-weight: bold; margin-top: 8px; display: inline-block;">Fazer nova análise →</a>
-      </div>`;
-    return;
-  }
-
-  containerLista.innerHTML = analises
-    .map((a) => {
-      const dataFormatada = new Date(a.criado_em).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-
-      return `
-      <article class="area-row" style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-        <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
-          <i class="fa-solid fa-file-code" style="color: #3b82f6; font-size: 1.2rem;"></i>
-          <div>
-            <strong style="color: #f8fafc; font-size: 0.95rem;">${a.origem || "Código manual"} <small style="color: #64748b; font-weight: normal;">(${a.linguagem_detectada || "geral"})</small></strong>
-            <span style="display: block; color: #94a3b8; font-size: 0.85rem; margin-top: 2px;">${a.resumo || "Análise concluída."}</span>
-            <span style="font-size: 0.75rem; color: #64748b; display: block; margin-top: 4px;">Realizada em ${dataFormatada}</span>
-          </div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <b class="area-badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem;">
-            Score: ${a.score}%
-          </b>
-          <button onclick="excluirAnalise('${a.id}')" title="Excluir este relatório" style="background: transparent; color: #64748b; border: none; cursor: pointer; padding: 4px 6px; font-size: 0.9rem;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#64748b'">
-            <i class="fa-solid fa-trash-can"></i>
-          </button>
-        </div>
-      </article>
-    `;
-    })
-    .join("");
-}
-
-window.excluirAnalise = async function (analiseId) {
-  if (!confirm("Deseja excluir esta análise?")) return;
-  const { error } = await supabase.from("analises").delete().eq("id", analiseId).eq("user_id", userId);
-  if (!error) carregarRelatoriosReais();
 };
 
 iniciarPagina();
